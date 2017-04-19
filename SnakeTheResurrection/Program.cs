@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SnakeTheResurrection.Data;
+using System;
 
 namespace SnakeTheResurrection
 {
@@ -6,8 +7,20 @@ namespace SnakeTheResurrection
     {
         public static void Main(string[] args)
         {
-            Console.Write("Go away!!!");
+            #region Initialization
+            AppData.Load();
+
+            Console.Title           = Constants.APP_NAME;
+            Console.InputEncoding   = Constants.encoding;
+            Console.OutputEncoding  = Constants.encoding;
+            #endregion
+
+            Console.Write("What do you want? ಠ_ಠ");
             Console.ReadKey();
+
+            #region Unitialization
+            AppData.Current.Save();
+            #endregion
         }
     }
 }
