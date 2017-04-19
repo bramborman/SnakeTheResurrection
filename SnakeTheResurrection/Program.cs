@@ -8,18 +8,23 @@ namespace SnakeTheResurrection
         public static void Main(string[] args)
         {
             #region Initialization
-            AppData.Load();
-
             Console.Title           = Constants.APP_NAME;
             Console.InputEncoding   = Constants.encoding;
             Console.OutputEncoding  = Constants.encoding;
+            Console.ForegroundColor = Constants.FOREGROUND_COLOR;
+
+            AppData.Load();
+            ProfileManager.LoadProfiles();
             #endregion
-            
-            Console.Write(AppData.Current.Counter++ == 0 ? "What do you want? ಠ_ಠ" : "Again?? (ʘ_ʘ)");
+
+            Console.Write("( ͡° ͜ʖ ͡°)");
             Console.ReadKey();
+
+            // Main game method - main menu + profile selection
 
             #region Unitialization
             AppData.Current.Save();
+            ProfileManager.SaveProfiles();
             #endregion
         }
     }

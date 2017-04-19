@@ -49,6 +49,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants.cs" />
+    <Compile Include="Data\Profile.cs" />
+    <Compile Include="Data\SnakeConfiguration.cs" />
+    <Compile Include="ProfileManager.cs" />
     <Compile Include="Utilities\DebugHelper.cs" />
     <Compile Include="Utilities\ExceptionHelper.cs" />
     <Compile Include="Utilities\FileHelper.cs" />
