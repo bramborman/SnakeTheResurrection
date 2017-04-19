@@ -14,8 +14,8 @@ namespace SnakeTheResurrection
             Console.InputEncoding   = Constants.encoding;
             Console.OutputEncoding  = Constants.encoding;
             #endregion
-
-            Console.Write("What do you want? ಠ_ಠ");
+            
+            Console.Write(AppData.Current.Counter++ == 0 ? "What do you want? ಠ_ಠ" : "Again?? (ʘ_ʘ)");
             Console.ReadKey();
 
             #region Unitialization
