@@ -17,7 +17,7 @@ namespace SnakeTheResurrection
             ProfileManager.LoadProfiles();
             #endregion
 
-            Console.Write("( ͡° ͜ʖ ͡°)");
+            Console.Write("Well, this is new ^_^");
             Console.ReadKey();
 
             // Main game method - main menu + profile selection
