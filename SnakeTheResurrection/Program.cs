@@ -1,5 +1,6 @@
 ﻿using SnakeTheResurrection.Data;
 using System;
+using System.Runtime.CompilerServices;
 
 namespace SnakeTheResurrection
 {
@@ -7,25 +8,33 @@ namespace SnakeTheResurrection
     {
         public static void Main(string[] args)
         {
-            #region Initialization
             Console.Title           = Constants.APP_NAME;
+            Console.CursorVisible   = false;
+
             Console.InputEncoding   = Constants.encoding;
             Console.OutputEncoding  = Constants.encoding;
             Console.ForegroundColor = Constants.FOREGROUND_COLOR;
 
             AppData.Load();
             ProfileManager.LoadProfiles();
-            #endregion
 
-            Console.Write("Well, this is new ^_^");
+            Console.Write("Look at dis ᕕ(⪦╭͜ʖ╮⪧)ᕗ");
             Console.ReadKey();
 
-            // Main game method - main menu + profile selection
+            MainMenu.Show();
 
-            #region Unitialization
+#if DEBUG
+            throw new Exception("Y u do dis ಠ_ಠ");
+#else
+            Exit();
+#endif
+        }
+
+        public static void Exit([CallerMemberName]string callerMemberName = null)
+        {
             AppData.Current.Save();
             ProfileManager.SaveProfiles();
-            #endregion
+            Environment.Exit(callerMemberName == nameof(Main) ? 1 : 0);
         }
     }
 }

@@ -53,6 +53,8 @@
     <Compile Include="Constants.cs" />
     <Compile Include="Data\Profile.cs" />
     <Compile Include="Data\SnakeConfiguration.cs" />
+    <Compile Include="Game.cs" />
+    <Compile Include="MainMenu.cs" />
     <Compile Include="ProfileManager.cs" />
     <Compile Include="Utilities\DebugHelper.cs" />
     <Compile Include="Utilities\ExceptionHelper.cs" />
@@ -61,6 +63,7 @@
     <Compile Include="Data\AppData.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utilities\MenuItem.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
