@@ -14,11 +14,7 @@ namespace SnakeTheResurrection.Utilities
                 IntPtr stdHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 
                 // Comparing it with INVALID_HANDLE_VALUE and NULL.
-                if (stdHandle == new IntPtr(-1) || stdHandle == new IntPtr(0))
-                {
-                    MessageBox(@"We are so sorry, but some unknown dark power prevented us from doing the required magic ¯\_ツ_/¯", "No magic");
-                }
-
+                ExceptionHelper.ValidateMagic(stdHandle != new IntPtr(-1) && stdHandle != new IntPtr(0));
                 return stdHandle;
             }
         }
@@ -40,5 +36,53 @@ namespace SnakeTheResurrection.Utilities
 
         [DllImport("User32.dll", CharSet = CharSet.Unicode)]
         private static extern int MessageBox(IntPtr hWnd, string lpText, string lpCaption, uint uType);
+        
+        [StructLayout(LayoutKind.Sequential)]
+        public struct COORD
+        {
+            public short X;
+            public short Y;
+
+            public COORD(short x, short y)
+            {
+                X = x;
+                Y = y;
+            }
+        }
+
+        [StructLayout(LayoutKind.Explicit)]
+        public struct CHAR_UNION
+        {
+            [FieldOffset(0)]
+            public char UnicodeChar;
+            [FieldOffset(0)]
+            public byte AsciiChar;
+        }
+
+        [StructLayout(LayoutKind.Explicit)]
+        public struct CHAR_INFO
+        {
+            [FieldOffset(0)]
+            public CHAR_UNION Char;
+            [FieldOffset(2)]
+            public short Attributes;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct SMALL_RECT
+        {
+            public short Left;
+            public short Top;
+            public short Right;
+            public short Bottom;
+
+            public SMALL_RECT(short left, short top, short right, short bottom)
+            {
+                Left    = left;
+                Top     = top;
+                Right   = right;
+                Bottom  = bottom;
+            }
+        }
     }
 }

@@ -9,7 +9,7 @@ namespace SnakeTheResurrection.Utilities
         {
             CONSOLE_FONT_INFO_EX info = new CONSOLE_FONT_INFO_EX()
             {
-                dwFontSize = new COORD(x, y)
+                dwFontSize = new DllImports.COORD(x, y)
             };
 
             info.cbSize = (uint)Marshal.SizeOf(info);
@@ -26,23 +26,10 @@ namespace SnakeTheResurrection.Utilities
         {
             public uint cbSize;
             public uint nFont;
-            public COORD dwFontSize;
+            public DllImports.COORD dwFontSize;
             public int FontFamily;
             public int FontWeight;
             public fixed char FaceName[32];
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        private struct COORD
-        {
-            public short X;
-            public short Y;
-
-            public COORD(short x, short y)
-            {
-                X = x;
-                Y = y;
-            }
         }
     }
 }

@@ -12,16 +12,13 @@ namespace SnakeTheResurrection
             Console.Title           = Constants.APP_NAME;
             Console.CursorVisible   = false;
 
+            // Are these even needed? ಠ_ಠ
             Console.InputEncoding   = Constants.encoding;
             Console.OutputEncoding  = Constants.encoding;
             Console.ForegroundColor = Constants.FOREGROUND_COLOR;
-            
-            Console.Write("CANCEER");
-            
-            FontHelper.SetFont("Lucida Console", 1, 1);
-            Console.ReadKey();
-            
-            DllImports.MessageBox("Lol what did you expect?", "");
+
+            new Renderer();
+            DllImports.MessageBox("Lol what did you expect?!", "");
 
             AppData.Load();
             ProfileManager.LoadProfiles();

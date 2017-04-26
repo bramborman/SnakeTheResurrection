@@ -27,5 +27,13 @@ namespace SnakeTheResurrection.Utilities
                 throw new ArgumentOutOfRangeException(parameterName);
             }
         }
+
+        public static void ValidateMagic(bool magic)
+        {
+            if (!magic)
+            {
+                DllImports.MessageBox(@"We are so sorry but some unknown dark power prevented us from doing the required magic ¯\_ツ_/¯", "No magic");
+            }
+        }
     }
 }
