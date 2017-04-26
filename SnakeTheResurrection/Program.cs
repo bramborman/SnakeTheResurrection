@@ -18,9 +18,6 @@ namespace SnakeTheResurrection
             AppData.Load();
             ProfileManager.LoadProfiles();
 
-            Console.Write("Look at dis ᕕ(⪦╭͜ʖ╮⪧)ᕗ");
-            Console.ReadKey();
-
             MainMenu.Show();
 
 #if DEBUG

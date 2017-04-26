@@ -6,15 +6,28 @@ namespace SnakeTheResurrection
     public static class MainMenu
     {
         private static readonly ListMenu menu = new ListMenu(
-            new MenuItem("Singleplayer",   null                 ),
-            new MenuItem("Multiplayer",    null                 ),
-            new MenuItem("Options",        null                 ),
-            new MenuItem("Quit game",      () => Program.Exit() ));
+            new MenuItem("Singleplayer",    new Game().Start                    ),
+            // new MenuItem("Multiplayer",     null                                 ),
+            // new MenuItem("Options",         null                                 ),
+            new MenuItem("Profile manager", ProfileManager.ShowProfileSelection ),
+            new MenuItem("About",           null                                ),
+            new MenuItem("Quit game",       () => Program.Exit()                ))
+        {
+            RelativeY = 4
+        };
 
         public static void Show()
         {
-            Console.Clear();
-            menu.InvokeResult();
+            ProfileManager.ShowProfileSelection();
+
+            while (true)
+            {
+                Console.Clear();
+
+                Console.CursorTop = Console.WindowHeight / 2 - 7;
+                BigTextWriter.Write(Constants.APP_SHORT_NAME, ConsoleColor.Green);
+                menu.InvokeResult();
+            }
         }
     }
 }

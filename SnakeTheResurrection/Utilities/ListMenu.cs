@@ -15,6 +15,8 @@ namespace SnakeTheResurrection.Utilities
                 return Items[SelectedIndex];
             }
         }
+        public int RelativeX { get; set; }
+        public int RelativeY { get; set; }
 
         public ListMenu() : this(null)
         {
@@ -47,6 +49,9 @@ namespace SnakeTheResurrection.Utilities
             bool handled;
             int horizontalPosition  = (Console.WindowWidth - Items.OrderByDescending(i => i.Text.Length).First().Text.Length) / 2;
             int verticalPosition    = (Console.WindowHeight - Items.Count) / 2;
+
+            horizontalPosition  += RelativeX;
+            verticalPosition    += RelativeY;
 
             Console.CursorTop = verticalPosition;
 

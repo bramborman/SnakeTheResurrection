@@ -9,7 +9,7 @@ namespace SnakeTheResurrection
         
         public static Profile CurrentProfile { get; private set; }
 
-        public static void ProfileSelection()
+        public static void ShowProfileSelection()
         {
             if (profiles.Count < 1)
             {
