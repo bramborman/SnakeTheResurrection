@@ -38,7 +38,12 @@ namespace SnakeTheResurrection.Utilities
 
         public static void ThrowMagicException()
         {
+            // To be able to debug the call stack etc
+#if DEBUG
+            throw new Exception();
+#else
             DllImports.MessageBox(@"We are so sorry but some unknown dark power prevented us from doing the required magic ¯\_(ツ)_/¯", "No magic");
+#endif
         }
     }
 }

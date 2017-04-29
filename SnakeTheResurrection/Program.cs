@@ -18,17 +18,11 @@ namespace SnakeTheResurrection
             // Console.OutputEncoding  = Constants.encoding;
             
             MainRenderer = new Renderer();
+            Symtext.Write("Hello world!!!");
             MainRenderer.RenderFrame();
             Console.ReadKey();
 
-            for (int i = 0; i < 200; i++)
-            {
-                MainRenderer.Buffer[i, i] = ConsoleColor.Yellow;
-            }
-
-            MainRenderer.RenderFrame();
-            Console.ReadKey();
-            DllImports.MessageBox("I know what u been lookin for ;)", "");
+            DllImports.MessageBox("And this is it :)", "");
 
             AppData.Load();
             ProfileManager.LoadProfiles();

@@ -7,6 +7,10 @@ namespace SnakeTheResurrection.Utilities
     {
         private static bool isInitialized = false;
 
+        private readonly int bufferHeight;
+        private readonly int bufferWidth;
+        private readonly short[] lpAttribute;
+
         public ConsoleColor[,] Buffer { get; }
 
         public Renderer()
@@ -15,7 +19,7 @@ namespace SnakeTheResurrection.Utilities
             {
                 isInitialized = true;
                 
-                FontHelper.SetFont("Lucida Console", 1, 1);
+                DllImports.SetFont("Lucida Console", 1, 1);
                 DllImports.ConsoleFullscreenMode = true;
 
                 short windowHeight  = (short)Console.WindowHeight;
@@ -23,12 +27,13 @@ namespace SnakeTheResurrection.Utilities
                 Console.SetBufferSize(windowWidth, windowHeight);
 
                 DllImports.CHAR_INFO[] lpBuffer = new DllImports.CHAR_INFO[windowWidth * windowHeight];
+                short attributes = (short)Constants.BACKGROUND_COLOR;
 
                 for (int i = 0; i < lpBuffer.Length; i++)
                 {
                     // Fill the buffer with black full chars
                     lpBuffer[i].Char.AsciiChar  = 219;
-                    lpBuffer[i].Attributes      = 0;
+                    lpBuffer[i].Attributes      = attributes;
                 }
 
                 DllImports.SMALL_RECT lpWriteRegion = new DllImports.SMALL_RECT(0, 0, windowWidth, windowHeight);
@@ -37,16 +42,15 @@ namespace SnakeTheResurrection.Utilities
                 Console.CursorVisible = false;
             }
 
-            Buffer = new ConsoleColor[Console.WindowHeight, Console.WindowWidth];
+            Buffer          = new ConsoleColor[Console.WindowHeight, Console.WindowWidth];
+            lpAttribute     = new short[Buffer.Length];
+
+            bufferHeight    = Buffer.GetLength(0);
+            bufferWidth     = Buffer.GetLength(1);
         }
 
         public void RenderFrame()
         {
-            short[] lpAttribute = new short[Buffer.Length];
-            
-            int bufferHeight = Buffer.GetLength(0);
-            int bufferWidth  = Buffer.GetLength(1);
-            
             for (int row = 0; row < bufferHeight; row++)
             {
                 for (int column = 0; column < bufferWidth; column++)
@@ -57,6 +61,20 @@ namespace SnakeTheResurrection.Utilities
             
             int lpNumberOfAttrsWritten;
             ExceptionHelper.ValidateMagic(WriteConsoleOutputAttribute(DllImports.StdOutputHandle, lpAttribute, lpAttribute.Length, new DllImports.COORD(), out lpNumberOfAttrsWritten));
+        }
+
+        public void AddToBuffer(ConsoleColor[,] element, int x, int y)
+        {
+            int elementHeight   = element.GetLength(0);
+            int elementWidth    = element.GetLength(1);
+
+            for (int row = 0; row < elementHeight; row++)
+            {
+                for (int column = 0; column < elementWidth; column++)
+                {
+                    Buffer[row + y, column + x] = element[row, column];
+                }
+            }
         }
 
         [DllImport("kernel32.dll")]

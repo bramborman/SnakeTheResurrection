@@ -5,410 +5,545 @@ namespace SnakeTheResurrection.Utilities
     // Font inspired by Symtext (4/26/2017): http://www.dafont.com/symtext.font
     public static class Symtext
     {
-        private const bool X = true;
-        private const bool _ = false;
+        private const bool X            = true;
+        private const bool _            = false;
+        private const int CHAR_HEIGHT   = 7;
 
+        // All chars should be 7 (CHAR_HEIGHT) rows tall
         #region Alphabet
         private static readonly bool[,] a = new bool[,]
         {
+            { _, _, _, _ },
             { X, X, X, X },
             { X, _, _, X },
             { X, X, X, X },
             { X, _, _, X },
-            { X, _, _, X }
+            { X, _, _, X },
+            { _, _, _, _ }
         };
         private static readonly bool[,] b = new bool[,]
         {
+            { _, _, _, _ },
             { X, X, X, _ },
             { X, _, X, _ },
             { X, X, X, _ },
             { X, _, _, X },
-            { X, X, X, X }
+            { X, X, X, X },
+            { _, _, _, _ }
         };
         private static readonly bool[,] c = new bool[,]
         {
+            { _, _, _, _ },
             { X, X, X, X },
             { X, _, _, _ },
             { X, _, _, _ },
             { X, _, _, _ },
-            { X, X, X, X }
+            { X, X, X, X },
+            { _, _, _, _ }
         };
         private static readonly bool[,] d = new bool[,]
         {
+            { _, _, _, _ },
             { X, X, X, _ },
             { X, _, _, X },
             { X, _, _, X },
             { X, _, _, X },
-            { X, X, X, X }
+            { X, X, X, X },
+            { _, _, _, _ }
         };
         private static readonly bool[,] e = new bool[,]
         {
+            { _, _, _, _ },
             { X, X, X, X },
             { X, _, _, _ },
             { X, X, X, _ },
             { X, _, _, _ },
-            { X, X, X, X }
+            { X, X, X, X },
+            { _, _, _, _ }
         };
         private static readonly bool[,] f = new bool[,]
         {
+            { _, _, _, _ },
             { X, X, X, X },
             { X, _, _, _ },
             { X, X, X, _ },
             { X, _, _, _ },
-            { X, _, _, _ }
+            { X, _, _, _ },
+            { _, _, _, _ }
         };
         private static readonly bool[,] g = new bool[,]
         {
+            { _, _, _, _ },
             { X, X, X, X },
             { X, _, _, _ },
             { X, _, _, X },
             { X, _, _, X },
-            { X, X, X, X }
+            { X, X, X, X },
+            { _, _, _, _ }
         };
         private static readonly bool[,] h = new bool[,]
         {
+            { _, _, _, _ },
             { X, _, _, X },
             { X, _, _, X },
             { X, X, X, X },
             { X, _, _, X },
-            { X, _, _, X }
+            { X, _, _, X },
+            { _, _, _, _ }
         };
         private static readonly bool[,] i = new bool[,]
         {
+            { _ },
             { X },
             { X },
             { X },
             { X },
-            { X }
+            { X },
+            { _ }
         };
         private static readonly bool[,] j = new bool[,]
         {
+            { _, _, _, _ },
             { _, _, _, X },
             { _, _, _, X },
             { _, _, _, X },
             { _, _, _, X },
-            { X, X, X, X }
+            { X, X, X, X },
+            { _, _, _, _ }
         };
         private static readonly bool[,] k = new bool[,]
         {
+            { _, _, _, _ },
             { X, _, X, _ },
             { X, _, X, _ },
             { X, X, X, _ },
             { X, _, _, X },
-            { X, _, _, X }
+            { X, _, _, X },
+            { _, _, _, _ }
         };
         private static readonly bool[,] l = new bool[,]
         {
+            { _, _, _, _ },
             { X, _, _, _ },
             { X, _, _, _ },
             { X, _, _, _ },
             { X, _, _, _ },
-            { X, X, X, X }
+            { X, X, X, X },
+            { _, _, _, _ }
         };
         private static readonly bool[,] m = new bool[,]
         {
+            { _, _, _, _, _ },
             { X, X, X, X, X },
             { X, _, X, _, X },
             { X, _, X, _, X },
             { X, _, _, _, X },
-            { X, _, _, _, X }
+            { X, _, _, _, X },
+            { _, _, _, _, _ }
         };
         private static readonly bool[,] n = new bool[,]
         {
+            { _, _, _, _ },
             { X, X, X, _ },
             { X, _, _, X },
             { X, _, _, X },
             { X, _, _, X },
-            { X, _, _, X }
+            { X, _, _, X },
+            { _, _, _, _ }
         };
         private static readonly bool[,] o = new bool[,]
         {
+            { _, _, _, _ },
             { X, X, X, X },
             { X, _, _, X },
             { X, _, _, X },
             { X, _, _, X },
-            { X, X, X, X }
+            { X, X, X, X },
+            { _, _, _, _ }
         };
         private static readonly bool[,] p = new bool[,]
         {
+            { _, _, _, _ },
             { X, X, X, X },
             { X, _, _, X },
             { X, X, X, X },
             { X, _, _, _ },
-            { X, _, _, _ }
+            { X, _, _, _ },
+            { _, _, _, _ }
         };
         private static readonly bool[,] q = new bool[,]
         {
+            { _, _, _, _ },
             { X, X, X, X },
             { X, _, _, X },
             { X, _, _, X },
             { X, _, X, X },
-            { X, X, X, X }
+            { X, X, X, X },
+            { _, _, _, _ }
         };
         private static readonly bool[,] r = new bool[,]
         {
+            { _, _, _, _ },
             { X, X, X, _ },
             { X, _, X, _ },
             { X, X, X, X },
             { X, _, _, X },
-            { X, _, _, X }
+            { X, _, _, X },
+            { _, _, _, _ }
         };
         private static readonly bool[,] s = new bool[,]
         {
+            { _, _, _, _ },
             { X, X, X, X },
             { X, _, _, _ },
             { X, X, X, X },
             { _, _, _, X },
-            { X, X, X, X }
+            { X, X, X, X },
+            { _, _, _, _ }
         };
         private static readonly bool[,] t = new bool[,]
         {
+            { _, _, _, _, _ },
             { X, X, X, X, X },
             { _, _, X, _, _ },
             { _, _, X, _, _ },
             { _, _, X, _, _ },
-            { _, _, X, _, _ }
+            { _, _, X, _, _ },
+            { _, _, _, _, _ }
         };
         private static readonly bool[,] u = new bool[,]
         {
+            { _, _, _, _ },
             { X, _, _, X },
             { X, _, _, X },
             { X, _, _, X },
             { X, _, _, X },
-            { X, X, X, X }
+            { X, X, X, X },
+            { _, _, _, _ }
         };
         private static readonly bool[,] v = new bool[,]
         {
+            { _, _, _, _ },
             { X, _, _, X },
             { X, _, _, X },
             { X, _, _, X },
             { X, _, X, _ },
-            { _, X, _, _ }
+            { _, X, _, _ },
+            { _, _, _, _ }
         };
         private static readonly bool[,] w = new bool[,]
         {
+            { _, _, _, _, _ },
             { X, _, _, _, X },
             { X, _, _, _, X },
             { X, _, X, _, X },
             { X, _, X, _, X },
-            { X, X, X, X, X }
+            { X, X, X, X, X },
+            { _, _, _, _, _ }
         };
         private static readonly bool[,] x = new bool[,]
         {
+            { _, _, _, _ },
             { X, _, _, X },
             { X, _, _, X },
             { _, X, X, _ },
             { X, _, _, X },
-            { X, _, _, X }
+            { X, _, _, X },
+            { _, _, _, _ }
         };
         private static readonly bool[,] y = new bool[,]
         {
+            { _, _, _, _ },
             { X, _, _, X },
             { X, _, _, X },
             { X, X, X, X },
             { _, _, _, X },
-            { X, X, X, X }
+            { X, X, X, X },
+            { _, _, _, _ }
         };
         private static readonly bool[,] z = new bool[,]
         {
+            { _, _, _, _ },
             { X, X, X, X },
             { _, _, _, X },
             { _, X, X, _ },
             { X, _, _, _ },
-            { X, X, X, X }
+            { X, X, X, X },
+            { _, _, _, _ }
         };
         #endregion
         #region Numbers
         private static readonly bool[,] _0 = new bool[,]
         {
+            { _, _, _, _, _ },
             { X, X, X, X, X },
             { X, _, _, _, X },
             { X, _, X, _, X },
             { X, _, _, _, X },
-            { X, X, X, X, X }
+            { X, X, X, X, X },
+            { _, _, _, _, _ }
         };
         private static readonly bool[,] _1 = new bool[,]
         {
+            { _, _ },
             { X, X },
             { _, X },
             { _, X },
             { _, X },
-            { _, X }
+            { _, X },
+            { _, _ }
         };
         private static readonly bool[,] _2 = new bool[,]
         {
+            { _, _, _, _ },
             { X, X, X, X },
             { _, _, _, X },
             { X, X, X, X },
             { X, _, _, _ },
-            { X, X, X, X }
+            { X, X, X, X },
+            { _, _, _, _ }
         };
         private static readonly bool[,] _3 = new bool[,]
         {
+            { _, _, _, _ },
             { X, X, X, X },
             { _, _, _, X },
             { _, _, X, X },
             { _, _, _, X },
-            { X, X, X, X }
+            { X, X, X, X },
+            { _, _, _, _ }
         };
         private static readonly bool[,] _4 = new bool[,]
         {
+            { _, _, _, _ },
             { X, _, _, _ },
             { X, _, _, X },
             { X, X, X, X },
             { _, _, _, X },
-            { _, _, _, X }
+            { _, _, _, X },
+            { _, _, _, _ }
         };
         private static readonly bool[,] _5 = new bool[,]
         {
+            { _, _, _, _ },
             { X, X, X, X },
             { X, _, _, _ },
             { X, X, X, X },
             { _, _, _, X },
-            { X, X, X, X }
+            { X, X, X, X },
+            { _, _, _, _ }
         };
         private static readonly bool[,] _6 = new bool[,]
         {
+            { _, _, _, _ },
             { X, X, X, X },
             { X, _, _, _ },
             { X, X, X, X },
             { X, _, _, X },
-            { X, X, X, X }
+            { X, X, X, X },
+            { _, _, _, _ }
         };
         private static readonly bool[,] _7 = new bool[,]
         {
+            { _, _, _, _ },
             { X, X, X, X },
             { _, _, _, X },
             { _, _, _, X },
             { _, _, _, X },
-            { _, _, _, X }
+            { _, _, _, X },
+            { _, _, _, _ }
         };
         private static readonly bool[,] _8 = new bool[,]
         {
+            { _, _, _, _ },
             { X, X, X, X },
             { X, _, _, X },
             { X, X, X, X },
             { X, _, _, X },
-            { X, X, X, X }
+            { X, X, X, X },
+            { _, _, _, _ }
         };
         private static readonly bool[,] _9 = new bool[,]
         {
+            { _, _, _, _ },
             { X, X, X, X },
             { X, _, _, X },
             { X, X, X, X },
             { _, _, _, X },
-            { _, _, _, X }
+            { _, _, _, X },
+            { _, _, _, _ }
         };
         #endregion
         #region Special characters
+        private static readonly bool[,] space = new bool[,]
+        {
+            { _, _, _ },
+            { _, _, _ },
+            { _, _, _ },
+            { _, _, _ },
+            { _, _, _ },
+            { _, _, _ },
+            { _, _, _ }
+        };
         private static readonly bool[,] plus = new bool[,]
         {
+            { _, _, _ },
+            { _, _, _ },
             { _, X, _ },
             { X, X, X },
-            { _, X, _ }
+            { _, X, _ },
+            { _, _, _ },
+            { _, _, _ }
         };
         private static readonly bool[,] minus = new bool[,]
         {
-            { X, X, X }
+            { _, _, _ },
+            { _, _, _ },
+            { _, _, _ },
+            { X, X, X },
+            { _, _, _ },
+            { _, _, _ },
+            { _, _, _ }
         };
         private static readonly bool[,] cross = new bool[,]
         {
+            { _, _, _ },
+            { _, _, _ },
             { X, _, X },
             { _, X, _ },
-            { X, _, X }
+            { X, _, X },
+            { _, _, _ },
+            { _, _, _ }
         };
         private static readonly bool[,] slash = new bool[,]
         {
+            { _, _, _ },
             { _, _, X },
             { _, _, X },
             { _, X, _ },
             { X, _, _ },
-            { X, _, _ }
+            { X, _, _ },
+            { _, _, _ }
         };
         private static readonly bool[,] equals = new bool[,]
         {
+            { _, _, _ },
+            { _, _, _ },
             { X, X, X },
             { _, _, _ },
-            { X, X, X }
+            { X, X, X },
+            { _, _, _ },
+            { _, _, _ }
         };
         private static readonly bool[,] percents = new bool[,]
         {
+            { _, _, _ },
             { X, _, X },
             { _, _, X },
             { _, X, _ },
             { X, _, _ },
-            { X, _, X }
+            { X, _, X },
+            { _, _, _ }
         };
         private static readonly bool[,] hash = new bool[,]
         {
+            { _, _, _, _, _ },
             { _, X, _, X, _ },
             { X, X, X, X, X },
             { _, X, _, X, _ },
             { X, X, X, X, X },
-            { _, X, _, X, _ }
+            { _, X, _, X, _ },
+            { _, _, _, _, _ }
         };
         private static readonly bool[,] comma = new bool[,]
         {
+            { _ },
+            { _ },
+            { _ },
+            { _ },
+            { _ },
             { X },
             { X }
         };
         private static readonly bool[,] dot = new bool[,]
         {
-            { X }
+            { _ },
+            { _ },
+            { _ },
+            { _ },
+            { _ },
+            { X },
+            { _ }
         };
         private static readonly bool[,] colon = new bool[,]
         {
+            { _ },
+            { _ },
+            { _ },
             { X },
             { _ },
-            { X }
+            { X },
+            { _ }
         };
         private static readonly bool[,] questionMark = new bool[,]
         {
+            { _, _, _, _ },
             { X, X, X, X },
             { _, _, _, X },
             { _, X, X, X },
             { _, _, _, _ },
-            { _, X, _, _ }
+            { _, X, _, _ },
+            { _, _, _, _ }
         };
         private static readonly bool[,] exclamationMark = new bool[,]
         {
+            { _ },
             { X },
             { X },
             { X },
             { _ },
-            { X }
+            { X },
+            { _ }
         };
         private static readonly bool[,] arrowLeft = new bool[,]
         {
+            { _, _, _ },
             { _, _, X },
             { _, X, _ },
             { X, _, _ },
             { _, X, _ },
-            { _, _, X }
+            { _, _, X },
+            { _, _, _ }
         };
         private static readonly bool[,] arrowRight = new bool[,]
         {
+            { _, _, _ },
             { X, _, _ },
             { _, X, _ },
             { _, _, X },
             { _, X, _ },
-            { X, _, _ }
+            { X, _, _ },
+            { _, _, _ }
         };
         private static readonly bool[,] squareBracketLeft = new bool[,]
         {
+            { _, _ },
             { X, X },
             { X, _ },
             { X, _ },
             { X, _ },
-            { X, X }
+            { X, X },
+            { _, _ }
         };
         private static readonly bool[,] squareBracketRight = new bool[,]
         {
+            { _, _ },
             { X, X },
             { _, X },
             { _, X },
             { _, X },
-            { X, X }
+            { X, X },
+            { _, _ }
         };
         private static readonly bool[,] copyrightMark = new bool[,]
         {
@@ -422,32 +557,138 @@ namespace SnakeTheResurrection.Utilities
         };
         #endregion
 
-        private static ConsoleColor _color;
+        private static int _cursorX;
+        private static int _cursorY;
+        private static int _characterSpacing;
+        private static float _fontSize;
+        private static ConsoleColor _foregroundColor;
+        private static ConsoleColor _backgroundColor;
 
-        public static ConsoleColor Color
+        public static int CursorX
         {
-            get { return _color; }
+            get { return _cursorX; }
             set
             {
-                if (_color != value)
+                if (_cursorX != value)
                 {
-                    ExceptionHelper.ValidateEnumValueDefined(value, nameof(Color));
-                    _color = value;
+                    if (_cursorX < 0 || _cursorX > Console.WindowWidth)
+                    {
+                        throw new ArgumentOutOfRangeException(nameof(CursorX));
+                    }
+
+                    _cursorX = value;
                 }
             }
+        }
+        public static int CursorY
+        {
+            get { return _cursorY; }
+            set
+            {
+                if (_cursorY != value)
+                {
+                    if (_cursorY < 0 || _cursorY > Console.WindowHeight)
+                    {
+                        throw new ArgumentOutOfRangeException(nameof(CursorY));
+                    }
+
+                    _cursorY = value;
+                }
+            }
+        }
+        public static int CharacterSpacing
+        {
+            get { return _characterSpacing; }
+            set
+            {
+                if (_characterSpacing != value)
+                {
+                    if (_characterSpacing < 0)
+                    {
+                        throw new ArgumentOutOfRangeException(nameof(CharacterSpacing));
+                    }
+
+                    _characterSpacing = value;
+                }
+            }
+        }
+        public static float FontSize
+        {
+            get { return _fontSize; }
+            set
+            {
+                if (_fontSize != value)
+                {
+                    if (_fontSize < 0f)
+                    {
+                        throw new ArgumentOutOfRangeException(nameof(FontSize));
+                    }
+
+                    _fontSize = value;
+                }
+            }
+        }
+        public static ConsoleColor ForegroundColor
+        {
+            get { return _foregroundColor; }
+            set
+            {
+                if (_foregroundColor != value)
+                {
+                    ExceptionHelper.ValidateEnumValueDefined(value, nameof(ForegroundColor));
+                    _foregroundColor = value;
+                }
+            }
+        }
+        public static ConsoleColor BackgroundColor
+        {
+            get { return _backgroundColor; }
+            set
+            {
+                if (_backgroundColor != value)
+                {
+                    ExceptionHelper.ValidateEnumValueDefined(value, nameof(BackgroundColor));
+                    _backgroundColor = value;
+                }
+            }
+        }
+
+        static Symtext()
+        {
+            CharacterSpacing    = 1;
+            FontSize            = 1;
+            ForegroundColor     = Constants.FOREGROUND_COLOR;
+            BackgroundColor     = Constants.BACKGROUND_COLOR;
         }
         
         public static void Write(object value)
         {
-            //TODO: this
-
             foreach (char ch in value.ToString())
             {
-                bool[,] character = GetChar(ch);
+                if (ch == '\n')
+                {
+                    CursorY += CHAR_HEIGHT;
+                    continue;
+                }
 
-                // Program.MainRenderer.Buffer
+                bool[,] character               = GetChar(ch);
+                
+                int characterHeight             = character.GetLength(0);
+                int characterWidth              = character.GetLength(1);
+                ConsoleColor[,] renderedChar    = new ConsoleColor[characterHeight, characterWidth];
+
+                for (int row = 0; row < characterHeight; row++)
+                {
+                    for (int column = 0; column < characterWidth; column++)
+                    {
+                        renderedChar[row, column] = character[row, column] ? ForegroundColor : BackgroundColor;
+                    }
+                }
+
+                Program.MainRenderer.AddToBuffer(renderedChar, CursorX, CursorY);
+
+                CursorX += characterWidth + CharacterSpacing;
             }
-
         }
 
         private static bool[,] GetChar(char ch)
@@ -480,7 +721,9 @@ namespace SnakeTheResurrection.Utilities
                 case 'x': return x;
                 case 'y': return y;
                 case 'z': return z;
-                
+
+                case ' ': return space;
+
                 case '0': return _0;
                 case '1': return _1;
                 case '2': return _2;

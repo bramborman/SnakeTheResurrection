@@ -65,7 +65,6 @@
     <Compile Include="Utilities\DllImports.cs" />
     <Compile Include="Utilities\ExceptionHelper.cs" />
     <Compile Include="Utilities\FileHelper.cs" />
-    <Compile Include="Utilities\FontHelper.cs" />
     <Compile Include="Utilities\ListMenu.cs" />
     <Compile Include="Data\AppData.cs" />
     <Compile Include="Program.cs" />
