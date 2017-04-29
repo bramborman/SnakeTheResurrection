@@ -26,12 +26,15 @@ namespace SnakeTheResurrection.Utilities
 
                 for (int i = 0; i < lpBuffer.Length; i++)
                 {
+                    // Fill the buffer with black full chars
                     lpBuffer[i].Char.AsciiChar  = 219;
-                    lpBuffer[i].Attributes      = (short)ConsoleColor.Green;
+                    lpBuffer[i].Attributes      = 0;
                 }
 
                 DllImports.SMALL_RECT lpWriteRegion = new DllImports.SMALL_RECT(0, 0, windowWidth, windowHeight);
                 ExceptionHelper.ValidateMagic(WriteConsoleOutput(DllImports.StdOutputHandle, lpBuffer, new DllImports.COORD(windowWidth, windowHeight), new DllImports.COORD(), ref lpWriteRegion));
+
+                Console.CursorVisible = false;
             }
 
             Buffer = new ConsoleColor[Console.WindowHeight, Console.WindowWidth];
@@ -40,21 +43,20 @@ namespace SnakeTheResurrection.Utilities
         public void RenderFrame()
         {
             short[] lpAttribute = new short[Buffer.Length];
-            System.Buffer.BlockCopy(Buffer, 0, lpAttribute, 0, Buffer.Length);
-
-            // int bufferWidth  = Buffer.GetLength(0);
-            // int bufferHeight = Buffer.GetLength(1);
-            // 
-            // for (int row = 0; row < bufferHeight; row++)
-            // {
-            //     for (int column = 0; column < bufferWidth; column++)
-            //     {
-            //         lpAttribute[row * bufferWidth] = (short)Buffer[row, column];
-            //     }
-            // }
+            
+            int bufferHeight = Buffer.GetLength(0);
+            int bufferWidth  = Buffer.GetLength(1);
+            
+            for (int row = 0; row < bufferHeight; row++)
+            {
+                for (int column = 0; column < bufferWidth; column++)
+                {
+                    lpAttribute[(row * bufferWidth) + column] = (short)Buffer[row, column];
+                }
+            }
             
             int lpNumberOfAttrsWritten;
-            ExceptionHelper.ValidateMagic(!WriteConsoleOutputAttribute(DllImports.StdOutputHandle, lpAttribute, lpAttribute.Length, new DllImports.COORD(), out lpNumberOfAttrsWritten));
+            ExceptionHelper.ValidateMagic(WriteConsoleOutputAttribute(DllImports.StdOutputHandle, lpAttribute, lpAttribute.Length, new DllImports.COORD(), out lpNumberOfAttrsWritten));
         }
 
         [DllImport("kernel32.dll")]

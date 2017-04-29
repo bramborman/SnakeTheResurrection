@@ -11,10 +11,9 @@ namespace SnakeTheResurrection
 
         public static void Main(string[] args)
         {
-            Console.Title           = Constants.APP_NAME;
-            Console.CursorVisible   = false;
+            Console.Title = Constants.APP_NAME;
 
-            // Don't you dare trying to uncomment this (ง⸟ᨎ⸟)ง
+            // Don't you dare try uncommenting this (ง⸟ᨎ⸟)ง
             // Console.InputEncoding   = Constants.encoding;
             // Console.OutputEncoding  = Constants.encoding;
 
@@ -22,7 +21,17 @@ namespace SnakeTheResurrection
             Console.ForegroundColor = Constants.FOREGROUND_COLOR;
             
             MainRenderer = new Renderer();
-            DllImports.MessageBox("U still there?!", "");
+            MainRenderer.RenderFrame();
+            Console.ReadKey();
+
+            for (int i = 0; i < 200; i++)
+            {
+                MainRenderer.Buffer[i, i] = ConsoleColor.Yellow;
+            }
+
+            MainRenderer.RenderFrame();
+            Console.ReadKey();
+            DllImports.MessageBox("I know what u been lookin for ;)", "");
 
             AppData.Load();
             ProfileManager.LoadProfiles();
