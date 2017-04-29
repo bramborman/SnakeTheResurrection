@@ -557,6 +557,8 @@ namespace SnakeTheResurrection.Utilities
         };
         #endregion
 
+        private static ConsoleColor[,] characterSpacingBackgroundFiller;
+
         private static int _cursorX;
         private static int _cursorY;
         private static int _characterSpacing;
@@ -609,6 +611,9 @@ namespace SnakeTheResurrection.Utilities
                     }
 
                     _characterSpacing = value;
+
+                    characterSpacingBackgroundFiller = new ConsoleColor[CHAR_HEIGHT, value];
+                    FillCharacterSpacingBackgroundFiller();
                 }
             }
         }
@@ -649,6 +654,8 @@ namespace SnakeTheResurrection.Utilities
                 {
                     ExceptionHelper.ValidateEnumValueDefined(value, nameof(BackgroundColor));
                     _backgroundColor = value;
+
+                    FillCharacterSpacingBackgroundFiller();
                 }
             }
         }
@@ -660,13 +667,25 @@ namespace SnakeTheResurrection.Utilities
             ForegroundColor     = Constants.FOREGROUND_COLOR;
             BackgroundColor     = Constants.BACKGROUND_COLOR;
         }
-        
+
+        private static void FillCharacterSpacingBackgroundFiller()
+        {
+            for (int row = 0; row < characterSpacingBackgroundFiller.GetLength(0); row++)
+            {
+                for (int column = 0; column < characterSpacingBackgroundFiller.GetLength(1); column++)
+                {
+                    characterSpacingBackgroundFiller[row, column] = BackgroundColor;
+                }
+            }
+        }
+
         public static void Write(object value)
         {
             foreach (char ch in value.ToString())
             {
                 if (ch == '\n')
                 {
+                    CursorX = 0;
                     CursorY += CHAR_HEIGHT;
                     continue;
                 }
@@ -686,9 +705,74 @@ namespace SnakeTheResurrection.Utilities
                 }
 
                 Program.MainRenderer.AddToBuffer(renderedChar, CursorX, CursorY);
+                CursorX += characterWidth;
 
-                CursorX += characterWidth + CharacterSpacing;
+                Program.MainRenderer.AddToBuffer(characterSpacingBackgroundFiller, CursorX, CursorY);
+                CursorX += CharacterSpacing;
             }
+        }
+
+        public static void Write(object value, HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment)
+        {
+            string[] lines = value.ToString().Split('\n');
+
+            int cursorX = 0;
+            int cursorY = 0;
+
+            switch (verticalAlignment)
+            {
+                case VerticalAlignment.Top:     cursorY = 0;                                                            break;
+                case VerticalAlignment.Center:  cursorY = (Console.WindowHeight - (lines.Length * CHAR_HEIGHT)) / 2;    break;
+                case VerticalAlignment.Bottom:  cursorY = Console.WindowHeight - (lines.Length * CHAR_HEIGHT);          break;
+            }
+
+            foreach (string line in lines)
+            {
+                switch (horizontalAlignment)
+                {
+                    case HorizontalAlignment.Left:      cursorX = 0;                                                    break;
+                    case HorizontalAlignment.Center:    cursorX = (Console.WindowWidth - GetSymtextWidth(line)) / 2;    break;
+                    case HorizontalAlignment.Right:     cursorX = Console.WindowWidth - GetSymtextWidth(line);          break;
+                }
+                
+
+                foreach (char ch in line)
+                {
+                    bool[,] character               = GetChar(ch);
+                
+                    int characterHeight             = character.GetLength(0);
+                    int characterWidth              = character.GetLength(1);
+                    ConsoleColor[,] renderedChar    = new ConsoleColor[characterHeight, characterWidth];
+
+                    for (int row = 0; row < characterHeight; row++)
+                    {
+                        for (int column = 0; column < characterWidth; column++)
+                        {
+                            renderedChar[row, column] = character[row, column] ? ForegroundColor : BackgroundColor;
+                        }
+                    }
+
+                    Program.MainRenderer.AddToBuffer(renderedChar, cursorX, cursorY);
+                    cursorX += characterWidth;
+
+                    Program.MainRenderer.AddToBuffer(characterSpacingBackgroundFiller, cursorX, cursorY);
+                    cursorX += CharacterSpacing;
+                }
+
+                cursorY += CHAR_HEIGHT;
+            }
+        }
+
+        private static int GetSymtextWidth(string str)
+        {
+            int output = 0;
+
+            foreach (char ch in str)
+            {
+                output += GetChar(ch).GetLength(1) + CharacterSpacing;
+            }
+
+            return output;
         }
 
         private static bool[,] GetChar(char ch)
@@ -756,5 +840,19 @@ namespace SnakeTheResurrection.Utilities
                 default: ExceptionHelper.ThrowMagicException(); return null;
             }
         }
+    }
+
+    public enum HorizontalAlignment
+    {
+        Left,
+        Center,
+        Right
+    }
+
+    public enum VerticalAlignment
+    {
+        Top,
+        Center,
+        Bottom
     }
 }
