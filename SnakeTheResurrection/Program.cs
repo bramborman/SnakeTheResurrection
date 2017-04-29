@@ -16,9 +16,6 @@ namespace SnakeTheResurrection
             // Don't you dare try uncommenting this (ง⸟ᨎ⸟)ง
             // Console.InputEncoding   = Constants.encoding;
             // Console.OutputEncoding  = Constants.encoding;
-
-            // Is this even needed? ಠ_ಠ
-            Console.ForegroundColor = Constants.FOREGROUND_COLOR;
             
             MainRenderer = new Renderer();
             MainRenderer.RenderFrame();
