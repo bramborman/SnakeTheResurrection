@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using System.Threading;
 
 namespace SnakeTheResurrection.Utilities
 {
@@ -9,34 +8,33 @@ namespace SnakeTheResurrection.Utilities
         private static bool isInitialized = false;
 
         public ConsoleColor[,] Buffer { get; }
-        public AutoResetEvent ResetEvent { get; }
 
         public Renderer()
         {
-            short windowHeight  = (short)Console.WindowHeight;
-            short windowWidth   = (short)Console.WindowWidth;
-
             if (!isInitialized)
             {
                 isInitialized = true;
+                
+                FontHelper.SetFont("Lucida Console", 1, 1);
+                DllImports.ConsoleFullscreenMode = true;
 
-                Console.SetBufferSize((int)windowWidth, (int)windowHeight);
+                short windowHeight  = (short)Console.WindowHeight;
+                short windowWidth   = (short)Console.WindowWidth;
+                Console.SetBufferSize(windowWidth, windowHeight);
 
                 DllImports.CHAR_INFO[] lpBuffer = new DllImports.CHAR_INFO[windowWidth * windowHeight];
 
                 for (int i = 0; i < lpBuffer.Length; i++)
                 {
-                    lpBuffer[i].Char.UnicodeChar    = '\u2588';
-                    lpBuffer[i].Attributes          = (short)ConsoleColor.Red;
+                    lpBuffer[i].Char.AsciiChar  = 219;
+                    lpBuffer[i].Attributes      = (short)ConsoleColor.Green;
                 }
 
                 DllImports.SMALL_RECT lpWriteRegion = new DllImports.SMALL_RECT(0, 0, windowWidth, windowHeight);
                 ExceptionHelper.ValidateMagic(WriteConsoleOutput(DllImports.StdOutputHandle, lpBuffer, new DllImports.COORD(windowWidth, windowHeight), new DllImports.COORD(), ref lpWriteRegion));
-
-                FontHelper.SetFont("Lucida Console", 1, 1);
             }
 
-            Buffer = new ConsoleColor[windowHeight, windowWidth];
+            Buffer = new ConsoleColor[Console.WindowHeight, Console.WindowWidth];
         }
 
         public void RenderFrame()
@@ -54,12 +52,9 @@ namespace SnakeTheResurrection.Utilities
             //         lpAttribute[row * bufferWidth] = (short)Buffer[row, column];
             //     }
             // }
-
-#pragma warning disable IDE0018 // Inline variable declaration
+            
             int lpNumberOfAttrsWritten;
-#pragma warning restore IDE0018 // Inline variable declaration
-
-            ExceptionHelper.ValidateMagic(WriteConsoleOutputAttribute(DllImports.StdOutputHandle, lpAttribute, lpAttribute.Length, new DllImports.COORD(), out lpNumberOfAttrsWritten));
+            ExceptionHelper.ValidateMagic(!WriteConsoleOutputAttribute(DllImports.StdOutputHandle, lpAttribute, lpAttribute.Length, new DllImports.COORD(), out lpNumberOfAttrsWritten));
         }
 
         [DllImport("kernel32.dll")]

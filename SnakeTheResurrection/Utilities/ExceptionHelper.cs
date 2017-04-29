@@ -32,8 +32,13 @@ namespace SnakeTheResurrection.Utilities
         {
             if (!magic)
             {
-                DllImports.MessageBox(@"We are so sorry but some unknown dark power prevented us from doing the required magic ¯\_ツ_/¯", "No magic");
+                ThrowMagicException();
             }
+        }
+
+        public static void ThrowMagicException()
+        {
+            DllImports.MessageBox(@"We are so sorry but some unknown dark power prevented us from doing the required magic ¯\_(ツ)_/¯", "No magic");
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace SnakeTheResurrection.Utilities
@@ -18,6 +19,21 @@ namespace SnakeTheResurrection.Utilities
                 return stdHandle;
             }
         }
+        public static bool ConsoleFullscreenMode
+        {
+            get
+            {
+                int lpModeFlags;
+                ExceptionHelper.ValidateMagic(GetConsoleDisplayMode(out lpModeFlags));
+
+                return lpModeFlags == 1;
+            }
+            set
+            {
+                COORD lpNewScreenBufferDimensions;
+                ExceptionHelper.ValidateMagic(SetConsoleDisplayMode(StdOutputHandle, (uint)(value ? 1 : 2), out lpNewScreenBufferDimensions));
+            }
+        }
 
         public static int MessageBox(string message, string title, uint type = 0 | 0x10, bool exitProgram = true)
         {
@@ -34,9 +50,16 @@ namespace SnakeTheResurrection.Utilities
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern IntPtr GetStdHandle(int nStdHandle);
 
-        [DllImport("User32.dll", CharSet = CharSet.Unicode)]
+        [DllImport("kernel32.dll", SetLastError = true)]
+        private static extern bool GetConsoleDisplayMode(out int lpModeFlags);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        private static extern bool SetConsoleDisplayMode(IntPtr hConsoleOutput, uint dwFlags, out COORD lpNewScreenBufferDimensions);
+        
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         private static extern int MessageBox(IntPtr hWnd, string lpText, string lpCaption, uint uType);
         
+        [DebuggerDisplay("{X},{Y}")]
         [StructLayout(LayoutKind.Sequential)]
         public struct COORD
         {

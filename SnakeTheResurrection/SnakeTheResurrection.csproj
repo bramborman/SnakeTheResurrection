@@ -57,6 +57,7 @@
     <Compile Include="Data\Profile.cs" />
     <Compile Include="Data\SnakeConfiguration.cs" />
     <Compile Include="Game.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="MainMenu.cs" />
     <Compile Include="ProfileManager.cs" />
     <Compile Include="Utilities\BigTextWriter.cs" />
@@ -71,6 +72,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\MenuItem.cs" />
     <Compile Include="Utilities\Renderer.cs" />
+    <Compile Include="Utilities\Symtext.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

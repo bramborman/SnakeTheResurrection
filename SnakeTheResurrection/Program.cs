@@ -7,18 +7,22 @@ namespace SnakeTheResurrection
 {
     public static class Program
     {
+        public static Renderer MainRenderer { get; private set; }
+
         public static void Main(string[] args)
         {
             Console.Title           = Constants.APP_NAME;
             Console.CursorVisible   = false;
 
-            // Are these even needed? ಠ_ಠ
-            Console.InputEncoding   = Constants.encoding;
-            Console.OutputEncoding  = Constants.encoding;
-            Console.ForegroundColor = Constants.FOREGROUND_COLOR;
+            // Don't you dare trying to uncomment this (ง⸟ᨎ⸟)ง
+            // Console.InputEncoding   = Constants.encoding;
+            // Console.OutputEncoding  = Constants.encoding;
 
-            new Renderer();
-            DllImports.MessageBox("Lol what did you expect?!", "");
+            // Is this even needed? ಠ_ಠ
+            Console.ForegroundColor = Constants.FOREGROUND_COLOR;
+            
+            MainRenderer = new Renderer();
+            DllImports.MessageBox("U still there?!", "");
 
             AppData.Load();
             ProfileManager.LoadProfiles();
