@@ -18,12 +18,15 @@ namespace SnakeTheResurrection
             // Console.OutputEncoding  = Constants.encoding;
             
             MainRenderer = new Renderer();
+            
             Symtext.ForegroundColor = ConsoleColor.Green;
+            Symtext.FontSize        = 5;
             Symtext.Write("Hello world!!!\nThis is magic", HorizontalAlignment.Center, VerticalAlignment.Center);
+
             MainRenderer.RenderFrame();
             Console.ReadKey();
 
-            DllImports.MessageBox("Even better, don't u think?", "");
+            DllImports.MessageBox("Didn't expect this, right? (⌐■ᨎ■)", "");
 
             AppData.Load();
             ProfileManager.LoadProfiles();

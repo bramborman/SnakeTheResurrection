@@ -5,11 +5,10 @@ namespace SnakeTheResurrection.Utilities
     // Font inspired by Symtext (4/26/2017): http://www.dafont.com/symtext.font
     public static class Symtext
     {
-        private const bool X            = true;
-        private const bool _            = false;
-        private const int CHAR_HEIGHT   = 7;
+        private const bool X = true;
+        private const bool _ = false;
 
-        // All chars should be 7 (CHAR_HEIGHT) rows tall
+        // All chars should be 7 rows tall
         #region Alphabet
         private static readonly bool[,] a = new bool[,]
         {
@@ -561,10 +560,18 @@ namespace SnakeTheResurrection.Utilities
 
         private static int _cursorX;
         private static int _cursorY;
-        private static int _characterSpacing;
-        private static float _fontSize;
+        private static int _fontSize;
+        private static SymtextScalingStyle _scalingStyle;
         private static ConsoleColor _foregroundColor;
         private static ConsoleColor _backgroundColor;
+
+        private static int CharacterSpacing
+        {
+            get
+            {
+                return FontSize;
+            }
+        }
 
         public static int CursorX
         {
@@ -598,38 +605,34 @@ namespace SnakeTheResurrection.Utilities
                 }
             }
         }
-        public static int CharacterSpacing
-        {
-            get { return _characterSpacing; }
-            set
-            {
-                if (_characterSpacing != value)
-                {
-                    if (_characterSpacing < 0)
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(CharacterSpacing));
-                    }
-
-                    _characterSpacing = value;
-
-                    characterSpacingBackgroundFiller = new ConsoleColor[CHAR_HEIGHT, value];
-                    FillCharacterSpacingBackgroundFiller();
-                }
-            }
-        }
-        public static float FontSize
+        public static int FontSize
         {
             get { return _fontSize; }
             set
             {
                 if (_fontSize != value)
                 {
-                    if (_fontSize < 0f)
+                    if (_fontSize < 0)
                     {
                         throw new ArgumentOutOfRangeException(nameof(FontSize));
                     }
 
                     _fontSize = value;
+
+                    characterSpacingBackgroundFiller = new ConsoleColor[CharHeight, value];
+                    FillCharacterSpacingBackgroundFiller();
+                }
+            }
+        }
+        public static SymtextScalingStyle ScalingStyle
+        {
+            get { return _scalingStyle; }
+            set
+            {
+                if (_scalingStyle != value)
+                {
+                    ExceptionHelper.ValidateEnumValueDefined(value, nameof(ScalingStyle));
+                    _scalingStyle = value;
                 }
             }
         }
@@ -659,15 +662,21 @@ namespace SnakeTheResurrection.Utilities
                 }
             }
         }
+        public static int CharHeight
+        {
+            get
+            {
+                return 7 * FontSize;
+            }
+        }
 
         static Symtext()
         {
-            CharacterSpacing    = 1;
             FontSize            = 1;
             ForegroundColor     = Constants.FOREGROUND_COLOR;
             BackgroundColor     = Constants.BACKGROUND_COLOR;
         }
-
+        
         private static void FillCharacterSpacingBackgroundFiller()
         {
             for (int row = 0; row < characterSpacingBackgroundFiller.GetLength(0); row++)
@@ -681,16 +690,20 @@ namespace SnakeTheResurrection.Utilities
 
         public static void Write(object value)
         {
-            foreach (char ch in value.ToString())
+            string valueString = value.ToString();
+
+            for (int i = 0; i < valueString.Length; i++)
             {
+                char ch = valueString[i];
+
                 if (ch == '\n')
                 {
                     CursorX = 0;
-                    CursorY += CHAR_HEIGHT;
+                    CursorY += CharHeight;
                     continue;
                 }
 
-                bool[,] character               = GetChar(ch);
+                bool[,] character               = GetScaledBoolChar(ch);
                 
                 int characterHeight             = character.GetLength(0);
                 int characterWidth              = character.GetLength(1);
@@ -722,8 +735,8 @@ namespace SnakeTheResurrection.Utilities
             switch (verticalAlignment)
             {
                 case VerticalAlignment.Top:     cursorY = 0;                                                            break;
-                case VerticalAlignment.Center:  cursorY = (Console.WindowHeight - (lines.Length * CHAR_HEIGHT)) / 2;    break;
-                case VerticalAlignment.Bottom:  cursorY = Console.WindowHeight - (lines.Length * CHAR_HEIGHT);          break;
+                case VerticalAlignment.Center:  cursorY = (Console.WindowHeight - (lines.Length * CharHeight)) / 2;    break;
+                case VerticalAlignment.Bottom:  cursorY = Console.WindowHeight - (lines.Length * CharHeight);          break;
             }
 
             foreach (string line in lines)
@@ -734,11 +747,11 @@ namespace SnakeTheResurrection.Utilities
                     case HorizontalAlignment.Center:    cursorX = (Console.WindowWidth - GetSymtextWidth(line)) / 2;    break;
                     case HorizontalAlignment.Right:     cursorX = Console.WindowWidth - GetSymtextWidth(line);          break;
                 }
-                
 
-                foreach (char ch in line)
+
+                for (int i = 0; i < line.Length; i++)
                 {
-                    bool[,] character               = GetChar(ch);
+                    bool[,] character               = GetScaledBoolChar(line[i]);
                 
                     int characterHeight             = character.GetLength(0);
                     int characterWidth              = character.GetLength(1);
@@ -755,11 +768,14 @@ namespace SnakeTheResurrection.Utilities
                     Program.MainRenderer.AddToBuffer(renderedChar, cursorX, cursorY);
                     cursorX += characterWidth;
 
-                    Program.MainRenderer.AddToBuffer(characterSpacingBackgroundFiller, cursorX, cursorY);
-                    cursorX += CharacterSpacing;
+                    if (i != line.Length - 1)
+                    {
+                        Program.MainRenderer.AddToBuffer(characterSpacingBackgroundFiller, cursorX, cursorY);
+                        cursorX += CharacterSpacing;
+                    }
                 }
 
-                cursorY += CHAR_HEIGHT;
+                cursorY += CharHeight;
             }
         }
 
@@ -769,13 +785,59 @@ namespace SnakeTheResurrection.Utilities
 
             foreach (char ch in str)
             {
-                output += GetChar(ch).GetLength(1) + CharacterSpacing;
+                output += GetScaledBoolChar(ch).GetLength(1) + CharacterSpacing;
+            }
+            
+            // We are not adding the character spacing behind the word
+            return output - CharacterSpacing;
+        }
+
+        private static bool[,] GetScaledBoolChar(char ch)
+        {
+            bool[,] original    = GetBoolChar(ch);
+
+            int originalHeight  = original.GetLength(0);
+            int originalWidth   = original.GetLength(1);
+            bool[,] output      = new bool[originalHeight * FontSize, originalWidth * FontSize];
+
+            if (ScalingStyle == SymtextScalingStyle.Normal)
+            {
+                for (int row = 0; row < originalHeight; row++)
+                {
+                    for (int column = 0; column < originalWidth; column++)
+                    {
+                        bool currentValue = original[row, column];
+
+                        for (int row2 = 0; row2 < FontSize; row2++)
+                        {
+                            for (int column2 = 0; column2 < FontSize; column2++)
+                            {
+                                output[(row * FontSize) + row2, (column * FontSize) + column2] = currentValue;
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                for (int row = 0; row < originalHeight; row++)
+                {
+                    for (int column = 0; column < originalWidth; column++)
+                    {
+                        bool currentValue = original[row, column];
+
+                        for (int difference = 0; difference < FontSize; difference++)
+                        {
+                            output[(row * FontSize) + difference, (column * FontSize) + difference] = currentValue;
+                        }
+                    }
+                }
             }
 
             return output;
         }
 
-        private static bool[,] GetChar(char ch)
+        private static bool[,] GetBoolChar(char ch)
         {
             switch (char.ToLower(ch))
             {
@@ -840,6 +902,12 @@ namespace SnakeTheResurrection.Utilities
                 default: ExceptionHelper.ThrowMagicException(); return null;
             }
         }
+    }
+
+    public enum SymtextScalingStyle
+    {
+        Normal,
+        Stripped
     }
 
     public enum HorizontalAlignment
