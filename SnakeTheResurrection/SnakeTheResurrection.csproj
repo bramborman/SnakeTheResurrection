@@ -60,12 +60,10 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="MainMenu.cs" />
     <Compile Include="ProfileManager.cs" />
-    <Compile Include="Utilities\BigTextWriter.cs" />
     <Compile Include="Utilities\DebugHelper.cs" />
     <Compile Include="Utilities\DllImports.cs" />
     <Compile Include="Utilities\ExceptionHelper.cs" />
     <Compile Include="Utilities\FileHelper.cs" />
-    <Compile Include="Utilities\ListMenu.cs" />
     <Compile Include="Data\AppData.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -707,8 +707,42 @@ namespace SnakeTheResurrection.Utilities
 
                     if (j != line.Length - 1)
                     {
-                        Program.MainRenderer.AddToBuffer(characterSpacingBackgroundFiller, CursorX, CursorY);
+                        Program.Renderer.AddToBuffer(characterSpacingBackgroundFiller, CursorX, CursorY);
                         CursorX += CharacterSpacing;
+                    }
+                }
+
+                if (i != lines.Length - 1)
+                {
+                    CursorY += CharHeight;
+                }
+            }
+        }
+
+        public static void Write(object value, HorizontalAlignment horizontalAlignment)
+        {
+            string[] lines = value.ToString().Split('\n');
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string line = lines[i];
+                int cursorX = 0;
+
+                switch (horizontalAlignment)
+                {
+                    case HorizontalAlignment.Left:      cursorX += 0;                                                   break;
+                    case HorizontalAlignment.Center:    cursorX += (Console.WindowWidth - GetSymtextWidth(line)) / 2;   break;
+                    case HorizontalAlignment.Right:     cursorX += Console.WindowWidth - GetSymtextWidth(line);         break;
+                }
+                
+                for (int j = 0; j < line.Length; j++)
+                {
+                    cursorX += AddRenderedCharToBuffer(line[j], cursorX, CursorY);
+
+                    if (j != line.Length - 1)
+                    {
+                        Program.Renderer.AddToBuffer(characterSpacingBackgroundFiller, cursorX, CursorY);
+                        cursorX += CharacterSpacing;
                     }
                 }
 
@@ -721,27 +755,32 @@ namespace SnakeTheResurrection.Utilities
 
         public static void Write(object value, HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment)
         {
+            Write(value, horizontalAlignment, verticalAlignment, 0, 0);
+        }
+
+        public static void Write(object value, HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment, int horizontalOffset, int verticalOffset)
+        {
             string[] lines = value.ToString().Split('\n');
 
-            int cursorX = 0;
-            int cursorY = 0;
+            int cursorY = verticalOffset;
 
             switch (verticalAlignment)
             {
-                case VerticalAlignment.Top:     cursorY = 0;                                                            break;
-                case VerticalAlignment.Center:  cursorY = (Console.WindowHeight - (lines.Length * CharHeight)) / 2;     break;
-                case VerticalAlignment.Bottom:  cursorY = Console.WindowHeight - (lines.Length * CharHeight);           break;
+                case VerticalAlignment.Top:     cursorY += 0;                                                           break;
+                case VerticalAlignment.Center:  cursorY += (Console.WindowHeight - (lines.Length * CharHeight)) / 2;    break;
+                case VerticalAlignment.Bottom:  cursorY += Console.WindowHeight - (lines.Length * CharHeight);          break;
             }
 
             for (int i = 0; i < lines.Length; i++)
             {
                 string line = lines[i];
+                int cursorX = horizontalOffset;
 
                 switch (horizontalAlignment)
                 {
-                    case HorizontalAlignment.Left:      cursorX = 0;                                                    break;
-                    case HorizontalAlignment.Center:    cursorX = (Console.WindowWidth - GetSymtextWidth(line)) / 2;    break;
-                    case HorizontalAlignment.Right:     cursorX = Console.WindowWidth - GetSymtextWidth(line);          break;
+                    case HorizontalAlignment.Left:      cursorX += 0;                                                   break;
+                    case HorizontalAlignment.Center:    cursorX += (Console.WindowWidth - GetSymtextWidth(line)) / 2;   break;
+                    case HorizontalAlignment.Right:     cursorX += Console.WindowWidth - GetSymtextWidth(line);         break;
                 }
                 
                 for (int j = 0; j < line.Length; j++)
@@ -750,7 +789,7 @@ namespace SnakeTheResurrection.Utilities
 
                     if (j != line.Length - 1)
                     {
-                        Program.MainRenderer.AddToBuffer(characterSpacingBackgroundFiller, cursorX, cursorY);
+                        Program.Renderer.AddToBuffer(characterSpacingBackgroundFiller, cursorX, cursorY);
                         cursorX += CharacterSpacing;
                     }
                 }
@@ -760,6 +799,26 @@ namespace SnakeTheResurrection.Utilities
                     cursorY += CharHeight;
                 }
             }
+        }
+
+        public static void WriteLine(object value)
+        {
+            Write(value.ToString() + '\n');
+        }
+
+        public static void WriteLine(object value, HorizontalAlignment horizontalAlignment)
+        {
+            Write(value.ToString() + '\n', horizontalAlignment);
+        }
+
+        public static void WriteLine(object value, HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment)
+        {
+            Write(value.ToString() + '\n', horizontalAlignment, verticalAlignment);
+        }
+
+        public static void WriteLine(object value, HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment, int horizontalOffset, int verticalOffset)
+        {
+            Write(value.ToString() + '\n', horizontalAlignment, verticalAlignment, horizontalOffset, verticalOffset);
         }
 
         public static int GetSymtextWidth(string str)
@@ -791,7 +850,7 @@ namespace SnakeTheResurrection.Utilities
                 }
             }
 
-            Program.MainRenderer.AddToBuffer(renderedChar, x, y);
+            Program.Renderer.AddToBuffer(renderedChar, x, y);
             return characterWidth;
         }
 

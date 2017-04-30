@@ -1,19 +1,19 @@
 ﻿using SnakeTheResurrection.Utilities;
 using System;
+using System.Collections.Generic;
 
 namespace SnakeTheResurrection
 {
     public static class MainMenu
     {
-        private static readonly ListMenu menu = new ListMenu(
-            new MenuItem("Singleplayer",    new Game().Start                    ),
-            // new MenuItem("Multiplayer",     null                                 ),
-            // new MenuItem("Options",         null                                 ),
+        private static readonly List<MenuItem> menuItems = new List<MenuItem>
+        {
+            new MenuItem("Singleplayer",    new Game().Start                    ) { IsSelected = true },
+         // new MenuItem("Multiplayer",     null                                ),
+         // new MenuItem("Options",         null                                ),
             new MenuItem("Profile manager", ProfileManager.ShowProfileSelection ),
             new MenuItem("About",           null                                ),
-            new MenuItem("Quit game",       () => Program.Exit()                ))
-        {
-            RelativeY = 4
+            new MenuItem("Quit game",       () => Program.Exit()                )
         };
 
         public static void Show()
@@ -22,11 +22,19 @@ namespace SnakeTheResurrection
 
             while (true)
             {
-                Console.Clear();
+                Program.Renderer.ClearBuffer();
 
-                Console.CursorTop = Console.WindowHeight / 2 - 7;
-                BigTextWriter.Write(Constants.APP_SHORT_NAME, ConsoleColor.Green);
-                menu.InvokeResult();
+                Symtext.ForegroundColor = ConsoleColor.Green;
+                Symtext.FontSize        = 15;
+                Symtext.Write("Snake", HorizontalAlignment.Center, VerticalAlignment.Center);
+
+                Symtext.FontSize = 1;
+                Program.Renderer.RenderFrame();
+
+                // foreach (MenuItem menuItem in menuItems)
+                // {
+                //     menuItem.Write();
+                // }
             }
         }
     }

@@ -31,11 +31,28 @@ namespace SnakeTheResurrection.Utilities
                 }
             }
         }
+        public bool IsSelected { get; set; }
 
         public MenuItem(string text, Action action)
         {
             Text    = text;
             Action  = action;
+        }
+
+        public void Write()
+        {
+            if (IsSelected)
+            {
+                Symtext.ForegroundColor = ConsoleColor.White;
+                Symtext.BackgroundColor = ConsoleColor.DarkGreen;
+            }
+            else
+            {
+                Symtext.ForegroundColor = Constants.FOREGROUND_COLOR;
+                Symtext.BackgroundColor = Constants.BACKGROUND_COLOR;
+            }
+
+            Symtext.WriteLine(Text, HorizontalAlignment.Center);
         }
     }
 }

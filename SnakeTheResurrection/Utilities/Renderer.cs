@@ -80,6 +80,22 @@ namespace SnakeTheResurrection.Utilities
             }
         }
 
+        public void RemoveFromBuffer(int x, int y, int height, int width)
+        {
+            for (int row = y; row < y + height; row++)
+            {
+                for (int column = x; column < x + width; column++)
+                {
+                    Buffer[row, column] = Constants.BACKGROUND_COLOR;
+                }
+            }
+        }
+
+        public void ClearBuffer()
+        {
+            Array.Clear(Buffer, 0, Buffer.Length);
+        }
+
         [DllImport("kernel32.dll")]
         private static extern bool WriteConsoleOutputAttribute(IntPtr hConsoleOutput, short[] lpAttribute, int nLength, DllImports.COORD dwWriteCoord, out int lpNumberOfAttrsWritten);
 

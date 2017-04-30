@@ -7,7 +7,7 @@ namespace SnakeTheResurrection
 {
     public static class Program
     {
-        public static Renderer MainRenderer { get; private set; }
+        public static Renderer Renderer { get; private set; }
 
         public static void Main(string[] args)
         {
@@ -17,16 +17,7 @@ namespace SnakeTheResurrection
             // Console.InputEncoding   = Constants.encoding;
             // Console.OutputEncoding  = Constants.encoding;
             
-            MainRenderer = new Renderer();
-            
-            Symtext.ForegroundColor = ConsoleColor.Yellow;
-            Symtext.FontSize        = 5;
-            Symtext.Write("Hello world!!!\nThis is magic", HorizontalAlignment.Center, VerticalAlignment.Center);
-
-            MainRenderer.RenderFrame();
-            Console.ReadKey();
-
-            DllImports.MessageBox("Of course I can do yellow ^_^", "");
+            Renderer = new Renderer();
 
             AppData.Load();
             ProfileManager.LoadProfiles();
