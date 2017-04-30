@@ -22,6 +22,9 @@ namespace SnakeTheResurrection.Utilities
                 DllImports.SetFont("Lucida Console", 1, 1);
                 DllImports.ConsoleFullscreenMode = true;
 
+                // Make it a real fullscreen :D
+                Console.SetWindowSize(Console.LargestWindowWidth, Console.LargestWindowHeight);
+
                 short windowHeight  = (short)Console.WindowHeight;
                 short windowWidth   = (short)Console.WindowWidth;
                 Console.SetBufferSize(windowWidth, windowHeight);
