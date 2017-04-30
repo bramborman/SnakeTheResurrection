@@ -761,44 +761,50 @@ namespace SnakeTheResurrection.Utilities
         public static void Write(object value, HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment, int horizontalOffset, int verticalOffset)
         {
             string[] lines = value.ToString().Split('\n');
-
-            int cursorY = verticalOffset;
-
+            
             switch (verticalAlignment)
             {
-                case VerticalAlignment.Top:     cursorY += 0;                                                           break;
-                case VerticalAlignment.Center:  cursorY += (Console.WindowHeight - (lines.Length * CharHeight)) / 2;    break;
-                case VerticalAlignment.Bottom:  cursorY += Console.WindowHeight - (lines.Length * CharHeight);          break;
+                case VerticalAlignment.Top:     CursorY = 0;                                                            break;
+                case VerticalAlignment.Center:  CursorY = (Console.WindowHeight - (lines.Length * CharHeight)) / 2;     break;
+                case VerticalAlignment.Bottom:  CursorY = Console.WindowHeight - (lines.Length * CharHeight);           break;
             }
+
+            CursorY += verticalOffset;
 
             for (int i = 0; i < lines.Length; i++)
             {
                 string line = lines[i];
-                int cursorX = horizontalOffset;
 
                 switch (horizontalAlignment)
                 {
-                    case HorizontalAlignment.Left:      cursorX += 0;                                                   break;
-                    case HorizontalAlignment.Center:    cursorX += (Console.WindowWidth - GetSymtextWidth(line)) / 2;   break;
-                    case HorizontalAlignment.Right:     cursorX += Console.WindowWidth - GetSymtextWidth(line);         break;
+                    case HorizontalAlignment.Left:      CursorX = 0;                                                    break;
+                    case HorizontalAlignment.Center:    CursorX = (Console.WindowWidth - GetSymtextWidth(line)) / 2;    break;
+                    case HorizontalAlignment.Right:     CursorX = Console.WindowWidth - GetSymtextWidth(line);          break;
                 }
-                
+
+                CursorX += horizontalOffset;
+
                 for (int j = 0; j < line.Length; j++)
                 {
-                    cursorX += AddRenderedCharToBuffer(line[j], cursorX, cursorY);
+                    CursorX += AddRenderedCharToBuffer(line[j], CursorX, CursorY);
 
                     if (j != line.Length - 1)
                     {
-                        Program.Renderer.AddToBuffer(characterSpacingBackgroundFiller, cursorX, cursorY);
-                        cursorX += CharacterSpacing;
+                        Program.Renderer.AddToBuffer(characterSpacingBackgroundFiller, CursorX, CursorY);
+                        CursorX += CharacterSpacing;
                     }
                 }
 
                 if (i != lines.Length - 1)
                 {
-                    cursorY += CharHeight;
+                    CursorY += CharHeight;
                 }
             }
+        }
+
+        public static void WriteLine()
+        {
+            Write('\n');
         }
 
         public static void WriteLine(object value)

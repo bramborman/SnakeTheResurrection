@@ -8,12 +8,12 @@ namespace SnakeTheResurrection
     {
         private static readonly List<MenuItem> menuItems = new List<MenuItem>
         {
-            new MenuItem("Singleplayer",    new Game().Start                    ) { IsSelected = true },
-         // new MenuItem("Multiplayer",     null                                ),
-         // new MenuItem("Options",         null                                ),
-            new MenuItem("Profile manager", ProfileManager.ShowProfileSelection ),
-            new MenuItem("About",           null                                ),
-            new MenuItem("Quit game",       () => Program.Exit()                )
+            new MenuItem(" Singleplayer ",    new Game().Start                    ) { IsSelected = true },
+         // new MenuItem(" Multiplayer ",     null                                ),
+         // new MenuItem(" Options ",         null                                ),
+            new MenuItem(" Profile manager ", ProfileManager.ShowProfileSelection ),
+            new MenuItem(" About ",           null                                ),
+            new MenuItem(" Quit game ",       () => Program.Exit()                )
         };
 
         public static void Show()
@@ -26,15 +26,17 @@ namespace SnakeTheResurrection
 
                 Symtext.ForegroundColor = ConsoleColor.Green;
                 Symtext.FontSize        = 15;
-                Symtext.Write("Snake", HorizontalAlignment.Center, VerticalAlignment.Center);
-
-                Symtext.FontSize = 1;
+                Symtext.WriteLine("Snake", HorizontalAlignment.Center, VerticalAlignment.Center);
+                
+                Symtext.FontSize = 2;
+                Symtext.WriteLine("\n");
+                
+                foreach (MenuItem menuItem in menuItems)
+                {
+                    menuItem.Write();
+                }
+                
                 Program.Renderer.RenderFrame();
-
-                // foreach (MenuItem menuItem in menuItems)
-                // {
-                //     menuItem.Write();
-                // }
             }
         }
     }
