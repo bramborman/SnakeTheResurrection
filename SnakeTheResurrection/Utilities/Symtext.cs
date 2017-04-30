@@ -690,38 +690,32 @@ namespace SnakeTheResurrection.Utilities
 
         public static void Write(object value)
         {
-            string valueString = value.ToString();
+            string[] lines = value.ToString().Split('\n');
 
-            for (int i = 0; i < valueString.Length; i++)
+            for (int i = 0; i < lines.Length; i++)
             {
-                char ch = valueString[i];
-
-                if (ch == '\n')
+                if (i != 0)
                 {
                     CursorX = 0;
-                    CursorY += CharHeight;
-                    continue;
                 }
 
-                bool[,] character               = GetScaledBoolChar(ch);
-                
-                int characterHeight             = character.GetLength(0);
-                int characterWidth              = character.GetLength(1);
-                ConsoleColor[,] renderedChar    = new ConsoleColor[characterHeight, characterWidth];
+                string line = lines[i];
 
-                for (int row = 0; row < characterHeight; row++)
+                for (int j = 0; j < line.Length; j++)
                 {
-                    for (int column = 0; column < characterWidth; column++)
+                    CursorX += AddRenderedCharToBuffer(line[j], CursorX, CursorY);
+
+                    if (j != line.Length - 1)
                     {
-                        renderedChar[row, column] = character[row, column] ? ForegroundColor : BackgroundColor;
+                        Program.MainRenderer.AddToBuffer(characterSpacingBackgroundFiller, CursorX, CursorY);
+                        CursorX += CharacterSpacing;
                     }
                 }
 
-                Program.MainRenderer.AddToBuffer(renderedChar, CursorX, CursorY);
-                CursorX += characterWidth;
-
-                Program.MainRenderer.AddToBuffer(characterSpacingBackgroundFiller, CursorX, CursorY);
-                CursorX += CharacterSpacing;
+                if (i != lines.Length - 1)
+                {
+                    CursorY += CharHeight;
+                }
             }
         }
 
@@ -735,51 +729,40 @@ namespace SnakeTheResurrection.Utilities
             switch (verticalAlignment)
             {
                 case VerticalAlignment.Top:     cursorY = 0;                                                            break;
-                case VerticalAlignment.Center:  cursorY = (Console.WindowHeight - (lines.Length * CharHeight)) / 2;    break;
-                case VerticalAlignment.Bottom:  cursorY = Console.WindowHeight - (lines.Length * CharHeight);          break;
+                case VerticalAlignment.Center:  cursorY = (Console.WindowHeight - (lines.Length * CharHeight)) / 2;     break;
+                case VerticalAlignment.Bottom:  cursorY = Console.WindowHeight - (lines.Length * CharHeight);           break;
             }
 
-            foreach (string line in lines)
+            for (int i = 0; i < lines.Length; i++)
             {
+                string line = lines[i];
+
                 switch (horizontalAlignment)
                 {
                     case HorizontalAlignment.Left:      cursorX = 0;                                                    break;
                     case HorizontalAlignment.Center:    cursorX = (Console.WindowWidth - GetSymtextWidth(line)) / 2;    break;
                     case HorizontalAlignment.Right:     cursorX = Console.WindowWidth - GetSymtextWidth(line);          break;
                 }
-
-
-                for (int i = 0; i < line.Length; i++)
-                {
-                    bool[,] character               = GetScaledBoolChar(line[i]);
                 
-                    int characterHeight             = character.GetLength(0);
-                    int characterWidth              = character.GetLength(1);
-                    ConsoleColor[,] renderedChar    = new ConsoleColor[characterHeight, characterWidth];
+                for (int j = 0; j < line.Length; j++)
+                {
+                    cursorX += AddRenderedCharToBuffer(line[j], cursorX, cursorY);
 
-                    for (int row = 0; row < characterHeight; row++)
-                    {
-                        for (int column = 0; column < characterWidth; column++)
-                        {
-                            renderedChar[row, column] = character[row, column] ? ForegroundColor : BackgroundColor;
-                        }
-                    }
-
-                    Program.MainRenderer.AddToBuffer(renderedChar, cursorX, cursorY);
-                    cursorX += characterWidth;
-
-                    if (i != line.Length - 1)
+                    if (j != line.Length - 1)
                     {
                         Program.MainRenderer.AddToBuffer(characterSpacingBackgroundFiller, cursorX, cursorY);
                         cursorX += CharacterSpacing;
                     }
                 }
 
-                cursorY += CharHeight;
+                if (i != lines.Length - 1)
+                {
+                    cursorY += CharHeight;
+                }
             }
         }
 
-        private static int GetSymtextWidth(string str)
+        public static int GetSymtextWidth(string str)
         {
             int output = 0;
 
@@ -790,6 +773,26 @@ namespace SnakeTheResurrection.Utilities
             
             // We are not adding the character spacing behind the word
             return output - CharacterSpacing;
+        }
+
+        private static int AddRenderedCharToBuffer(char ch, int x, int y)
+        {
+            bool[,] character               = GetScaledBoolChar(ch);
+                
+            int characterHeight             = character.GetLength(0);
+            int characterWidth              = character.GetLength(1);
+            ConsoleColor[,] renderedChar    = new ConsoleColor[characterHeight, characterWidth];
+
+            for (int row = 0; row < characterHeight; row++)
+            {
+                for (int column = 0; column < characterWidth; column++)
+                {
+                    renderedChar[row, column] = character[row, column] ? ForegroundColor : BackgroundColor;
+                }
+            }
+
+            Program.MainRenderer.AddToBuffer(renderedChar, x, y);
+            return characterWidth;
         }
 
         private static bool[,] GetScaledBoolChar(char ch)

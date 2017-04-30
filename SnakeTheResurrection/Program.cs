@@ -19,14 +19,14 @@ namespace SnakeTheResurrection
             
             MainRenderer = new Renderer();
             
-            Symtext.ForegroundColor = ConsoleColor.Green;
+            Symtext.ForegroundColor = ConsoleColor.Yellow;
             Symtext.FontSize        = 5;
             Symtext.Write("Hello world!!!\nThis is magic", HorizontalAlignment.Center, VerticalAlignment.Center);
 
             MainRenderer.RenderFrame();
             Console.ReadKey();
 
-            DllImports.MessageBox("Didn't expect this, right? (⌐■ᨎ■)", "");
+            DllImports.MessageBox("Of course I can do yellow ^_^", "");
 
             AppData.Load();
             ProfileManager.LoadProfiles();
