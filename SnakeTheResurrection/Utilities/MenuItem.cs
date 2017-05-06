@@ -14,7 +14,7 @@ namespace SnakeTheResurrection.Utilities
             {
                 if (_text != value)
                 {
-                    ExceptionHelper.ValidateNotNullOrWhiteSpace(value, nameof(Text));
+                    ExceptionHelper.ValidateStringNotNullOrWhiteSpace(value, nameof(Text));
                     _text = value;
                 }
             }
@@ -26,33 +26,16 @@ namespace SnakeTheResurrection.Utilities
             {
                 if (_action != value)
                 {
-                    ExceptionHelper.ValidateNotNull(value, nameof(Action));
+                    ExceptionHelper.ValidateObjectNotNull(value, nameof(Action));
                     _action = value;
                 }
             }
         }
-        public bool IsSelected { get; set; }
 
         public MenuItem(string text, Action action)
         {
             Text    = text;
             Action  = action;
-        }
-
-        public void Write()
-        {
-            if (IsSelected)
-            {
-                Symtext.ForegroundColor = ConsoleColor.White;
-                Symtext.BackgroundColor = ConsoleColor.DarkGreen;
-            }
-            else
-            {
-                Symtext.ForegroundColor = Constants.FOREGROUND_COLOR;
-                Symtext.BackgroundColor = Constants.BACKGROUND_COLOR;
-            }
-
-            Symtext.WriteLine(Text, HorizontalAlignment.Center);
         }
     }
 }

@@ -6,14 +6,18 @@ namespace SnakeTheResurrection
 {
     public static class MainMenu
     {
-        private static readonly List<MenuItem> menuItems = new List<MenuItem>
+        private static readonly ListMenu menuItems = new ListMenu
         {
-            new MenuItem(" Singleplayer ",    new Game().Start                    ) { IsSelected = true },
-         // new MenuItem(" Multiplayer ",     null                                ),
-         // new MenuItem(" Options ",         null                                ),
-            new MenuItem(" Profile manager ", ProfileManager.ShowProfileSelection ),
-            new MenuItem(" About ",           null                                ),
-            new MenuItem(" Quit game ",       () => Program.Exit()                )
+            Items = new List<MenuItem>
+            {
+                new MenuItem("Singleplayer",    new Game().Start                    ),
+             // new MenuItem("Multiplayer",     null                                ),
+             // new MenuItem("Options",         null                                ),
+                new MenuItem("Profiles",        ProfileManager.ShowProfileSelection ),
+                new MenuItem("About",           null                                ),
+                new MenuItem("Quit game",       () => Program.Exit()                )
+            },
+            RelativeY = 57
         };
 
         public static void Show()
@@ -23,20 +27,12 @@ namespace SnakeTheResurrection
             while (true)
             {
                 Program.Renderer.ClearBuffer();
-
+                
                 Symtext.ForegroundColor = ConsoleColor.Green;
                 Symtext.FontSize        = 15;
-                Symtext.WriteLine("Snake", HorizontalAlignment.Center, VerticalAlignment.Center);
+                Symtext.WriteLine("Snake", HorizontalAlignment.Center, VerticalAlignment.Center, 0, 7);
                 
-                Symtext.FontSize = 2;
-                Symtext.WriteLine("\n");
-                
-                foreach (MenuItem menuItem in menuItems)
-                {
-                    menuItem.Write();
-                }
-                
-                Program.Renderer.RenderFrame();
+                menuItems.InvokeResult();
             }
         }
     }

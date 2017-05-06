@@ -68,27 +68,28 @@ namespace SnakeTheResurrection.Utilities
 
         public void AddToBuffer(ConsoleColor[,] element, int x, int y)
         {
-            int elementHeight   = element.GetLength(0);
-            int elementWidth    = element.GetLength(1);
+            int elementWidth = element.GetLength(1);
 
-            for (int row = 0; row < elementHeight; row++)
+            for (int row = 0; row < element.GetLength(0); row++)
             {
-                for (int column = 0; column < elementWidth; column++)
+                Array.Copy(element, row * elementWidth, Buffer, ((y + row) * bufferWidth) + x, elementWidth);
+            }
+        }
+
+        public void AddToBuffer(ConsoleColor color, int x, int y, int height, int width)
+        {
+            for (int row = y; row < y + height; row++)
+            {
+                for (int column = x; column < x + width; column++)
                 {
-                    Buffer[row + y, column + x] = element[row, column];
+                    Buffer[row, column] = color;
                 }
             }
         }
 
         public void RemoveFromBuffer(int x, int y, int height, int width)
         {
-            for (int row = y; row < y + height; row++)
-            {
-                for (int column = x; column < x + width; column++)
-                {
-                    Buffer[row, column] = Constants.BACKGROUND_COLOR;
-                }
-            }
+            AddToBuffer(Constants.BACKGROUND_COLOR, x, y, height, width);
         }
 
         public void ClearBuffer()

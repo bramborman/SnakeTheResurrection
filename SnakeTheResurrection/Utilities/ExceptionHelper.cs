@@ -4,7 +4,7 @@ namespace SnakeTheResurrection.Utilities
 {
     public static class ExceptionHelper
     {
-        public static void ValidateNotNull(object obj, string parameterName)
+        public static void ValidateObjectNotNull(object obj, string parameterName)
         {
             if (obj == null)
             {
@@ -12,7 +12,7 @@ namespace SnakeTheResurrection.Utilities
             }
         }
 
-        public static void ValidateNotNullOrWhiteSpace(string str, string parameterName)
+        public static void ValidateStringNotNullOrWhiteSpace(string str, string parameterName)
         {
             if (string.IsNullOrWhiteSpace(str))
             {
@@ -25,6 +25,30 @@ namespace SnakeTheResurrection.Utilities
             if (!Enum.IsDefined(enumValue.GetType(), enumValue))
             {
                 throw new ArgumentOutOfRangeException(parameterName);
+            }
+        }
+        
+        public static void ValidateNumberGreaterOrEqual(long value, long min, string parameterName)
+        {
+            if (value < min)
+            {
+                throw new ArgumentOutOfRangeException(parameterName, $"Value ({value}) is out of range (smaller than {min}).");
+            }
+        }
+
+        public static void ValidateNumberSmallerOrEqual(long value, long max, string parameterName)
+        {
+            if (value > max)
+            {
+                throw new ArgumentOutOfRangeException(parameterName, $"Value ({value}) is out of range (greater than {max}).");
+            }
+        }
+
+        public static void ValidateNumberInRange(long value, long min, long max, string parameterName)
+        {
+            if (value < min || value > max)
+            {
+                throw new ArgumentOutOfRangeException(parameterName, $"Value ({value}) is out of range ({min} - {max}).");
             }
         }
 

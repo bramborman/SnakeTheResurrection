@@ -580,11 +580,7 @@ namespace SnakeTheResurrection.Utilities
             {
                 if (_cursorX != value)
                 {
-                    if (_cursorX < 0 || _cursorX > Console.WindowWidth)
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(CursorX));
-                    }
-
+                    ExceptionHelper.ValidateNumberInRange(value, 0, Console.WindowWidth, nameof(CursorX));
                     _cursorX = value;
                 }
             }
@@ -596,11 +592,7 @@ namespace SnakeTheResurrection.Utilities
             {
                 if (_cursorY != value)
                 {
-                    if (_cursorY < 0 || _cursorY > Console.WindowHeight)
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(CursorY));
-                    }
-
+                    ExceptionHelper.ValidateNumberInRange(value, 0, Console.WindowHeight, nameof(CursorY));
                     _cursorY = value;
                 }
             }
@@ -612,11 +604,7 @@ namespace SnakeTheResurrection.Utilities
             {
                 if (_fontSize != value)
                 {
-                    if (_fontSize < 0)
-                    {
-                        throw new ArgumentOutOfRangeException(nameof(FontSize));
-                    }
-
+                    ExceptionHelper.ValidateNumberGreaterOrEqual(value, 0, nameof(FontSize));
                     _fontSize = value;
 
                     characterSpacingBackgroundFiller = new ConsoleColor[CharHeight, value];
@@ -980,6 +968,7 @@ namespace SnakeTheResurrection.Utilities
 
     public enum HorizontalAlignment
     {
+        None,
         Left,
         Center,
         Right
@@ -987,6 +976,7 @@ namespace SnakeTheResurrection.Utilities
 
     public enum VerticalAlignment
     {
+        None,
         Top,
         Center,
         Bottom

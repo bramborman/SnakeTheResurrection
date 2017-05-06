@@ -8,7 +8,7 @@ namespace SnakeTheResurrection.Utilities
     {
         public static bool SaveObject(object obj, string filePath)
         {
-            ExceptionHelper.ValidateNotNullOrWhiteSpace(filePath, nameof(filePath));
+            ExceptionHelper.ValidateStringNotNullOrWhiteSpace(filePath, nameof(filePath));
 
             bool success    = true;
             string fileName = Path.GetFileName(filePath);
@@ -35,7 +35,7 @@ namespace SnakeTheResurrection.Utilities
 
         public static LoadObjectAsyncResult<T> LoadObject<T>(string filePath) where T : class, new()
         {
-            ExceptionHelper.ValidateNotNullOrWhiteSpace(filePath, nameof(filePath));
+            ExceptionHelper.ValidateStringNotNullOrWhiteSpace(filePath, nameof(filePath));
             
             if (!File.Exists(filePath))
             {
