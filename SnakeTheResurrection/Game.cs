@@ -9,7 +9,7 @@ namespace SnakeTheResurrection
 {
     public sealed class Game
     {
-        public void Start()
+        public void SinglePlayer()
         {
             Snake snake = new Snake(ProfileManager.CurrentProfile);
 
@@ -125,7 +125,7 @@ namespace SnakeTheResurrection
             public Direction Direction
             {
                 get { return _direction; }
-                set
+                private set
                 {
                     if (_direction != value)
                     {
@@ -155,32 +155,71 @@ namespace SnakeTheResurrection
                 {
                     Direction originalDirection = Direction;
 
-                    if (DllImports.IsKeyDown(ConsoleKey.UpArrow))
+                    bool up     = DllImports.IsKeyDown(ConsoleKey.UpArrow);
+                    bool down   = DllImports.IsKeyDown(ConsoleKey.DownArrow);
+                    bool left   = DllImports.IsKeyDown(ConsoleKey.LeftArrow);
+                    bool right  = DllImports.IsKeyDown(ConsoleKey.RightArrow);
+
+                    if (up)
                     {
-                        if (Direction != Direction.Down)
+                        if (left)
                         {
-                            Direction = Direction.Up;
+                            if (Direction != Direction.DownRight)
+                            {
+                                Direction = Direction.UpLeft;
+                            }
+                        }
+                        else if (right)
+                        {
+                            if (Direction != Direction.DownLeft)
+                            {
+                                Direction = Direction.UpRight;
+                            }
+                        }
+                        else
+                        {
+                            if (Direction != Direction.Down)
+                            {
+                                Direction = Direction.Up;
+                            }
                         }
                     }
-                    else if (DllImports.IsKeyDown(ConsoleKey.RightArrow))
+                    else if (down)
                     {
-                        if (Direction != Direction.Left)
+                        if (left)
                         {
-                            Direction = Direction.Right;
+                            if (Direction != Direction.UpRight)
+                            {
+                                Direction = Direction.DownLeft;
+                            }
+                        }
+                        else if (right)
+                        {
+                            if (Direction != Direction.UpLeft)
+                            {
+                                Direction = Direction.DownRight;
+                            }
+                        }
+                        else
+                        {
+                            if (Direction != Direction.Up)
+                            {
+                                Direction = Direction.Down;
+                            }
                         }
                     }
-                    else if (DllImports.IsKeyDown(ConsoleKey.DownArrow))
-                    {
-                        if (Direction != Direction.Up)
-                        {
-                            Direction = Direction.Down;
-                        }
-                    }
-                    else if (DllImports.IsKeyDown(ConsoleKey.LeftArrow))
+                    else if (left)
                     {
                         if (Direction != Direction.Right)
                         {
                             Direction = Direction.Left;
+                        }
+                    }
+                    else if (right)
+                    {
+                        if (Direction != Direction.Left)
+                        {
+                            Direction = Direction.Right;
                         }
                     }
 
@@ -201,15 +240,26 @@ namespace SnakeTheResurrection
                     if (currentBendInfo != null)
                     {
                         Direction = currentBendInfo.Direction;
+                        bendInfo.Remove(currentBendInfo);
                     }
                 }
-
-                switch (Direction)
+                
+                if (Direction == Direction.UpLeft || Direction == Direction.Up || Direction == Direction.UpRight)
                 {
-                    case Direction.Left:    X -= Size;  break;
-                    case Direction.Up:      Y -= Size;  break;
-                    case Direction.Right:   X += Size;  break;
-                    case Direction.Down:    Y += Size;  break;
+                    Y -= Size;
+                }
+                else if (Direction == Direction.DownLeft || Direction == Direction.Down || Direction == Direction.DownRight)
+                {
+                    Y += Size;
+                }
+
+                if (Direction == Direction.UpLeft || Direction == Direction.Left || Direction == Direction.DownLeft)
+                {
+                    X -= Size;
+                }
+                else if (Direction == Direction.UpRight || Direction == Direction.Right || Direction == Direction.DownRight)
+                {
+                    X += Size;
                 }
 
                 Renderer.AddToBuffer(Color, X, Y, Size, Size);
@@ -234,9 +284,13 @@ namespace SnakeTheResurrection
         private enum Direction
         {
             Left,
+            UpLeft,
             Up,
+            UpRight,
             Right,
-            Down
+            DownRight,
+            Down,
+            DownLeft
         }
     }
 }

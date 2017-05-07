@@ -10,7 +10,7 @@ namespace SnakeTheResurrection
         {
             Items = new List<MenuItem>
             {
-                new MenuItem("Singleplayer",    new Game().Start                    ),
+                new MenuItem("Singleplayer",    new Game().SinglePlayer                    ),
              // new MenuItem("Multiplayer",     null                                ),
              // new MenuItem("Options",         null                                ),
                 new MenuItem("Profiles",        ProfileManager.ShowProfileSelection ),
