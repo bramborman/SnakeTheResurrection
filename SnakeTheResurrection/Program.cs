@@ -7,8 +7,6 @@ namespace SnakeTheResurrection
 {
     public static class Program
     {
-        public static Renderer Renderer { get; private set; }
-
         public static void Main(string[] args)
         {
             Console.Title = Constants.APP_NAME;
@@ -16,8 +14,8 @@ namespace SnakeTheResurrection
             // Don't you dare try uncommenting this (ง⸟ᨎ⸟)ง
             // Console.InputEncoding   = Constants.encoding;
             // Console.OutputEncoding  = Constants.encoding;
-            
-            Renderer = new Renderer();
+
+            Renderer.Initialize();
 
             AppData.Load();
             ProfileManager.LoadProfiles();

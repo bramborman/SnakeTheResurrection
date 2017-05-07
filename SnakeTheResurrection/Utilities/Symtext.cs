@@ -701,7 +701,7 @@ namespace SnakeTheResurrection.Utilities
 
                     if (j != line.Length - 1)
                     {
-                        Program.Renderer.AddToBuffer(characterSpacingBackgroundFiller, CursorLeft, CursorTop);
+                        Renderer.AddToBuffer(characterSpacingBackgroundFiller, CursorLeft, CursorTop);
                         CursorLeft += CharacterSpacing;
                     }
                 }
@@ -735,7 +735,7 @@ namespace SnakeTheResurrection.Utilities
 
                     if (j != line.Length - 1)
                     {
-                        Program.Renderer.AddToBuffer(characterSpacingBackgroundFiller, cursorX, CursorTop);
+                        Renderer.AddToBuffer(characterSpacingBackgroundFiller, cursorX, CursorTop);
                         cursorX += CharacterSpacing;
                     }
                 }
@@ -784,7 +784,7 @@ namespace SnakeTheResurrection.Utilities
 
                     if (j != line.Length - 1)
                     {
-                        Program.Renderer.AddToBuffer(characterSpacingBackgroundFiller, CursorLeft, CursorTop);
+                        Renderer.AddToBuffer(characterSpacingBackgroundFiller, CursorLeft, CursorTop);
                         CursorLeft += CharacterSpacing;
                     }
                 }
@@ -850,7 +850,7 @@ namespace SnakeTheResurrection.Utilities
                 }
             }
 
-            Program.Renderer.AddToBuffer(renderedChar, x, y);
+            Renderer.AddToBuffer(renderedChar, x, y);
             return characterWidth;
         }
 

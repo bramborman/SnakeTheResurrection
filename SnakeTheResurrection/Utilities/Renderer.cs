@@ -3,47 +3,48 @@ using System.Runtime.InteropServices;
 
 namespace SnakeTheResurrection.Utilities
 {
-    public sealed class Renderer
+    public static class Renderer
     {
-        private static bool isInitialized = false;
+        private static int bufferHeight;
+        private static int bufferWidth;
+        private static short[] lpAttribute;
 
-        private readonly int bufferHeight;
-        private readonly int bufferWidth;
-        private readonly short[] lpAttribute;
+        public static bool IsInitialized { get; private set; }
+        public static ConsoleColor[,] Buffer { get; private set; }
 
-        public ConsoleColor[,] Buffer { get; }
-
-        public Renderer()
+        public static void Initialize()
         {
-            if (!isInitialized)
+            if (IsInitialized)
             {
-                isInitialized = true;
-                
-                DllImports.SetFont("Lucida Console", 1, 1);
-                DllImports.ConsoleFullscreenMode = true;
-
-                // Make it a real fullscreen :D
-                Console.SetWindowSize(Console.LargestWindowWidth, Console.LargestWindowHeight);
-
-                short windowHeight  = (short)Console.WindowHeight;
-                short windowWidth   = (short)Console.WindowWidth;
-                Console.SetBufferSize(windowWidth, windowHeight);
-
-                DllImports.CHAR_INFO[] lpBuffer = new DllImports.CHAR_INFO[windowWidth * windowHeight];
-                short attributes = (short)Constants.BACKGROUND_COLOR;
-
-                for (int i = 0; i < lpBuffer.Length; i++)
-                {
-                    // Fill the buffer with black full chars
-                    lpBuffer[i].Char.AsciiChar  = 219;
-                    lpBuffer[i].Attributes      = attributes;
-                }
-
-                DllImports.SMALL_RECT lpWriteRegion = new DllImports.SMALL_RECT(0, 0, windowWidth, windowHeight);
-                ExceptionHelper.ValidateMagic(WriteConsoleOutput(DllImports.StdOutputHandle, lpBuffer, new DllImports.COORD(windowWidth, windowHeight), new DllImports.COORD(), ref lpWriteRegion));
-
-                Console.CursorVisible = false;
+                throw new InvalidOperationException();
             }
+
+            IsInitialized = true;
+                
+            DllImports.SetFont("Lucida Console", 1, 1);
+            DllImports.ConsoleFullscreenMode = true;
+
+            // Make it a real fullscreen :D
+            Console.SetWindowSize(Console.LargestWindowWidth, Console.LargestWindowHeight);
+
+            short windowHeight  = (short)Console.WindowHeight;
+            short windowWidth   = (short)Console.WindowWidth;
+            Console.SetBufferSize(windowWidth, windowHeight);
+
+            DllImports.CHAR_INFO[] lpBuffer = new DllImports.CHAR_INFO[windowWidth * windowHeight];
+            short attributes = (short)Constants.BACKGROUND_COLOR;
+
+            for (int i = 0; i < lpBuffer.Length; i++)
+            {
+                // Fill the buffer with black full chars
+                lpBuffer[i].Char.AsciiChar  = 219;
+                lpBuffer[i].Attributes      = attributes;
+            }
+
+            DllImports.SMALL_RECT lpWriteRegion = new DllImports.SMALL_RECT(0, 0, windowWidth, windowHeight);
+            ExceptionHelper.ValidateMagic(WriteConsoleOutput(DllImports.StdOutputHandle, lpBuffer, new DllImports.COORD(windowWidth, windowHeight), new DllImports.COORD(), ref lpWriteRegion));
+
+            Console.CursorVisible = false;
 
             Buffer          = new ConsoleColor[Console.WindowHeight, Console.WindowWidth];
             lpAttribute     = new short[Buffer.Length];
@@ -52,7 +53,7 @@ namespace SnakeTheResurrection.Utilities
             bufferWidth     = Buffer.GetLength(1);
         }
 
-        public void RenderFrame()
+        public static void RenderFrame()
         {
             for (int row = 0; row < bufferHeight; row++)
             {
@@ -66,7 +67,7 @@ namespace SnakeTheResurrection.Utilities
             ExceptionHelper.ValidateMagic(WriteConsoleOutputAttribute(DllImports.StdOutputHandle, lpAttribute, lpAttribute.Length, new DllImports.COORD(), out lpNumberOfAttrsWritten));
         }
 
-        public void AddToBuffer(ConsoleColor[,] element, int x, int y)
+        public static void AddToBuffer(ConsoleColor[,] element, int x, int y)
         {
             int elementWidth = element.GetLength(1);
 
@@ -76,7 +77,7 @@ namespace SnakeTheResurrection.Utilities
             }
         }
 
-        public void AddToBuffer(ConsoleColor color, int x, int y, int height, int width)
+        public static void AddToBuffer(ConsoleColor color, int x, int y, int height, int width)
         {
             for (int row = y; row < y + height; row++)
             {
@@ -87,12 +88,12 @@ namespace SnakeTheResurrection.Utilities
             }
         }
 
-        public void RemoveFromBuffer(int x, int y, int height, int width)
+        public static void RemoveFromBuffer(int x, int y, int height, int width)
         {
             AddToBuffer(Constants.BACKGROUND_COLOR, x, y, height, width);
         }
 
-        public void ClearBuffer()
+        public static void ClearBuffer()
         {
             Array.Clear(Buffer, 0, Buffer.Length);
         }

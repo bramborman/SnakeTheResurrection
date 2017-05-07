@@ -26,7 +26,7 @@ namespace SnakeTheResurrection
 
             while (true)
             {
-                Program.Renderer.ClearBuffer();
+                Renderer.ClearBuffer();
                 
                 Symtext.ForegroundColor = ConsoleColor.Green;
                 Symtext.FontSize        = 15;

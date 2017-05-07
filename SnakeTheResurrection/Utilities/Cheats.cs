@@ -57,11 +57,11 @@ namespace SnakeTheResurrection.Utilities
 
                         string message = $" Cheat {(cheatCodeInfo[currentCode] ? "" : "de")}activated ";
                         Symtext.Write(message);
-                        Program.Renderer.RenderFrame();
+                        Renderer.RenderFrame();
 
                         await Task.Delay(TimeSpan.FromSeconds(5));
-                        Program.Renderer.RemoveFromBuffer(0, 0, Symtext.CharHeight, Symtext.GetSymtextWidth(message));
-                        Program.Renderer.RenderFrame();
+                        Renderer.RemoveFromBuffer(0, 0, Symtext.CharHeight, Symtext.GetSymtextWidth(message));
+                        Renderer.RenderFrame();
                     });
                 }
             }

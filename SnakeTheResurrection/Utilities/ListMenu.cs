@@ -84,7 +84,7 @@ namespace SnakeTheResurrection.Utilities
                     Symtext.WriteLine($" {Items[i].Text} ", HorizontalAlignment.Center);
                 }
 
-                Program.Renderer.RenderFrame();
+                Renderer.RenderFrame();
 
                 switch (Helpers.ReadKey().Key)
                 {
@@ -105,7 +105,7 @@ namespace SnakeTheResurrection.Utilities
                         break;
 
                     case ConsoleKey.Enter:
-                        Program.Renderer.ClearBuffer();
+                        Renderer.ClearBuffer();
                         return SelectedIndex;
                 }
             }
