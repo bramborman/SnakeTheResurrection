@@ -73,15 +73,18 @@ namespace SnakeTheResurrection.Utilities
 
             while (true)
             {
-                Symtext.FontSize = 2;
-                Symtext.CursorTop  = RelativeY + (Console.WindowHeight - (Items.Count * Symtext.CharHeight)) / 2;
-
-                for (int i = 0; i < Items.Count; i++)
+                lock (Symtext.SyncRoot)
                 {
-                    Symtext.ForegroundColor = Constants.FOREGROUND_COLOR;
-                    Symtext.BackgroundColor = i == SelectedIndex ? ConsoleColor.DarkGreen : Constants.BACKGROUND_COLOR;
+                    Symtext.FontSize    = 2;
+                    Symtext.CursorTop   = RelativeY + (Console.WindowHeight - (Items.Count * Symtext.CharHeight)) / 2;
 
-                    Symtext.WriteLine($" {Items[i].Text} ", HorizontalAlignment.Center);
+                    for (int i = 0; i < Items.Count; i++)
+                    {
+                        Symtext.ForegroundColor = Constants.FOREGROUND_COLOR;
+                        Symtext.BackgroundColor = i == SelectedIndex ? ConsoleColor.DarkGreen : Constants.BACKGROUND_COLOR;
+
+                        Symtext.WriteLine($" {Items[i].Text} ", HorizontalAlignment.Center);
+                    }
                 }
 
                 Renderer.RenderFrame();
@@ -105,7 +108,7 @@ namespace SnakeTheResurrection.Utilities
                         break;
 
                     case ConsoleKey.Enter:
-                        Renderer.ClearBuffer();
+                        Renderer.CleanBuffer();
                         return SelectedIndex;
                 }
             }

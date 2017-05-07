@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SnakeTheResurrection.Utilities
@@ -10,13 +11,15 @@ namespace SnakeTheResurrection.Utilities
     {
         public enum CheatCode
         {
-            Pony
+            Nothing
         }
 
         private static readonly Dictionary<CheatCode, bool> cheatCodeInfo = new Dictionary<CheatCode, bool>
         {
-            { CheatCode.Pony, false }
+            { CheatCode.Nothing, false }
         };
+
+        private static CancellationTokenSource previousCts;
 
         public static ReadOnlyDictionary<CheatCode, bool> CheatCodeInfo
         {
@@ -44,25 +47,44 @@ namespace SnakeTheResurrection.Utilities
                             return pressedKeyInfo;
                         }
                     }
-                    
+
                     CheatCode currentCode = (CheatCode)Enum.Parse(typeof(CheatCode), currentCheatCode);
                     cheatCodeInfo[currentCode] = !cheatCodeInfo[currentCode];
 
+                    CancellationTokenSource currentCts = new CancellationTokenSource();
+
                     Task.Run(async () =>
                     {
-                        Symtext.FontSize = 1;
-                        Symtext.SetCursorPosition(0, 0);
-                        Symtext.BackgroundColor = ConsoleColor.Gray;
-                        Symtext.ForegroundColor = ConsoleColor.Black;
+                        const string CHEAT_ACTIVATED_MESSAGE = " Cheat activated ";
+                        const string CHEAT_DEACTIVATED_MESSAGE = " Cheat deactivated ";
 
-                        string message = $" Cheat {(cheatCodeInfo[currentCode] ? "" : "de")}activated ";
-                        Symtext.Write(message);
-                        Renderer.RenderFrame();
+                        previousCts?.Cancel();
+
+                        lock (Symtext.SyncRoot)
+                        {
+                            Symtext.SetCursorPosition(0, 0);
+                            Symtext.FontSize = 1;
+                            Symtext.BackgroundColor = ConsoleColor.Gray;
+                            Symtext.ForegroundColor = ConsoleColor.Black;
+
+                            Renderer.RemoveFromBuffer(0, 0, Symtext.CharHeight, Symtext.GetSymtextWidth(CHEAT_DEACTIVATED_MESSAGE));
+                            Symtext.Write(cheatCodeInfo[currentCode] ? CHEAT_ACTIVATED_MESSAGE : CHEAT_DEACTIVATED_MESSAGE);
+                            Renderer.RenderFrame();
+                        }
 
                         await Task.Delay(TimeSpan.FromSeconds(5));
-                        Renderer.RemoveFromBuffer(0, 0, Symtext.CharHeight, Symtext.GetSymtextWidth(message));
-                        Renderer.RenderFrame();
-                    });
+
+                        if (!currentCts.IsCancellationRequested)
+                        {
+                            lock (Symtext.SyncRoot)
+                            {
+                                Renderer.RemoveFromBuffer(0, 0, Symtext.CharHeight, Symtext.GetSymtextWidth(CHEAT_DEACTIVATED_MESSAGE));
+                                Renderer.RenderFrame();
+                            }
+                        }
+                    }, currentCts.Token);
+
+                    previousCts = currentCts;
                 }
             }
 
