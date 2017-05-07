@@ -7,7 +7,8 @@ namespace SnakeTheResurrection.Utilities
     public unsafe static class DllImports
     {
         private const int STD_OUTPUT_HANDLE = -11;
-        
+        private const int KEY_PRESSED = 0x8000;
+
         public static IntPtr StdOutputHandle
         {
             get
@@ -33,6 +34,11 @@ namespace SnakeTheResurrection.Utilities
                 COORD lpNewScreenBufferDimensions;
                 ExceptionHelper.ValidateMagic(SetConsoleDisplayMode(StdOutputHandle, (uint)(value ? 1 : 2), out lpNewScreenBufferDimensions));
             }
+        }
+        
+        public static bool IsKeyDown(ConsoleKey key)
+        {
+            return (GetKeyState((int)key) & KEY_PRESSED) != 0;
         }
 
         public static unsafe void SetFont(string fontName, short x, short y)
@@ -71,6 +77,9 @@ namespace SnakeTheResurrection.Utilities
 
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern bool SetCurrentConsoleFontEx(IntPtr hConsoleOutput, bool bMaximumWindow, ref CONSOLE_FONT_INFOEX lpConsoleCurrentFontEx);
+
+        [DllImport("user32.dll")]
+        private static extern short GetKeyState(int key);
 
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         private static extern int MessageBox(IntPtr hWnd, string lpText, string lpCaption, uint uType);

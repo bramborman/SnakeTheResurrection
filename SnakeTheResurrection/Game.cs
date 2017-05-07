@@ -17,6 +17,13 @@ namespace SnakeTheResurrection
             {
                 snake.Update();
                 Renderer.RenderFrame();
+
+                if (DllImports.IsKeyDown(ConsoleKey.Escape))
+                {
+                    //TODO: Show pause menu
+                    return;
+                }
+
                 Thread.Sleep(100);
             }
         }
@@ -28,18 +35,20 @@ namespace SnakeTheResurrection
 
         private sealed class Snake : IGameObject
         {
-            private readonly List<SnakeBody> snakeBodies = new List<SnakeBody>();
+            private SnakeBody head;
+            private SnakeBody tail;
+
+            private SnakeBody NewCenteredBody
+            {
+                get
+                {
+                    return new SnakeBody((Console.WindowWidth - SnakeBody.Size) / 2, (Console.WindowHeight - SnakeBody.Size) / 2, Profile.Color, Direction.Up);
+                }
+            }
 
             public bool IsAlive { get; private set; }
-            public int Length
-            {
-                get { return snakeBodies.Count; }
-            }
+            public int Length { get; private set; }
             public Profile Profile { get; }
-            public SnakeBody Head
-            {
-                get { return snakeBodies.FirstOrDefault(); }
-            }
 
             public Snake(Profile profile)
             {
@@ -51,32 +60,39 @@ namespace SnakeTheResurrection
 
             public void Update()
             {
-                if (snakeBodies.Count < 3)
+                if (Length < 3)
                 {
                     AddBody();
                 }
 
-                Head.Update(true);
-
-                for (int i = 1; i < snakeBodies.Count; i++)
-                {
-                    snakeBodies[i].Update(false);
-                }
+                head.Update(true, null);
             }
 
             private void AddBody()
             {
-                snakeBodies.Add(new SnakeBody((Console.WindowWidth - SnakeBody.Size) / 2, (Console.WindowHeight - SnakeBody.Size) / 2, Profile.Color, Direction.Up));
+                if (head == null)
+                {
+                    head = NewCenteredBody;
+                    tail = head;
+                }
+                else
+                {
+                    tail.NextBody = NewCenteredBody;
+                    tail = tail.NextBody;
+                }
+
+                Length++;
             }
         }
-
-
+        
         private sealed class SnakeBody
         {
             public static int Size
             {
                 get { return 5; }
             }
+
+            private readonly List<BendInfo> bendInfo = new List<BendInfo>();
 
             private int _x;
             private int _y;
@@ -119,6 +135,7 @@ namespace SnakeTheResurrection
                 }
             }
             public ConsoleColor Color { get; }
+            public SnakeBody NextBody { get; set; }
 
             public SnakeBody(int x, int y, ConsoleColor color, Direction direction)
             {
@@ -130,13 +147,61 @@ namespace SnakeTheResurrection
                 Color       = color;
             }
 
-            public void Update(bool isHead)
+            public void Update(bool isHead, BendInfo newBendInfo)
             {
                 Renderer.RemoveFromBuffer(X, Y, Size, Size);
-
+                
                 if (isHead)
                 {
-                    //TODO: Direction change logic
+                    Direction originalDirection = Direction;
+
+                    if (DllImports.IsKeyDown(ConsoleKey.UpArrow))
+                    {
+                        if (Direction != Direction.Down)
+                        {
+                            Direction = Direction.Up;
+                        }
+                    }
+                    else if (DllImports.IsKeyDown(ConsoleKey.RightArrow))
+                    {
+                        if (Direction != Direction.Left)
+                        {
+                            Direction = Direction.Right;
+                        }
+                    }
+                    else if (DllImports.IsKeyDown(ConsoleKey.DownArrow))
+                    {
+                        if (Direction != Direction.Up)
+                        {
+                            Direction = Direction.Down;
+                        }
+                    }
+                    else if (DllImports.IsKeyDown(ConsoleKey.LeftArrow))
+                    {
+                        if (Direction != Direction.Right)
+                        {
+                            Direction = Direction.Left;
+                        }
+                    }
+
+                    if (Direction != originalDirection)
+                    {
+                        newBendInfo = new BendInfo(X, Y, Direction);
+                    }
+                }
+                else
+                {
+                    if (newBendInfo != null)
+                    {
+                        bendInfo.Add(newBendInfo);
+                    }
+
+                    BendInfo currentBendInfo = bendInfo.FirstOrDefault(b => b.X == X && b.Y == Y);
+
+                    if (currentBendInfo != null)
+                    {
+                        Direction = currentBendInfo.Direction;
+                    }
                 }
 
                 switch (Direction)
@@ -148,6 +213,21 @@ namespace SnakeTheResurrection
                 }
 
                 Renderer.AddToBuffer(Color, X, Y, Size, Size);
+                NextBody?.Update(false, newBendInfo);
+            }
+        }
+
+        private sealed class BendInfo
+        {
+            public int X { get; }
+            public int Y { get; }
+            public Direction Direction { get; }
+
+            public BendInfo(int x, int y, Direction direction)
+            {
+                X           = x;
+                Y           = y;
+                Direction   = direction;
             }
         }
 

@@ -33,6 +33,7 @@ namespace SnakeTheResurrection
                 Symtext.WriteLine("Snake", HorizontalAlignment.Center, VerticalAlignment.Center, 0, 7);
                 
                 menuItems.InvokeResult();
+                Helpers.ClearInputBuffer();
             }
         }
     }
