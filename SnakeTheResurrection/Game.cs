@@ -42,7 +42,7 @@ namespace SnakeTheResurrection
             {
                 get
                 {
-                    return new SnakeBody((Console.WindowWidth - SnakeBody.Size) / 2, (Console.WindowHeight - SnakeBody.Size) / 2, Profile.Color, Direction.Up);
+                    return new SnakeBody((Console.WindowWidth - SnakeBody.Size) / 2, (Console.WindowHeight - SnakeBody.Size) / 2, Direction.Up, Profile.Color, Profile);
                 }
             }
 
@@ -84,7 +84,7 @@ namespace SnakeTheResurrection
                 Length++;
             }
         }
-        
+
         private sealed class SnakeBody
         {
             public static int Size
@@ -134,17 +134,20 @@ namespace SnakeTheResurrection
                     }
                 }
             }
-            public ConsoleColor Color { get; }
             public SnakeBody NextBody { get; set; }
+            public ConsoleColor Color { get; }
+            public Profile Profile { get; }
 
-            public SnakeBody(int x, int y, ConsoleColor color, Direction direction)
+            public SnakeBody(int x, int y, Direction direction, ConsoleColor color, Profile profile)
             {
                 ExceptionHelper.ValidateEnumValueDefined(color, nameof(color));
+                ExceptionHelper.ValidateObjectNotNull(profile, nameof(profile));
 
                 X           = x;
                 Y           = y;
                 Direction   = direction;
                 Color       = color;
+                Profile     = profile;
             }
 
             public void Update(bool isHead, BendInfo newBendInfo)
@@ -155,10 +158,10 @@ namespace SnakeTheResurrection
                 {
                     Direction originalDirection = Direction;
 
-                    bool up     = DllImports.IsKeyDown(ConsoleKey.UpArrow);
-                    bool down   = DllImports.IsKeyDown(ConsoleKey.DownArrow);
-                    bool left   = DllImports.IsKeyDown(ConsoleKey.LeftArrow);
-                    bool right  = DllImports.IsKeyDown(ConsoleKey.RightArrow);
+                    bool up     = DllImports.IsKeyDown(Profile.SnakeControls.Up);
+                    bool down   = DllImports.IsKeyDown(Profile.SnakeControls.Down);
+                    bool left   = DllImports.IsKeyDown(Profile.SnakeControls.Left);
+                    bool right  = DllImports.IsKeyDown(Profile.SnakeControls.Right);
 
                     if (up)
                     {
@@ -291,6 +294,14 @@ namespace SnakeTheResurrection
             DownRight,
             Down,
             DownLeft
+        }
+
+        private sealed class Berry : IGameObject
+        {
+            public void Update()
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }

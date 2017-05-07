@@ -1,25 +1,32 @@
-﻿using NotifyPropertyChangedBase;
-using System;
+﻿using System;
 
 namespace SnakeTheResurrection.Data
 {
-    public sealed class Profile : NotifyPropertyChanged
+    public sealed class Profile
     {
-        public string Name
-        {
-            get { return (string)GetValue(); }
-            set { SetValue(value); }
-        }
-        public ConsoleColor Color
-        {
-            get { return (ConsoleColor)GetValue(); }
-            set { SetValue(value); }
-        }
-        
+        public string Name { get; set; }
+        public ConsoleColor Color { get; set; }
+        public SnakeControls SnakeControls { get; set; }
+
         public Profile()
         {
-            RegisterProperty(nameof(Name), typeof(string), null);
-            RegisterProperty(nameof(Color), typeof(ConsoleColor), default(ConsoleColor));
+            SnakeControls = new SnakeControls();
+        }
+    }
+
+    public sealed class SnakeControls
+    {
+        public ConsoleKey Up { get; set; }
+        public ConsoleKey Down { get; set; }
+        public ConsoleKey Left { get; set; }
+        public ConsoleKey Right { get; set; }
+
+        public SnakeControls()
+        {
+            Up      = ConsoleKey.UpArrow;
+            Down    = ConsoleKey.DownArrow;
+            Left    = ConsoleKey.LeftArrow;
+            Right   = ConsoleKey.RightArrow;
         }
     }
 }
