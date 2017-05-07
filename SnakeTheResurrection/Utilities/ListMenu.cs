@@ -74,7 +74,7 @@ namespace SnakeTheResurrection.Utilities
             while (true)
             {
                 Symtext.FontSize = 2;
-                Symtext.CursorY  = RelativeY + (Console.WindowHeight - (Items.Count * Symtext.CharHeight)) / 2;
+                Symtext.CursorTop  = RelativeY + (Console.WindowHeight - (Items.Count * Symtext.CharHeight)) / 2;
 
                 for (int i = 0; i < Items.Count; i++)
                 {
@@ -86,7 +86,7 @@ namespace SnakeTheResurrection.Utilities
 
                 Program.Renderer.RenderFrame();
 
-                switch (Console.ReadKey(true).Key)
+                switch (Helpers.ReadKey().Key)
                 {
                     case ConsoleKey.UpArrow:
                         if (SelectedIndex != 0)

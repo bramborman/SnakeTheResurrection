@@ -558,8 +558,8 @@ namespace SnakeTheResurrection.Utilities
 
         private static ConsoleColor[,] characterSpacingBackgroundFiller;
 
-        private static int _cursorX;
-        private static int _cursorY;
+        private static int _cursorLeft;
+        private static int _cursorTop;
         private static int _fontSize;
         private static SymtextScalingStyle _scalingStyle;
         private static ConsoleColor _foregroundColor;
@@ -573,27 +573,27 @@ namespace SnakeTheResurrection.Utilities
             }
         }
 
-        public static int CursorX
+        public static int CursorLeft
         {
-            get { return _cursorX; }
+            get { return _cursorLeft; }
             set
             {
-                if (_cursorX != value)
+                if (_cursorLeft != value)
                 {
-                    ExceptionHelper.ValidateNumberInRange(value, 0, Console.WindowWidth, nameof(CursorX));
-                    _cursorX = value;
+                    ExceptionHelper.ValidateNumberInRange(value, 0, Console.WindowWidth, nameof(CursorLeft));
+                    _cursorLeft = value;
                 }
             }
         }
-        public static int CursorY
+        public static int CursorTop
         {
-            get { return _cursorY; }
+            get { return _cursorTop; }
             set
             {
-                if (_cursorY != value)
+                if (_cursorTop != value)
                 {
-                    ExceptionHelper.ValidateNumberInRange(value, 0, Console.WindowHeight, nameof(CursorY));
-                    _cursorY = value;
+                    ExceptionHelper.ValidateNumberInRange(value, 0, Console.WindowHeight, nameof(CursorTop));
+                    _cursorTop = value;
                 }
             }
         }
@@ -676,6 +676,12 @@ namespace SnakeTheResurrection.Utilities
             }
         }
 
+        public static void SetCursorPosition(int left, int top)
+        {
+            CursorLeft = left;
+            CursorTop = top;
+        }
+
         public static void Write(object value)
         {
             string[] lines = value.ToString().Split('\n');
@@ -684,25 +690,25 @@ namespace SnakeTheResurrection.Utilities
             {
                 if (i != 0)
                 {
-                    CursorX = 0;
+                    CursorLeft = 0;
                 }
 
                 string line = lines[i];
 
                 for (int j = 0; j < line.Length; j++)
                 {
-                    CursorX += AddRenderedCharToBuffer(line[j], CursorX, CursorY);
+                    CursorLeft += AddRenderedCharToBuffer(line[j], CursorLeft, CursorTop);
 
                     if (j != line.Length - 1)
                     {
-                        Program.Renderer.AddToBuffer(characterSpacingBackgroundFiller, CursorX, CursorY);
-                        CursorX += CharacterSpacing;
+                        Program.Renderer.AddToBuffer(characterSpacingBackgroundFiller, CursorLeft, CursorTop);
+                        CursorLeft += CharacterSpacing;
                     }
                 }
 
                 if (i != lines.Length - 1)
                 {
-                    CursorY += CharHeight;
+                    CursorTop += CharHeight;
                 }
             }
         }
@@ -725,18 +731,18 @@ namespace SnakeTheResurrection.Utilities
                 
                 for (int j = 0; j < line.Length; j++)
                 {
-                    cursorX += AddRenderedCharToBuffer(line[j], cursorX, CursorY);
+                    cursorX += AddRenderedCharToBuffer(line[j], cursorX, CursorTop);
 
                     if (j != line.Length - 1)
                     {
-                        Program.Renderer.AddToBuffer(characterSpacingBackgroundFiller, cursorX, CursorY);
+                        Program.Renderer.AddToBuffer(characterSpacingBackgroundFiller, cursorX, CursorTop);
                         cursorX += CharacterSpacing;
                     }
                 }
 
                 if (i != lines.Length - 1)
                 {
-                    CursorY += CharHeight;
+                    CursorTop += CharHeight;
                 }
             }
         }
@@ -752,12 +758,12 @@ namespace SnakeTheResurrection.Utilities
             
             switch (verticalAlignment)
             {
-                case VerticalAlignment.Top:     CursorY = 0;                                                            break;
-                case VerticalAlignment.Center:  CursorY = (Console.WindowHeight - (lines.Length * CharHeight)) / 2;     break;
-                case VerticalAlignment.Bottom:  CursorY = Console.WindowHeight - (lines.Length * CharHeight);           break;
+                case VerticalAlignment.Top:     CursorTop = 0;                                                            break;
+                case VerticalAlignment.Center:  CursorTop = (Console.WindowHeight - (lines.Length * CharHeight)) / 2;     break;
+                case VerticalAlignment.Bottom:  CursorTop = Console.WindowHeight - (lines.Length * CharHeight);           break;
             }
 
-            CursorY += verticalOffset;
+            CursorTop += verticalOffset;
 
             for (int i = 0; i < lines.Length; i++)
             {
@@ -765,27 +771,27 @@ namespace SnakeTheResurrection.Utilities
 
                 switch (horizontalAlignment)
                 {
-                    case HorizontalAlignment.Left:      CursorX = 0;                                                    break;
-                    case HorizontalAlignment.Center:    CursorX = (Console.WindowWidth - GetSymtextWidth(line)) / 2;    break;
-                    case HorizontalAlignment.Right:     CursorX = Console.WindowWidth - GetSymtextWidth(line);          break;
+                    case HorizontalAlignment.Left:      CursorLeft = 0;                                                    break;
+                    case HorizontalAlignment.Center:    CursorLeft = (Console.WindowWidth - GetSymtextWidth(line)) / 2;    break;
+                    case HorizontalAlignment.Right:     CursorLeft = Console.WindowWidth - GetSymtextWidth(line);          break;
                 }
 
-                CursorX += horizontalOffset;
+                CursorLeft += horizontalOffset;
 
                 for (int j = 0; j < line.Length; j++)
                 {
-                    CursorX += AddRenderedCharToBuffer(line[j], CursorX, CursorY);
+                    CursorLeft += AddRenderedCharToBuffer(line[j], CursorLeft, CursorTop);
 
                     if (j != line.Length - 1)
                     {
-                        Program.Renderer.AddToBuffer(characterSpacingBackgroundFiller, CursorX, CursorY);
-                        CursorX += CharacterSpacing;
+                        Program.Renderer.AddToBuffer(characterSpacingBackgroundFiller, CursorLeft, CursorTop);
+                        CursorLeft += CharacterSpacing;
                     }
                 }
 
                 if (i != lines.Length - 1)
                 {
-                    CursorY += CharHeight;
+                    CursorTop += CharHeight;
                 }
             }
         }
