@@ -7,24 +7,18 @@ namespace SnakeTheResurrection.Utilities
     {
         private static readonly object syncRoot = new object();
 
-        private static int bufferHeight;
-        private static int bufferWidth;
-        private static short[] lpAttribute;
+        private static readonly int bufferHeight;
+        private static readonly int bufferWidth;
+        private static readonly short[] lpAttribute;
+        
+        public static ConsoleColor[,] Buffer { get; }
 
-        public static bool IsInitialized { get; private set; }
-        public static ConsoleColor[,] Buffer { get; private set; }
-
-        public static void Initialize()
+        static Renderer()
         {
             lock (syncRoot)
             {
-                if (IsInitialized)
-                {
-                    throw new InvalidOperationException();
-                }
-
-                IsInitialized = true;
-                
+                // This is brighter, but the other one looks more retro xD
+                // DllImports.SetFont("Consolas", 2, 2);
                 DllImports.SetFont("Lucida Console", 1, 1);
                 DllImports.ConsoleFullscreenMode = true;
 
@@ -108,6 +102,7 @@ namespace SnakeTheResurrection.Utilities
         public static void CleanBuffer()
         {
             Array.Clear(Buffer, 0, Buffer.Length);
+            // AddToBuffer(Constants.BACKGROUND_COLOR, 0, 0, bufferHeight, bufferWidth);
         }
 
         [DllImport("kernel32.dll")]

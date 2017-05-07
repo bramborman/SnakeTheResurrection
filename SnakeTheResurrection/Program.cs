@@ -15,7 +15,8 @@ namespace SnakeTheResurrection
             // Console.InputEncoding   = Constants.encoding;
             // Console.OutputEncoding  = Constants.encoding;
 
-            Renderer.Initialize();
+            // Run the static constructor of Renderer
+            RuntimeHelpers.RunClassConstructor(typeof(Renderer).TypeHandle);
 
             AppData.Load();
             ProfileManager.LoadProfiles();
