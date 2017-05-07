@@ -28,7 +28,7 @@ namespace SnakeTheResurrection.Utilities
             }
         }
         
-        public static void ValidateNumberGreaterOrEqual(long value, long min, string parameterName)
+        public static void ValidateNumberGreaterOrEqual(int value, int min, string parameterName)
         {
             if (value < min)
             {
@@ -36,7 +36,7 @@ namespace SnakeTheResurrection.Utilities
             }
         }
 
-        public static void ValidateNumberSmallerOrEqual(long value, long max, string parameterName)
+        public static void ValidateNumberSmallerOrEqual(int value, int max, string parameterName)
         {
             if (value > max)
             {
@@ -44,12 +44,22 @@ namespace SnakeTheResurrection.Utilities
             }
         }
 
-        public static void ValidateNumberInRange(long value, long min, long max, string parameterName)
+        public static void ValidateNumberInRange(int value, int min, int max, string parameterName)
         {
             if (value < min || value > max)
             {
                 throw new ArgumentOutOfRangeException(parameterName, $"Value ({value}) is out of range ({min} - {max}).");
             }
+        }
+
+        public static void ValidateNumberInWindowHorizontalRange(int value, string parameterName)
+        {
+            ValidateNumberInRange(value, 0, Console.WindowWidth, parameterName);
+        }
+
+        public static void ValidateNumberInWindowVerticalRange(int value, string parameterName)
+        {
+            ValidateNumberInRange(value, 0, Console.WindowHeight, parameterName);
         }
 
         public static void ValidateMagic(bool magic)

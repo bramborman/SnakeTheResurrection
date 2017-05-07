@@ -55,7 +55,6 @@
   <ItemGroup>
     <Compile Include="Constants.cs" />
     <Compile Include="Data\Profile.cs" />
-    <Compile Include="Data\SnakeConfiguration.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="MainMenu.cs" />

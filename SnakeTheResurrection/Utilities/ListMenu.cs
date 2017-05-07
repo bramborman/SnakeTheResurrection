@@ -47,7 +47,7 @@ namespace SnakeTheResurrection.Utilities
             {
                 if (_relativeY != value)
                 {
-                    ExceptionHelper.ValidateNumberInRange(value, 0, Console.WindowWidth, nameof(RelativeY));
+                    ExceptionHelper.ValidateNumberInWindowVerticalRange(value, nameof(RelativeY));
                     _relativeY = value;
                 }
             }

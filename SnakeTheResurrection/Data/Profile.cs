@@ -1,4 +1,5 @@
 ﻿using NotifyPropertyChangedBase;
+using System;
 
 namespace SnakeTheResurrection.Data
 {
@@ -9,16 +10,16 @@ namespace SnakeTheResurrection.Data
             get { return (string)GetValue(); }
             set { SetValue(value); }
         }
-        public SnakeConfiguration SnakeConfiguration
+        public ConsoleColor Color
         {
-            get { return (SnakeConfiguration)GetValue(); }
+            get { return (ConsoleColor)GetValue(); }
             set { SetValue(value); }
         }
         
         public Profile()
         {
             RegisterProperty(nameof(Name), typeof(string), null);
-            RegisterProperty(nameof(SnakeConfiguration), typeof(SnakeConfiguration), null);
+            RegisterProperty(nameof(Color), typeof(ConsoleColor), default(ConsoleColor));
         }
     }
 }

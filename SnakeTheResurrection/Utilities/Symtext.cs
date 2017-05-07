@@ -583,7 +583,7 @@ namespace SnakeTheResurrection.Utilities
                 {
                     if (_cursorLeft != value)
                     {
-                        ExceptionHelper.ValidateNumberInRange(value, 0, Console.WindowWidth, nameof(CursorLeft));
+                        ExceptionHelper.ValidateNumberInWindowHorizontalRange(value, nameof(CursorLeft));
                         _cursorLeft = value;
                     }
                 }
@@ -598,7 +598,7 @@ namespace SnakeTheResurrection.Utilities
                 {
                     if (_cursorTop != value)
                     {
-                        ExceptionHelper.ValidateNumberInRange(value, 0, Console.WindowHeight, nameof(CursorTop));
+                        ExceptionHelper.ValidateNumberInWindowVerticalRange(value, nameof(CursorTop));
                         _cursorTop = value;
                     }
                 }

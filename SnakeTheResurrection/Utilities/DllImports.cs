@@ -68,12 +68,12 @@ namespace SnakeTheResurrection.Utilities
 
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern bool SetConsoleDisplayMode(IntPtr hConsoleOutput, uint dwFlags, out COORD lpNewScreenBufferDimensions);
-        
-        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-        private static extern int MessageBox(IntPtr hWnd, string lpText, string lpCaption, uint uType);
-        
+
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern bool SetCurrentConsoleFontEx(IntPtr hConsoleOutput, bool bMaximumWindow, ref CONSOLE_FONT_INFOEX lpConsoleCurrentFontEx);
+
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        private static extern int MessageBox(IntPtr hWnd, string lpText, string lpCaption, uint uType);
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
         private unsafe struct CONSOLE_FONT_INFOEX
