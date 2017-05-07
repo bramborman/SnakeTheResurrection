@@ -17,6 +17,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{4C607B
 	ProjectSection(SolutionItems) = preProject
 		Assets\Snake Icon Realistic S.ico = Assets\Snake Icon Realistic S.ico
 		Assets\Snake Icon.ico = Assets\Snake Icon.ico
+		Assets\Snake Icon.pdf = Assets\Snake Icon.pdf
+		Assets\Snake Icon.svg = Assets\Snake Icon.svg
 	EndProjectSection
 EndProject
 Global
