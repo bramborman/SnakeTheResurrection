@@ -12,10 +12,12 @@ namespace SnakeTheResurrection
         public void SinglePlayer()
         {
             Snake snake = new Snake(ProfileManager.CurrentProfile);
+            Berry berry = new Berry(snake);
 
             while (snake.IsAlive)
             {
                 snake.Update();
+                berry.Update();
                 Renderer.RenderFrame();
 
                 if (DllImports.IsKeyDown(ConsoleKey.Escape))
@@ -28,12 +30,46 @@ namespace SnakeTheResurrection
             }
         }
 
-        private interface IGameObject
+        private abstract class GameObjectBase
         {
-            void Update();
+            private int _x;
+            private int _y;
+
+            public virtual int X
+            {
+                get { return _x; }
+                protected set
+                {
+                    if (_x != value)
+                    {
+                        ExceptionHelper.ValidateNumberInWindowHorizontalRange(value, nameof(X));
+                        _x = value;
+                    }
+                }
+            }
+            public virtual int Y
+            {
+                get { return _y; }
+                protected set
+                {
+                    if (_y != value)
+                    {
+                        ExceptionHelper.ValidateNumberInWindowHorizontalRange(value, nameof(Y));
+                        _y = value;
+                    }
+                }
+            }
+            public abstract int Size { get; }
+
+            public abstract void Update();
+
+            public bool HitTest(GameObjectBase other)
+            {
+                return X >= other.X && X + Size <= other.X + other.Size && Y >= other.Y && Y + Size <= other.Y + other.Size;
+            }
         }
 
-        private sealed class Snake : IGameObject
+        private sealed class Snake : GameObjectBase
         {
             private SnakeBody head;
             private SnakeBody tail;
@@ -42,10 +78,22 @@ namespace SnakeTheResurrection
             {
                 get
                 {
-                    return new SnakeBody((Console.WindowWidth - SnakeBody.Size) / 2, (Console.WindowHeight - SnakeBody.Size) / 2, Direction.Up, Profile.Color, Profile);
+                    return new SnakeBody((Console.WindowWidth - SnakeBody.SIZE) / 2, (Console.WindowHeight - SnakeBody.SIZE) / 2, Direction.Up, Profile.Color, Profile);
                 }
             }
 
+            public override int X
+            {
+                get { return head.X; }
+            }
+            public override int Y
+            {
+                get { return head.Y; }
+            }
+            public override int Size
+            {
+                get { return SnakeBody.SIZE; }
+            }
             public bool IsAlive { get; private set; }
             public int Length { get; private set; }
             public Profile Profile { get; }
@@ -58,7 +106,7 @@ namespace SnakeTheResurrection
                 Profile = profile;
             }
 
-            public void Update()
+            public override void Update()
             {
                 if (Length < 3)
                 {
@@ -85,42 +133,17 @@ namespace SnakeTheResurrection
             }
         }
 
-        private sealed class SnakeBody
+        private sealed class SnakeBody : GameObjectBase
         {
-            public static int Size
-            {
-                get { return 5; }
-            }
+            public const int SIZE = 5;
 
             private readonly List<BendInfo> bendInfo = new List<BendInfo>();
-
-            private int _x;
-            private int _y;
+            
             private Direction _direction;
-
-            public int X
+            
+            public override int Size
             {
-                get { return _x; }
-                private set
-                {
-                    if (_x != value)
-                    {
-                        ExceptionHelper.ValidateNumberInWindowHorizontalRange(value, nameof(X));
-                        _x = value;
-                    }
-                }
-            }
-            public int Y
-            {
-                get { return _y; }
-                private set
-                {
-                    if (_y != value)
-                    {
-                        ExceptionHelper.ValidateNumberInWindowHorizontalRange(value, nameof(Y));
-                        _y = value;
-                    }
-                }
+                get { return SIZE; }
             }
             public Direction Direction
             {
@@ -150,9 +173,14 @@ namespace SnakeTheResurrection
                 Profile     = profile;
             }
 
+            public override void Update()
+            {
+                throw new NotImplementedException();
+            }
+
             public void Update(bool isHead, BendInfo newBendInfo)
             {
-                Renderer.RemoveFromBuffer(X, Y, Size, Size);
+                Renderer.RemoveFromBuffer(X, Y, SIZE, SIZE);
                 
                 if (isHead)
                 {
@@ -249,24 +277,69 @@ namespace SnakeTheResurrection
                 
                 if (Direction == Direction.UpLeft || Direction == Direction.Up || Direction == Direction.UpRight)
                 {
-                    Y -= Size;
+                    Y -= SIZE;
                 }
                 else if (Direction == Direction.DownLeft || Direction == Direction.Down || Direction == Direction.DownRight)
                 {
-                    Y += Size;
+                    Y += SIZE;
                 }
 
                 if (Direction == Direction.UpLeft || Direction == Direction.Left || Direction == Direction.DownLeft)
                 {
-                    X -= Size;
+                    X -= SIZE;
                 }
                 else if (Direction == Direction.UpRight || Direction == Direction.Right || Direction == Direction.DownRight)
                 {
-                    X += Size;
+                    X += SIZE;
                 }
 
-                Renderer.AddToBuffer(Color, X, Y, Size, Size);
+                Renderer.AddToBuffer(Color, X, Y, SIZE, SIZE);
                 NextBody?.Update(false, newBendInfo);
+            }
+        }
+
+        private sealed class Berry : GameObjectBase
+        {
+            private const int SIZE = 2;
+
+            private static readonly Random random = new Random();
+
+            private readonly IEnumerable<Snake> snakes;
+            
+            public override int Size
+            {
+                get { return SIZE; }
+            }
+            public ConsoleColor Color { get; }
+
+            public Berry(Snake snake) : this(new List<Snake> { snake })
+            {
+
+            }
+
+            public Berry(IEnumerable<Snake> snakes)
+            {
+                ExceptionHelper.ValidateObjectNotNull(snakes, nameof(snakes));
+                this.snakes = snakes;
+
+                GenerateNewPosition();
+                Color = ConsoleColor.Red;
+            }
+
+            public override void Update()
+            {
+                Renderer.AddToBuffer(Color, X, Y, SIZE, SIZE);
+
+                if (snakes.Any(s => HitTest(s)))
+                {
+                    GenerateNewPosition();
+                }
+            }
+
+            private void GenerateNewPosition()
+            {
+                X = random.Next(0, Console.WindowWidth);
+                Y = random.Next(0, Console.WindowHeight);
             }
         }
 
@@ -278,9 +351,9 @@ namespace SnakeTheResurrection
 
             public BendInfo(int x, int y, Direction direction)
             {
-                X           = x;
-                Y           = y;
-                Direction   = direction;
+                X = x;
+                Y = y;
+                Direction = direction;
             }
         }
 
@@ -294,14 +367,6 @@ namespace SnakeTheResurrection
             DownRight,
             Down,
             DownLeft
-        }
-
-        private sealed class Berry : IGameObject
-        {
-            public void Update()
-            {
-                throw new NotImplementedException();
-            }
         }
     }
 }
