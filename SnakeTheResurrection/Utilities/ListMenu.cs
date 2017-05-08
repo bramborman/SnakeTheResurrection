@@ -7,7 +7,6 @@ namespace SnakeTheResurrection.Utilities
     {
         private List<MenuItem> _items;
         private int _selectedIndex;
-        private int _verticalOffset;
 
         public List<MenuItem> Items
         {
@@ -40,18 +39,6 @@ namespace SnakeTheResurrection.Utilities
                 return Items[SelectedIndex];
             }
         }
-        public int VerticalOffset
-        {
-            get { return _verticalOffset; }
-            set
-            {
-                if (_verticalOffset != value)
-                {
-                    ExceptionHelper.ValidateNumberInWindowVerticalRange(value, nameof(VerticalOffset));
-                    _verticalOffset = value;
-                }
-            }
-        }
 
         public ListMenu()
         {
@@ -71,12 +58,22 @@ namespace SnakeTheResurrection.Utilities
                 throw new InvalidOperationException("Cannot draw menu with no items.");
             }
 
+            int? symtextCursorTop = null;
+
             while (true)
             {
                 lock (Symtext.SyncRoot)
                 {
-                    Symtext.FontSize    = Constants.TEXT_SYMTEXT_SIZE;
-                    Symtext.CursorTop   = VerticalOffset + (Console.WindowHeight - (Items.Count * Symtext.CharHeight)) / 2;
+                    Symtext.SetTextProperties();
+
+                    if (symtextCursorTop == null)
+                    {
+                        symtextCursorTop    = Symtext.CursorTop;
+                    }
+                    else
+                    {
+                        Symtext.CursorTop   = symtextCursorTop.Value;
+                    }
 
                     for (int i = 0; i < Items.Count; i++)
                     {
@@ -86,27 +83,35 @@ namespace SnakeTheResurrection.Utilities
 
                 Renderer.RenderFrame();
 
-                switch (Helpers.ReadKey().Key)
+                bool handled = false;
+
+                while (!handled)
                 {
-                    case ConsoleKey.UpArrow:
-                        if (SelectedIndex != 0)
-                        {
-                            SelectedIndex--;
-                        }
+                    switch (Helpers.ReadKey().Key)
+                    {
+                        case ConsoleKey.UpArrow:
+                            if (SelectedIndex != 0)
+                            {
+                                handled = true;
+                                SelectedIndex--;
+                            }
 
-                        break;
+                            break;
 
-                    case ConsoleKey.DownArrow:
-                        if (SelectedIndex != Items.Count - 1)
-                        {
-                            SelectedIndex++;
-                        }
+                        case ConsoleKey.DownArrow:
+                            if (SelectedIndex != Items.Count - 1)
+                            {
+                                handled = true;
+                                SelectedIndex++;
+                            }
 
-                        break;
+                            break;
 
-                    case ConsoleKey.Enter:
-                        Renderer.CleanBuffer();
-                        return SelectedIndex;
+                        case ConsoleKey.Enter:
+                            handled = true;
+                            Renderer.CleanBuffer();
+                            return SelectedIndex;
+                    }
                 }
             }
         }

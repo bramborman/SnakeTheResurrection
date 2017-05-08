@@ -270,6 +270,17 @@ namespace SnakeTheResurrection.Utilities
             { X, X, X, X },
             { _, _, _, _ }
         };
+
+        private static readonly bool[,] ý = new bool[,]
+        {
+            { _, _, X, _ },
+            { X, _, X, X },
+            { X, _, _, X },
+            { X, X, X, X },
+            { _, _, _, X },
+            { X, X, X, X },
+            { _, _, _, _ }
+        };
         #endregion
         #region Numbers
         private static readonly bool[,] _0 = new bool[,]
@@ -443,6 +454,26 @@ namespace SnakeTheResurrection.Utilities
             { X, _, _ },
             { X, _, X },
             { _, _, _ }
+        };
+        private static readonly bool[,] quotationMark = new bool[,]
+        {
+            { X, X },
+            { X, X },
+            { _, _ },
+            { _, _ },
+            { _, _ },
+            { _, _ },
+            { _, _ }
+        };
+        private static readonly bool[,] apostrophe = new bool[,]
+        {
+            { X },
+            { X },
+            { _ },
+            { _ },
+            { _ },
+            { _ },
+            { _ }
         };
         private static readonly bool[,] hash = new bool[,]
         {
@@ -856,6 +887,26 @@ namespace SnakeTheResurrection.Utilities
             Write(value.ToString() + '\n', horizontalAlignment, verticalAlignment, horizontalOffset, verticalOffset);
         }
 
+        public static void WriteTitle(object value, int verticalOffset)
+        {
+            ForegroundColor = Constants.ACCENT_COLOR;
+            BackgroundColor = Constants.BACKGROUND_COLOR;
+            FontSize        = 15;
+            WriteLine(value, HorizontalAlignment.Center, VerticalAlignment.Center, 0, verticalOffset);
+
+            FontSize = 3;
+            WriteLine();
+
+            SetTextProperties();
+        }
+
+        public static void SetTextProperties()
+        {
+            ForegroundColor = Constants.FOREGROUND_COLOR;
+            BackgroundColor = Constants.BACKGROUND_COLOR;
+            FontSize        = 2;
+        }
+
         public static int GetSymtextWidth(string str)
         {
             int output = 0;
@@ -965,6 +1016,8 @@ namespace SnakeTheResurrection.Utilities
                 case 'y': return y;
                 case 'z': return z;
 
+                case 'ý': return ý;
+
                 case ' ': return space;
 
                 case '0': return _0;
@@ -984,6 +1037,8 @@ namespace SnakeTheResurrection.Utilities
                 case '/': return slash;
                 case '=': return equals;
                 case '%': return percents;
+                case '"': return quotationMark;
+                case '\'': return apostrophe;
                 case '#': return hash;
                 case ',': return comma;
                 case '.': return dot;

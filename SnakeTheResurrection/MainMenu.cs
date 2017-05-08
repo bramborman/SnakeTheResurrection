@@ -1,66 +1,64 @@
 ﻿using SnakeTheResurrection.Utilities;
-using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace SnakeTheResurrection
 {
     public static class MainMenu
     {
-        private static readonly ListMenu menuItems = new ListMenu
-        {
-            Items = new List<MenuItem>
-            {
-                new MenuItem("Singleplayer",    new Game().SinglePlayer             ),
-             // new MenuItem("Multiplayer",     null                                ),
-             // new MenuItem("Options",         null                                ),
-                new MenuItem("Profiles",        ProfileManager.ShowProfileSelection ),
-                new MenuItem("About",           About                               ),
-                new MenuItem("Quit game",       () => Program.Exit()                )
-            },
-            VerticalOffset = 57
-        };
-
         public static void Show()
         {
-            ProfileManager.ShowProfileSelection();
+            ListMenu mainMenu = new ListMenu
+            {
+                Items = new List<MenuItem>
+                {
+                    new MenuItem("Singleplayer",    new Game().SinglePlayer             ),
+                 // new MenuItem("Multiplayer",     null                                ),
+                 // new MenuItem("Options",         null                                ),
+                    new MenuItem("Profiles",        ProfileManager.ShowProfileSelection ),
+                    new MenuItem("About",           About                               ),
+                    new MenuItem("Quit game",       () => Program.Exit()                )
+                }
+            };
 
+            ProfileManager.ShowProfileSelection();
+            
             while (true)
             {
                 Renderer.CleanBuffer();
-
-                Symtext.ForegroundColor = Constants.ACCENT_COLOR;
-                Symtext.BackgroundColor = Constants.BACKGROUND_COLOR;
-                Symtext.FontSize        = Constants.BIG_TITLE_SYMTEXT_SIZE;
-                Symtext.WriteLine(Constants.APP_SHORT_NAME, HorizontalAlignment.Center, VerticalAlignment.Center, 0, 7);
                 
-                menuItems.InvokeResult();
+                Symtext.WriteTitle(Constants.APP_SHORT_NAME, 7);
+                
+                mainMenu.InvokeResult();
                 Helpers.ClearInputBuffer();
             }
         }
 
         public static void About()
         {
-            Symtext.ForegroundColor = Constants.ACCENT_COLOR;
-            Symtext.BackgroundColor = Constants.BACKGROUND_COLOR;
-            Symtext.FontSize        = Constants.BIG_TITLE_SYMTEXT_SIZE;
-            Symtext.WriteLine("About", HorizontalAlignment.Center, VerticalAlignment.Center, 0, -8);
+            bool goBack = false;
 
-            Symtext.ForegroundColor = Constants.FOREGROUND_COLOR;
-            Symtext.FontSize        = Constants.TEXT_SYMTEXT_SIZE;
+            ListMenu aboutMenu = new ListMenu
+            {
+                Items = new List<MenuItem>
+                {
+                    new MenuItem("GitHub repo", () => Process.Start("https://github.com/bramborman/SnakeTheResurrection")   ),
+                    new MenuItem("Back",        () => goBack = true                                                         )
+                },
+                SelectedIndex = 1
+            };
 
-            Symtext.WriteLine(Constants.APP_NAME + " v2.0", HorizontalAlignment.Center);
-            Symtext.WriteLine("C 2017 Marian Dolinsky\n", HorizontalAlignment.Center);
-
-            new MenuItem("Go back", null).Write(true);
-
-            Renderer.RenderFrame();
-
-            ConsoleKey pressedKey;
-
+            // Whole screen has to be rendered every time, because opening the link causes everything on screen to disappear
             do
             {
-                pressedKey = Helpers.ReadKey().Key;
-            } while (pressedKey != ConsoleKey.Escape && pressedKey != ConsoleKey.Enter);
+                Symtext.WriteTitle("About", 0);
+                Symtext.SetTextProperties();
+
+                Symtext.WriteLine($"{Constants.APP_SHORT_NAME} v2.0 '{Constants.APP_NAME_ADDITION}'", HorizontalAlignment.Center);
+                Symtext.WriteLine("© 2017 Marian Dolinský\n", HorizontalAlignment.Center);
+
+                aboutMenu.InvokeResult();
+            } while (!goBack);
         }
     }
 }
