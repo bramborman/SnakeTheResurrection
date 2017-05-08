@@ -60,7 +60,6 @@
     <Compile Include="Data\Profile.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="MainMenu.cs" />
     <Compile Include="ProfileManager.cs" />
     <Compile Include="Utilities\Cheats.cs" />
     <Compile Include="Utilities\DebugHelper.cs" />

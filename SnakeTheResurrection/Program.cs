@@ -1,6 +1,8 @@
 ﻿using SnakeTheResurrection.Data;
 using SnakeTheResurrection.Utilities;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace SnakeTheResurrection
@@ -21,13 +23,67 @@ namespace SnakeTheResurrection
             AppData.Load();
             ProfileManager.LoadProfiles();
 
-            MainMenu.Show();
+            MainMenu();
 
 #if DEBUG
             throw new Exception("Y u do dis ಠ_ಠ");
 #else
             Exit();
 #endif
+        }
+        
+        public static void MainMenu()
+        {
+            ListMenu mainMenu = new ListMenu
+            {
+                Items = new List<MenuItem>
+                {
+                    new MenuItem("Singleplayer",    new Game().SinglePlayer             ),
+                 // new MenuItem("Multiplayer",     null                                ),
+                 // new MenuItem("Options",         null                                ),
+                    new MenuItem("Profiles",        ProfileManager.ShowProfileSelection ),
+                    new MenuItem("About",           About                               ),
+                    new MenuItem("Quit game",       () => Exit()                        )
+                }
+            };
+
+            ProfileManager.ShowProfileSelection();
+            
+            while (true)
+            {
+                Renderer.CleanBuffer();
+                Symtext.WriteTitle(Constants.APP_SHORT_NAME, 7);
+                
+                mainMenu.InvokeResult();
+                Helpers.ClearInputBuffer();
+            }
+        }
+
+        public static void About()
+        {
+            bool goBack = false;
+
+            ListMenu aboutMenu = new ListMenu
+            {
+                Items = new List<MenuItem>
+                {
+                    new MenuItem("GitHub repo", () => Process.Start("https://github.com/bramborman/SnakeTheResurrection")   ),
+                    new MenuItem("Back",        () => goBack = true                                                         )
+                },
+                SelectedIndex = 1
+            };
+
+            // Whole screen has to be rendered every time, because opening the link causes everything on screen to disappear
+            do
+            {
+                Symtext.WriteTitle("About", 0);
+                Symtext.SetCenteredTextProperties();
+                
+                Symtext.WriteLine($"{Constants.APP_SHORT_NAME} v2.0 '{Constants.APP_NAME_ADDITION}'");
+                Symtext.WriteLine("© 2017 Marian Dolinský\n");
+
+                aboutMenu.InvokeResult();
+            } while (!goBack);
         }
 
         public static void Exit([CallerMemberName]string callerMemberName = null)

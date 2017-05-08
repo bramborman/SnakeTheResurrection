@@ -60,14 +60,9 @@ namespace SnakeTheResurrection
             }
             public abstract int Size { get; }
             
-            public bool HitTest(GameObjectBase other)
+            public bool HitTest(GameObjectBase g)
             {
-                if ((X >= other.X && X + Size <= other.X + other.Size && Y >= other.Y && Y + Size <= other.Y + other.Size) || (other.X >= X && other.X + other.Size <= X + Size && other.Y >= Y && other.Y + other.Size <= Y + Size))
-                {
-                    return true;
-                }
-
-                return false;
+                return X <= g.X + g.Size && X + Size >= g.X && Y <= g.Y + g.Size && Y + Size >= g.Y;
             }
         }
 
@@ -95,7 +90,7 @@ namespace SnakeTheResurrection
                 {
                     if (head == null)
                     {
-                        head = new SnakeBody((Console.WindowWidth - SnakeBody.SIZE) / 2, (Console.WindowHeight - SnakeBody.SIZE) / 2, Direction.Up, Profile);
+                        head = new SnakeBody(true, (Console.WindowWidth - SnakeBody.SIZE) / 2, (Console.WindowHeight - SnakeBody.SIZE) / 2, Direction.Up, Profile);
                         tail = head;
                     }
                     else
@@ -142,14 +137,14 @@ namespace SnakeTheResurrection
 
                         SnakeBody.UpdateCoordinates(inverseDirection, ref newX, ref newY);
 
-                        tail.NextBody   = new SnakeBody(newX, newY, tail.Direction, Profile);
+                        tail.NextBody   = new SnakeBody(false, newX, newY, tail.Direction, Profile);
                         tail            = tail.NextBody;
                     }
 
                     Length++;
                 }
 
-                head.Update(true, null);
+                head.Update(null);
 
                 Berry berry = Berry.Current.FirstOrDefault(b => head.HitTest(b));
 
@@ -164,10 +159,13 @@ namespace SnakeTheResurrection
         {
             public const int SIZE = 5;
 
-            private readonly List<BendInfo> bendInfo = new List<BendInfo>();
-            
+            private readonly List<BendInfo> bendInfo;
+
+            private bool isNew = true;
+
             private Direction _direction;
-            
+
+            public bool IsHead { get; }
             public override int Size
             {
                 get { return SIZE; }
@@ -187,21 +185,27 @@ namespace SnakeTheResurrection
             public Profile Profile { get; }
             public SnakeBody NextBody { get; set; }
 
-            public SnakeBody(int x, int y, Direction direction, Profile profile)
+            public SnakeBody(bool isHead, int x, int y, Direction direction, Profile profile)
             {
                 ExceptionHelper.ValidateObjectNotNull(profile, nameof(profile));
 
+                IsHead      = isHead;
                 X           = x;
                 Y           = y;
                 Direction   = direction;
                 Profile     = profile;
+
+                if (!isHead)
+                {
+                    bendInfo = new List<BendInfo>();
+                }
             }
             
-            public void Update(bool isHead, BendInfo newBendInfo)
+            public void Update(BendInfo newBendInfo)
             {
                 Renderer.RemoveFromBuffer(X, Y, SIZE, SIZE);
                 
-                if (isHead)
+                if (IsHead)
                 {
                     Direction originalDirection = Direction;
 
@@ -301,7 +305,22 @@ namespace SnakeTheResurrection
                 Y = y;
 
                 Renderer.AddToBuffer(Profile.Color, X, Y, SIZE, SIZE);
-                NextBody?.Update(false, newBendInfo);
+
+                if (NextBody != null)
+                {
+                    if (NextBody.isNew)
+                    {
+                        NextBody.isNew = false;
+
+                        if (!IsHead)
+                        {
+                            NextBody.bendInfo.AddRange(bendInfo);
+                            newBendInfo = null;
+                        }
+                    }
+
+                    NextBody.Update(newBendInfo);
+                }
             }
 
             public static void UpdateCoordinates(Direction direction, ref int x, ref int y)
@@ -370,6 +389,8 @@ namespace SnakeTheResurrection
 
             private void GenerateNewPosition()
             {
+                Renderer.RemoveFromBuffer(X, Y, Size, Size);
+
                 while (true)
                 {
                     X = random.Next(0, Console.WindowWidth);
