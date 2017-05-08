@@ -7,7 +7,7 @@ namespace SnakeTheResurrection.Utilities
     public unsafe static class DllImports
     {
         private const int STD_OUTPUT_HANDLE = -11;
-        private const int KEY_PRESSED = 0x8000;
+        private const int KEY_PRESSED       = 0x8000;
 
         public static IntPtr StdOutputHandle
         {

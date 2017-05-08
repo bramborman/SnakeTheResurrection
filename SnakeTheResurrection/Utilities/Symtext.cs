@@ -595,6 +595,8 @@ namespace SnakeTheResurrection.Utilities
         private static SymtextScalingStyle _scalingStyle;
         private static ConsoleColor _foregroundColor;
         private static ConsoleColor _backgroundColor;
+        private static HorizontalAlignment _horizontalAlignment;
+        private static VerticalAlignment _verticalAlignment;
 
         private static int CharacterSpacing
         {
@@ -700,6 +702,30 @@ namespace SnakeTheResurrection.Utilities
                 }
             }
         }
+        public static HorizontalAlignment HorizontalAlignment
+        {
+            get { return _horizontalAlignment; }
+            set
+            {
+                if (_horizontalAlignment != value)
+                {
+                    ExceptionHelper.ValidateEnumValueDefined(value, nameof(HorizontalAlignment));
+                    _horizontalAlignment = value;
+                }
+            }
+        }
+        public static VerticalAlignment VerticalAlignment
+        {
+            get { return _verticalAlignment; }
+            set
+            {
+                if (_verticalAlignment != value)
+                {
+                    ExceptionHelper.ValidateEnumValueDefined(value, nameof(VerticalAlignment));
+                    _verticalAlignment = value;
+                }
+            }
+        }
         public static int CharHeight
         {
             get
@@ -735,93 +761,16 @@ namespace SnakeTheResurrection.Utilities
 
         public static void Write(object value)
         {
-            lock (SyncRoot)
-            {
-                string[] lines = value.ToString().Split('\n');
-
-                for (int i = 0; i < lines.Length; i++)
-                {
-                    if (i != 0)
-                    {
-                        CursorLeft = 0;
-                    }
-
-                    string line = lines[i];
-
-                    for (int j = 0; j < line.Length; j++)
-                    {
-                        // Is an escape character probably
-                        if (line[j] == '\\')
-                        {
-                            continue;
-                        }
-
-                        CursorLeft += AddRenderedCharToBuffer(line[j], CursorLeft, CursorTop);
-
-                        if (j != line.Length - 1)
-                        {
-                            Renderer.AddToBuffer(characterSpacingBackgroundFiller, CursorLeft, CursorTop);
-                            CursorLeft += CharacterSpacing;
-                        }
-                    }
-
-                    if (i != lines.Length - 1)
-                    {
-                        CursorTop += CharHeight;
-                    }
-                }
-            }
+            Write(value, 0);
         }
-
-        public static void Write(object value, HorizontalAlignment horizontalAlignment)
-        {
-            lock (SyncRoot)
-            {
-                string[] lines = value.ToString().Split('\n');
-
-                for (int i = 0; i < lines.Length; i++)
-                {
-                    string line = lines[i];
-                    int cursorX = 0;
-
-                    switch (horizontalAlignment)
-                    {
-                        case HorizontalAlignment.Left:      cursorX += 0;                                                   break;
-                        case HorizontalAlignment.Center:    cursorX += (Console.WindowWidth - GetSymtextWidth(line)) / 2;   break;
-                        case HorizontalAlignment.Right:     cursorX += Console.WindowWidth - GetSymtextWidth(line);         break;
-                    }
-                
-                    for (int j = 0; j < line.Length; j++)
-                    {
-                        cursorX += AddRenderedCharToBuffer(line[j], cursorX, CursorTop);
-
-                        if (j != line.Length - 1)
-                        {
-                            Renderer.AddToBuffer(characterSpacingBackgroundFiller, cursorX, CursorTop);
-                            cursorX += CharacterSpacing;
-                        }
-                    }
-
-                    if (i != lines.Length - 1)
-                    {
-                        CursorTop += CharHeight;
-                    }
-                }
-            }
-        }
-
-        public static void Write(object value, HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment)
-        {
-            Write(value, horizontalAlignment, verticalAlignment, 0, 0);
-        }
-
-        public static void Write(object value, HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment, int horizontalOffset, int verticalOffset)
+        
+        public static void Write(object value, int verticalOffset)
         {
             lock (SyncRoot)
             {
                 string[] lines = value.ToString().Split('\n');
                 
-                switch (verticalAlignment)
+                switch (VerticalAlignment)
                 {
                     case VerticalAlignment.Top:     CursorTop = 0;                                                            break;
                     case VerticalAlignment.Center:  CursorTop = (Console.WindowHeight - (lines.Length * CharHeight)) / 2;     break;
@@ -834,17 +783,21 @@ namespace SnakeTheResurrection.Utilities
                 {
                     string line = lines[i];
 
-                    switch (horizontalAlignment)
+                    switch (HorizontalAlignment)
                     {
                         case HorizontalAlignment.Left:      CursorLeft = 0;                                                    break;
                         case HorizontalAlignment.Center:    CursorLeft = (Console.WindowWidth - GetSymtextWidth(line)) / 2;    break;
                         case HorizontalAlignment.Right:     CursorLeft = Console.WindowWidth - GetSymtextWidth(line);          break;
                     }
 
-                    CursorLeft += horizontalOffset;
-
                     for (int j = 0; j < line.Length; j++)
                     {
+                        // Is an escape character probably
+                        if (line[j] == '\\')
+                        {
+                            continue;
+                        }
+
                         CursorLeft += AddRenderedCharToBuffer(line[j], CursorLeft, CursorTop);
 
                         if (j != line.Length - 1)
@@ -872,39 +825,40 @@ namespace SnakeTheResurrection.Utilities
             Write(value.ToString() + '\n');
         }
 
-        public static void WriteLine(object value, HorizontalAlignment horizontalAlignment)
+        public static void WriteLine(object value, int verticalOffset)
         {
-            Write(value.ToString() + '\n', horizontalAlignment);
-        }
-
-        public static void WriteLine(object value, HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment)
-        {
-            Write(value.ToString() + '\n', horizontalAlignment, verticalAlignment);
-        }
-
-        public static void WriteLine(object value, HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment, int horizontalOffset, int verticalOffset)
-        {
-            Write(value.ToString() + '\n', horizontalAlignment, verticalAlignment, horizontalOffset, verticalOffset);
+            Write(value.ToString() + '\n', verticalOffset);
         }
 
         public static void WriteTitle(object value, int verticalOffset)
         {
-            ForegroundColor = Constants.ACCENT_COLOR;
-            BackgroundColor = Constants.BACKGROUND_COLOR;
-            FontSize        = 15;
-            WriteLine(value, HorizontalAlignment.Center, VerticalAlignment.Center, 0, verticalOffset);
+            ForegroundColor     = Constants.ACCENT_COLOR;
+            BackgroundColor     = Constants.BACKGROUND_COLOR;
+            FontSize            = 15;
+            HorizontalAlignment = HorizontalAlignment.Center;
+            VerticalAlignment   = VerticalAlignment.Center;
+            WriteLine(value, verticalOffset);
+
+            HorizontalAlignment = HorizontalAlignment.None;
+            VerticalAlignment   = VerticalAlignment.None;
 
             FontSize = 3;
             WriteLine();
-
-            SetTextProperties();
         }
 
         public static void SetTextProperties()
         {
-            ForegroundColor = Constants.FOREGROUND_COLOR;
-            BackgroundColor = Constants.BACKGROUND_COLOR;
-            FontSize        = 2;
+            ForegroundColor     = Constants.FOREGROUND_COLOR;
+            BackgroundColor     = Constants.BACKGROUND_COLOR;
+            FontSize            = 2;
+            HorizontalAlignment = HorizontalAlignment.None;
+            VerticalAlignment   = VerticalAlignment.None;
+        }
+
+        public static void SetCenteredTextProperties()
+        {
+            SetTextProperties();
+            HorizontalAlignment = HorizontalAlignment.Center;
         }
 
         public static int GetSymtextWidth(string str)

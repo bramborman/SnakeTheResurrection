@@ -64,7 +64,7 @@ namespace SnakeTheResurrection.Utilities
             {
                 lock (Symtext.SyncRoot)
                 {
-                    Symtext.SetTextProperties();
+                    Symtext.SetCenteredTextProperties();
 
                     if (symtextCursorTop == null)
                     {
@@ -77,7 +77,10 @@ namespace SnakeTheResurrection.Utilities
 
                     for (int i = 0; i < Items.Count; i++)
                     {
-                        Items[i].Write(i == SelectedIndex);
+                        Symtext.ForegroundColor = Constants.FOREGROUND_COLOR;
+                        Symtext.BackgroundColor = i == SelectedIndex ? Constants.ACCENT_COLOR_DARK : Constants.BACKGROUND_COLOR;
+
+                        Symtext.WriteLine($" {Items[i].Text} ");
                     }
                 }
 

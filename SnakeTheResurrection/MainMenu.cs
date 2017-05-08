@@ -26,7 +26,6 @@ namespace SnakeTheResurrection
             while (true)
             {
                 Renderer.CleanBuffer();
-                
                 Symtext.WriteTitle(Constants.APP_SHORT_NAME, 7);
                 
                 mainMenu.InvokeResult();
@@ -52,10 +51,10 @@ namespace SnakeTheResurrection
             do
             {
                 Symtext.WriteTitle("About", 0);
-                Symtext.SetTextProperties();
-
-                Symtext.WriteLine($"{Constants.APP_SHORT_NAME} v2.0 '{Constants.APP_NAME_ADDITION}'", HorizontalAlignment.Center);
-                Symtext.WriteLine("© 2017 Marian Dolinský\n", HorizontalAlignment.Center);
+                Symtext.SetCenteredTextProperties();
+                
+                Symtext.WriteLine($"{Constants.APP_SHORT_NAME} v2.0 '{Constants.APP_NAME_ADDITION}'");
+                Symtext.WriteLine("© 2017 Marian Dolinský\n");
 
                 aboutMenu.InvokeResult();
             } while (!goBack);
