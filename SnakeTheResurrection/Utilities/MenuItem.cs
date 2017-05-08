@@ -37,5 +37,13 @@ namespace SnakeTheResurrection.Utilities
             Text    = text;
             Action  = action;
         }
+
+        public void Write(bool isSelected)
+        {
+            Symtext.ForegroundColor = Constants.FOREGROUND_COLOR;
+            Symtext.BackgroundColor = isSelected ? Constants.ACCENT_COLOR_DARK : Constants.BACKGROUND_COLOR;
+
+            Symtext.WriteLine($" {Text} ", HorizontalAlignment.Center);
+        }
     }
 }

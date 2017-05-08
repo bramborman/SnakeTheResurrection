@@ -719,6 +719,12 @@ namespace SnakeTheResurrection.Utilities
 
                     for (int j = 0; j < line.Length; j++)
                     {
+                        // Is an escape character probably
+                        if (line[j] == '\\')
+                        {
+                            continue;
+                        }
+
                         CursorLeft += AddRenderedCharToBuffer(line[j], CursorLeft, CursorTop);
 
                         if (j != line.Length - 1)

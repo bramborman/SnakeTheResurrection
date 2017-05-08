@@ -7,7 +7,7 @@ namespace SnakeTheResurrection.Utilities
     {
         private List<MenuItem> _items;
         private int _selectedIndex;
-        private int _relativeY;
+        private int _verticalOffset;
 
         public List<MenuItem> Items
         {
@@ -40,15 +40,15 @@ namespace SnakeTheResurrection.Utilities
                 return Items[SelectedIndex];
             }
         }
-        public int RelativeY
+        public int VerticalOffset
         {
-            get { return _relativeY; }
+            get { return _verticalOffset; }
             set
             {
-                if (_relativeY != value)
+                if (_verticalOffset != value)
                 {
-                    ExceptionHelper.ValidateNumberInWindowVerticalRange(value, nameof(RelativeY));
-                    _relativeY = value;
+                    ExceptionHelper.ValidateNumberInWindowVerticalRange(value, nameof(VerticalOffset));
+                    _verticalOffset = value;
                 }
             }
         }
@@ -75,15 +75,12 @@ namespace SnakeTheResurrection.Utilities
             {
                 lock (Symtext.SyncRoot)
                 {
-                    Symtext.FontSize    = 2;
-                    Symtext.CursorTop   = RelativeY + (Console.WindowHeight - (Items.Count * Symtext.CharHeight)) / 2;
+                    Symtext.FontSize    = Constants.TEXT_SYMTEXT_SIZE;
+                    Symtext.CursorTop   = VerticalOffset + (Console.WindowHeight - (Items.Count * Symtext.CharHeight)) / 2;
 
                     for (int i = 0; i < Items.Count; i++)
                     {
-                        Symtext.ForegroundColor = Constants.FOREGROUND_COLOR;
-                        Symtext.BackgroundColor = i == SelectedIndex ? ConsoleColor.DarkGreen : Constants.BACKGROUND_COLOR;
-
-                        Symtext.WriteLine($" {Items[i].Text} ", HorizontalAlignment.Center);
+                        Items[i].Write(i == SelectedIndex);
                     }
                 }
 

@@ -1,5 +1,4 @@
 ﻿using SnakeTheResurrection.Data;
-using System;
 using System.Collections.Generic;
 
 namespace SnakeTheResurrection
@@ -23,7 +22,7 @@ namespace SnakeTheResurrection
 
         private static void CreateNewProfile()
         {
-            Profile newProfile = new Profile { Color = ConsoleColor.Green };
+            Profile newProfile = new Profile { Color = Constants.ACCENT_COLOR };
 
             //TODO: UI for customization
 

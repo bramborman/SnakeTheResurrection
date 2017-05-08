@@ -12,7 +12,7 @@ namespace SnakeTheResurrection
         public void SinglePlayer()
         {
             Snake snake = new Snake(ProfileManager.CurrentProfile);
-            Berry berry = new Berry(snake);
+            Berry berry = new Berry();
 
             while (snake.IsAlive)
             {
@@ -35,7 +35,7 @@ namespace SnakeTheResurrection
             private int _x;
             private int _y;
 
-            public virtual int X
+            public int X
             {
                 get { return _x; }
                 protected set
@@ -47,7 +47,7 @@ namespace SnakeTheResurrection
                     }
                 }
             }
-            public virtual int Y
+            public int Y
             {
                 get { return _y; }
                 protected set
@@ -60,40 +60,24 @@ namespace SnakeTheResurrection
                 }
             }
             public abstract int Size { get; }
-
-            public abstract void Update();
-
+            
             public bool HitTest(GameObjectBase other)
             {
-                return X >= other.X && X + Size <= other.X + other.Size && Y >= other.Y && Y + Size <= other.Y + other.Size;
+                if (X >= other.X && X + Size <= other.X + other.Size && Y >= other.Y && Y + Size <= other.Y + other.Size)
+                {
+                    return true;
+                }
+
+                return false;
             }
         }
 
-        private sealed class Snake : GameObjectBase
+        private sealed class Snake
         {
             private SnakeBody head;
             private SnakeBody tail;
-
-            private SnakeBody NewCenteredBody
-            {
-                get
-                {
-                    return new SnakeBody((Console.WindowWidth - SnakeBody.SIZE) / 2, (Console.WindowHeight - SnakeBody.SIZE) / 2, Direction.Up, Profile.Color, Profile);
-                }
-            }
-
-            public override int X
-            {
-                get { return head.X; }
-            }
-            public override int Y
-            {
-                get { return head.Y; }
-            }
-            public override int Size
-            {
-                get { return SnakeBody.SIZE; }
-            }
+            private int desiredLength = 3;
+            
             public bool IsAlive { get; private set; }
             public int Length { get; private set; }
             public Profile Profile { get; }
@@ -106,30 +90,35 @@ namespace SnakeTheResurrection
                 Profile = profile;
             }
 
-            public override void Update()
+            public void Update()
             {
-                if (Length < 3)
+                if (Length < desiredLength)
                 {
-                    AddBody();
+                    if (head == null)
+                    {
+                        head            = GetNewCenteredBody();
+                        tail            = head;
+                    }
+                    else
+                    {
+                        tail.NextBody   = GetNewCenteredBody();
+                        tail            = tail.NextBody;
+                    }
+
+                    Length++;
                 }
 
                 head.Update(true, null);
+
+                // if (head.HitTest(berry))
+                // {
+                // 
+                // }
             }
 
-            private void AddBody()
+            private SnakeBody GetNewCenteredBody()
             {
-                if (head == null)
-                {
-                    head = NewCenteredBody;
-                    tail = head;
-                }
-                else
-                {
-                    tail.NextBody = NewCenteredBody;
-                    tail = tail.NextBody;
-                }
-
-                Length++;
+                return new SnakeBody((Console.WindowWidth - SnakeBody.SIZE) / 2, (Console.WindowHeight - SnakeBody.SIZE) / 2, Direction.Up, Profile.Color, Profile);
             }
         }
 
@@ -157,9 +146,9 @@ namespace SnakeTheResurrection
                     }
                 }
             }
-            public SnakeBody NextBody { get; set; }
             public ConsoleColor Color { get; }
             public Profile Profile { get; }
+            public SnakeBody NextBody { get; set; }
 
             public SnakeBody(int x, int y, Direction direction, ConsoleColor color, Profile profile)
             {
@@ -172,12 +161,7 @@ namespace SnakeTheResurrection
                 Color       = color;
                 Profile     = profile;
             }
-
-            public override void Update()
-            {
-                throw new NotImplementedException();
-            }
-
+            
             public void Update(bool isHead, BendInfo newBendInfo)
             {
                 Renderer.RemoveFromBuffer(X, Y, SIZE, SIZE);
@@ -300,46 +284,47 @@ namespace SnakeTheResurrection
 
         private sealed class Berry : GameObjectBase
         {
-            private const int SIZE = 2;
-
             private static readonly Random random = new Random();
-
-            private readonly IEnumerable<Snake> snakes;
             
             public override int Size
             {
-                get { return SIZE; }
+                get { return 2; }
             }
             public ConsoleColor Color { get; }
 
-            public Berry(Snake snake) : this(new List<Snake> { snake })
+            public Berry()
             {
-
-            }
-
-            public Berry(IEnumerable<Snake> snakes)
-            {
-                ExceptionHelper.ValidateObjectNotNull(snakes, nameof(snakes));
-                this.snakes = snakes;
-
                 GenerateNewPosition();
                 Color = ConsoleColor.Red;
             }
 
-            public override void Update()
+            public void Update()
             {
-                Renderer.AddToBuffer(Color, X, Y, SIZE, SIZE);
-
-                if (snakes.Any(s => HitTest(s)))
-                {
-                    GenerateNewPosition();
-                }
+                Renderer.AddToBuffer(Color, X, Y, Size, Size);
             }
 
-            private void GenerateNewPosition()
+            public void GenerateNewPosition()
             {
-                X = random.Next(0, Console.WindowWidth);
-                Y = random.Next(0, Console.WindowHeight);
+                Renderer.RemoveFromBuffer(X, Y, Size, Size);
+
+                while (true)
+                {
+                    X = random.Next(0, Console.WindowWidth);
+                    Y = random.Next(0, Console.WindowHeight);
+
+                    for (int row = Y; row < Y + Size; row++)
+                    {
+                        for (int column = X; column < X + Size; column++)
+                        {
+                            if (Renderer.Buffer[row, column] != Constants.BACKGROUND_COLOR)
+                            {
+                                continue;
+                            }
+                        }
+                    }
+
+                    break;
+                }
             }
         }
 
