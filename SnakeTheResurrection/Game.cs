@@ -12,12 +12,11 @@ namespace SnakeTheResurrection
         public void SinglePlayer()
         {
             Snake snake = new Snake(ProfileManager.CurrentProfile);
-            Berry berry = new Berry();
+            Berry berry = new Berry(10);
 
             while (snake.IsAlive)
             {
                 snake.Update();
-                berry.Update();
                 Renderer.RenderFrame();
 
                 if (DllImports.IsKeyDown(ConsoleKey.Escape))
@@ -63,7 +62,7 @@ namespace SnakeTheResurrection
             
             public bool HitTest(GameObjectBase other)
             {
-                if (X >= other.X && X + Size <= other.X + other.Size && Y >= other.Y && Y + Size <= other.Y + other.Size)
+                if ((X >= other.X && X + Size <= other.X + other.Size && Y >= other.Y && Y + Size <= other.Y + other.Size) || (other.X >= X && other.X + other.Size <= X + Size && other.Y >= Y && other.Y + other.Size <= Y + Size))
                 {
                     return true;
                 }
@@ -96,12 +95,54 @@ namespace SnakeTheResurrection
                 {
                     if (head == null)
                     {
-                        head            = GetNewCenteredBody();
-                        tail            = head;
+                        head = new SnakeBody((Console.WindowWidth - SnakeBody.SIZE) / 2, (Console.WindowHeight - SnakeBody.SIZE) / 2, Direction.Up, Profile);
+                        tail = head;
                     }
                     else
                     {
-                        tail.NextBody   = GetNewCenteredBody();
+                        int newX = tail.X;
+                        int newY = tail.Y;
+
+                        Direction inverseDirection = tail.Direction;
+
+                        switch (tail.Direction)
+                        {
+                            case Direction.Left:
+                                inverseDirection = Direction.Right;
+                                break;
+                            
+                            case Direction.UpLeft:
+                                inverseDirection = Direction.DownRight;
+                                break;
+                            
+                            case Direction.Up:
+                                inverseDirection = Direction.Down;
+                                break;
+                            
+                            case Direction.UpRight:
+                                inverseDirection = Direction.DownLeft;
+                                break;
+                            
+                            case Direction.Right:
+                                inverseDirection = Direction.Left;
+                                break;
+                            
+                            case Direction.DownRight:
+                                inverseDirection = Direction.UpLeft;
+                                break;
+                            
+                            case Direction.Down:
+                                inverseDirection = Direction.Up;
+                                break;
+                            
+                            case Direction.DownLeft:
+                                inverseDirection = Direction.UpRight;
+                                break;
+                        }
+
+                        SnakeBody.UpdateCoordinates(inverseDirection, ref newX, ref newY);
+
+                        tail.NextBody   = new SnakeBody(newX, newY, tail.Direction, Profile);
                         tail            = tail.NextBody;
                     }
 
@@ -110,15 +151,12 @@ namespace SnakeTheResurrection
 
                 head.Update(true, null);
 
-                // if (head.HitTest(berry))
-                // {
-                // 
-                // }
-            }
+                Berry berry = Berry.Current.FirstOrDefault(b => head.HitTest(b));
 
-            private SnakeBody GetNewCenteredBody()
-            {
-                return new SnakeBody((Console.WindowWidth - SnakeBody.SIZE) / 2, (Console.WindowHeight - SnakeBody.SIZE) / 2, Direction.Up, Profile.Color, Profile);
+                if (berry != null)
+                {
+                    desiredLength += berry.Eat();
+                }
             }
         }
 
@@ -146,19 +184,16 @@ namespace SnakeTheResurrection
                     }
                 }
             }
-            public ConsoleColor Color { get; }
             public Profile Profile { get; }
             public SnakeBody NextBody { get; set; }
 
-            public SnakeBody(int x, int y, Direction direction, ConsoleColor color, Profile profile)
+            public SnakeBody(int x, int y, Direction direction, Profile profile)
             {
-                ExceptionHelper.ValidateEnumValueDefined(color, nameof(color));
                 ExceptionHelper.ValidateObjectNotNull(profile, nameof(profile));
 
                 X           = x;
                 Y           = y;
                 Direction   = direction;
-                Color       = color;
                 Profile     = profile;
             }
             
@@ -258,55 +293,83 @@ namespace SnakeTheResurrection
                         bendInfo.Remove(currentBendInfo);
                     }
                 }
-                
-                if (Direction == Direction.UpLeft || Direction == Direction.Up || Direction == Direction.UpRight)
-                {
-                    Y -= SIZE;
-                }
-                else if (Direction == Direction.DownLeft || Direction == Direction.Down || Direction == Direction.DownRight)
-                {
-                    Y += SIZE;
-                }
 
-                if (Direction == Direction.UpLeft || Direction == Direction.Left || Direction == Direction.DownLeft)
-                {
-                    X -= SIZE;
-                }
-                else if (Direction == Direction.UpRight || Direction == Direction.Right || Direction == Direction.DownRight)
-                {
-                    X += SIZE;
-                }
+                int x = X;
+                int y = Y;
+                UpdateCoordinates(Direction, ref x, ref y);
+                X = x;
+                Y = y;
 
-                Renderer.AddToBuffer(Color, X, Y, SIZE, SIZE);
+                Renderer.AddToBuffer(Profile.Color, X, Y, SIZE, SIZE);
                 NextBody?.Update(false, newBendInfo);
+            }
+
+            public static void UpdateCoordinates(Direction direction, ref int x, ref int y)
+            {
+                if (direction == Direction.UpLeft || direction == Direction.Up || direction == Direction.UpRight)
+                {
+                    y -= SIZE;
+                }
+                else if (direction == Direction.DownLeft || direction == Direction.Down || direction == Direction.DownRight)
+                {
+                    y += SIZE;
+                }
+
+                if (direction == Direction.UpLeft || direction == Direction.Left || direction == Direction.DownLeft)
+                {
+                    x -= SIZE;
+                }
+                else if (direction == Direction.UpRight || direction == Direction.Right || direction == Direction.DownRight)
+                {
+                    x += SIZE;
+                }
             }
         }
 
         private sealed class Berry : GameObjectBase
         {
-            private static readonly Random random = new Random();
+            private static readonly List<Berry> _current    = new List<Berry>();
+            private static readonly Random random           = new Random();
+
+            public static IEnumerable<Berry> Current
+            {
+                get
+                {
+                    return _current.AsEnumerable();
+                }
+            }
             
             public override int Size
             {
                 get { return 2; }
             }
             public ConsoleColor Color { get; }
+            public int Power { get; }
 
-            public Berry()
+            public Berry() : this(1)
+            {
+
+            }
+
+            public Berry(int power)
+            {
+                ExceptionHelper.ValidateNumberGreaterOrEqual(power, 0, nameof(power));
+
+                Color = ConsoleColor.Red;
+                Power = power;
+
+                _current.Add(this);
+                GenerateNewPosition();
+            }
+            
+            public int Eat()
             {
                 GenerateNewPosition();
-                Color = ConsoleColor.Red;
+                return Power;
             }
 
-            public void Update()
+            private void GenerateNewPosition()
             {
-                Renderer.AddToBuffer(Color, X, Y, Size, Size);
-            }
-
-            public void GenerateNewPosition()
-            {
-                Renderer.RemoveFromBuffer(X, Y, Size, Size);
-
                 while (true)
                 {
                     X = random.Next(0, Console.WindowWidth);
@@ -325,6 +388,8 @@ namespace SnakeTheResurrection
 
                     break;
                 }
+
+                Renderer.AddToBuffer(Color, X, Y, Size, Size);
             }
         }
 
