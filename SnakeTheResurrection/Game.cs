@@ -288,16 +288,15 @@ namespace SnakeTheResurrection
                     {
                         bendInfo.Add(newBendInfo);
                     }
-
-                    BendInfo currentBendInfo = bendInfo.FirstOrDefault(b => b.X == X && b.Y == Y);
-
-                    if (currentBendInfo != null)
+                    
+                    if (bendInfo.Count >= 1 && bendInfo[0].X == X && bendInfo[0].Y == Y)
                     {
-                        Direction = currentBendInfo.Direction;
-                        bendInfo.Remove(currentBendInfo);
+                        Direction = bendInfo[0].Direction;
+                        bendInfo.RemoveAt(0);
                     }
                 }
 
+                // Cannot pass property as ref or out parameter
                 int x = X;
                 int y = Y;
                 UpdateCoordinates(Direction, ref x, ref y);
