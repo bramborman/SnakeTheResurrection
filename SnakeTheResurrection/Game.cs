@@ -14,6 +14,20 @@ namespace SnakeTheResurrection
             // Using try-finally to execute things even after 'return'
             try
             {
+                int gameBoardWidthExcess    = Console.WindowWidth % SnakeBody.SIZE;
+                int gameBoardHeightExcess   = Console.WindowHeight % SnakeBody.SIZE;
+
+                int gameBoardBorderLeft     = (int)Math.Round(gameBoardWidthExcess / 2.0);
+                int gameBoardBorderTop      = (int)Math.Round(gameBoardHeightExcess / 2.0);
+
+                int gameBoardBorderRight    = gameBoardWidthExcess - gameBoardBorderLeft;
+                int gameBoardBorderBottom   = gameBoardHeightExcess - gameBoardBorderTop;
+
+                Renderer.AddToBuffer(Constants.ACCENT_COLOR_DARK, 0, 0, gameBoardBorderLeft, Console.WindowHeight);
+                Renderer.AddToBuffer(Constants.ACCENT_COLOR_DARK, 0, 0, Console.WindowWidth, gameBoardBorderTop);
+                Renderer.AddToBuffer(Constants.ACCENT_COLOR_DARK, Console.WindowWidth - gameBoardBorderRight, 0, gameBoardBorderRight, Console.WindowHeight);
+                Renderer.AddToBuffer(Constants.ACCENT_COLOR_DARK, 0, Console.WindowHeight - gameBoardBorderBottom, Console.WindowWidth, gameBoardBorderBottom);
+
                 Snake snake = new Snake(ProfileManager.CurrentProfile);
                 Berry berry = new Berry();
                 
@@ -29,7 +43,7 @@ namespace SnakeTheResurrection
                     }
 
                     InputCacher.StartCaching();
-                    Thread.Sleep(1000);
+                    Thread.Sleep(100);
                     InputCacher.StopCaching();
                 }
             }
@@ -379,6 +393,8 @@ namespace SnakeTheResurrection
             private static readonly List<Berry> _current    = new List<Berry>();
             private static readonly Random random           = new Random();
 
+            private static bool isOnScreen = false;
+
             public static IEnumerable<Berry> Current
             {
                 get
@@ -418,7 +434,11 @@ namespace SnakeTheResurrection
 
             private void GenerateNewPosition()
             {
-                Renderer.RemoveFromBuffer(X, Y, Size, Size);
+                // It will remove the Game board border on 0,0 without this condition
+                if (isOnScreen)
+                {
+                    Renderer.RemoveFromBuffer(X, Y, Size, Size);
+                }
 
                 while (true)
                 {
@@ -440,6 +460,7 @@ namespace SnakeTheResurrection
                 }
 
                 Renderer.AddToBuffer(Color, X, Y, Size, Size);
+                isOnScreen = true;
             }
         }
 

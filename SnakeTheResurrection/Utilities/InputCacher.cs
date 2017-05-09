@@ -56,7 +56,7 @@ namespace SnakeTheResurrection.Utilities
         {
             cache.Clear();
         }
-
+        
         public static bool WasKeyPressed(ConsoleKey key)
         {
             if (cts != null)

@@ -80,7 +80,7 @@ namespace SnakeTheResurrection.Utilities
             }
         }
 
-        public static void AddToBuffer(ConsoleColor color, int x, int y, int height, int width)
+        public static void AddToBuffer(ConsoleColor color, int x, int y, int width, int height)
         {
             lock (syncRoot)
             {
@@ -96,7 +96,7 @@ namespace SnakeTheResurrection.Utilities
 
         public static void RemoveFromBuffer(int x, int y, int height, int width)
         {
-            AddToBuffer(Constants.BACKGROUND_COLOR, x, y, height, width);
+            AddToBuffer(Constants.BACKGROUND_COLOR, x, y, width, height);
         }
 
         public static void ClearBuffer()

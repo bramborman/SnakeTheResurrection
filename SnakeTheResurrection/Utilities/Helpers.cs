@@ -8,7 +8,7 @@ namespace SnakeTheResurrection.Utilities
         {
             return Cheats.ValidateCheat(Console.ReadKey(true));
         }
-
+        
         public static void ClearInputBuffer()
         {
             while (Console.KeyAvailable)
