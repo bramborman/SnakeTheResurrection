@@ -34,6 +34,7 @@ namespace SnakeTheResurrection
         
         public static void MainMenu()
         {
+            AppData.Current.EnableDiagonalMovement = true;
             ListMenu mainMenu = new ListMenu
             {
                 Items = new List<MenuItem>
@@ -42,7 +43,7 @@ namespace SnakeTheResurrection
                  // new MenuItem("Multiplayer",     null                                ),
                  // new MenuItem("Options",         null                                ),
                     new MenuItem("Profiles",        ProfileManager.ShowProfileSelection ),
-                    new MenuItem("About",           About                               ),
+                    new MenuItem("Options",         About                               ),
                     new MenuItem("Quit game",       () => Exit()                        )
                 }
             };

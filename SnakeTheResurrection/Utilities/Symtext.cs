@@ -707,10 +707,13 @@ namespace SnakeTheResurrection.Utilities
             get { return _horizontalAlignment; }
             set
             {
-                if (_horizontalAlignment != value)
+                lock (SyncRoot)
                 {
-                    ExceptionHelper.ValidateEnumValueDefined(value, nameof(HorizontalAlignment));
-                    _horizontalAlignment = value;
+                    if (_horizontalAlignment != value)
+                    {
+                        ExceptionHelper.ValidateEnumValueDefined(value, nameof(HorizontalAlignment));
+                        _horizontalAlignment = value;
+                    }
                 }
             }
         }
@@ -719,10 +722,13 @@ namespace SnakeTheResurrection.Utilities
             get { return _verticalAlignment; }
             set
             {
-                if (_verticalAlignment != value)
+                lock (SyncRoot)
                 {
-                    ExceptionHelper.ValidateEnumValueDefined(value, nameof(VerticalAlignment));
-                    _verticalAlignment = value;
+                    if (_verticalAlignment != value)
+                    {
+                        ExceptionHelper.ValidateEnumValueDefined(value, nameof(VerticalAlignment));
+                        _verticalAlignment = value;
+                    }
                 }
             }
         }

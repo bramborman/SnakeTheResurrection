@@ -13,15 +13,15 @@ namespace SnakeTheResurrection.Data
 
         [JsonIgnore]
         public bool ShowLoadingError { get; set; }
-        public int Counter
+        public bool EnableDiagonalMovement
         {
-            get { return (int)GetValue(); }
+            get { return (bool)GetValue(); }
             set { SetValue(value); }
         }
-
+        
         public AppData()
         {
-            RegisterProperty(nameof(Counter), typeof(int), 0);
+            RegisterProperty(nameof(EnableDiagonalMovement), typeof(bool), true);
         }
         
         public void Save()

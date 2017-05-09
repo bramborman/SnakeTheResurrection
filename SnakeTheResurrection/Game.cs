@@ -12,20 +12,22 @@ namespace SnakeTheResurrection
         public void SinglePlayer()
         {
             Snake snake = new Snake(ProfileManager.CurrentProfile);
-            Berry berry = new Berry(10);
+            Berry berry = new Berry();
 
             while (snake.IsAlive)
             {
                 snake.Update();
                 Renderer.RenderFrame();
 
-                if (DllImports.IsKeyDown(ConsoleKey.Escape))
+                if (InputCacher.WasKeyPressed(ConsoleKey.Escape))
                 {
                     //TODO: Show pause menu
                     return;
                 }
-
+                
+                InputCacher.StartCaching();
                 Thread.Sleep(100);
+                InputCacher.StopCaching();
             }
         }
 
@@ -209,57 +211,67 @@ namespace SnakeTheResurrection
                 {
                     Direction originalDirection = Direction;
 
-                    bool up     = DllImports.IsKeyDown(Profile.SnakeControls.Up);
-                    bool down   = DllImports.IsKeyDown(Profile.SnakeControls.Down);
-                    bool left   = DllImports.IsKeyDown(Profile.SnakeControls.Left);
-                    bool right  = DllImports.IsKeyDown(Profile.SnakeControls.Right);
-
+                    bool up     = InputCacher.WasKeyPressed(Profile.SnakeControls.Up);
+                    bool down   = InputCacher.WasKeyPressed(Profile.SnakeControls.Down);
+                    bool left   = InputCacher.WasKeyPressed(Profile.SnakeControls.Left);
+                    bool right  = InputCacher.WasKeyPressed(Profile.SnakeControls.Right);
+                    
                     if (up)
                     {
-                        if (left)
+                        bool assigned = false;
+
+                        if (AppData.Current.EnableDiagonalMovement)
                         {
-                            if (Direction != Direction.DownRight)
+                            if (left)
                             {
-                                Direction = Direction.UpLeft;
+                                if (Direction != Direction.DownRight)
+                                {
+                                    assigned = true;
+                                    Direction = Direction.UpLeft;
+                                }
+                            }
+                            else if (right)
+                            {
+                                if (Direction != Direction.DownLeft)
+                                {
+                                    assigned = true;
+                                    Direction = Direction.UpRight;
+                                }
                             }
                         }
-                        else if (right)
+
+                        if (!assigned && Direction != Direction.Down)
                         {
-                            if (Direction != Direction.DownLeft)
-                            {
-                                Direction = Direction.UpRight;
-                            }
-                        }
-                        else
-                        {
-                            if (Direction != Direction.Down)
-                            {
-                                Direction = Direction.Up;
-                            }
+                            Direction = Direction.Up;
                         }
                     }
                     else if (down)
                     {
-                        if (left)
+                        bool assigned = false;
+
+                        if (AppData.Current.EnableDiagonalMovement)
                         {
-                            if (Direction != Direction.UpRight)
+                            if (left)
                             {
-                                Direction = Direction.DownLeft;
+                                if (Direction != Direction.UpRight)
+                                {
+                                    assigned = true;
+                                    Direction = Direction.DownLeft;
+                                }
+                            }
+                            else if (right)
+                            {
+                                if (Direction != Direction.UpLeft)
+                                {
+                                    assigned = true;
+                                    Direction = Direction.DownRight;
+                                }
                             }
                         }
-                        else if (right)
+
+                        if (!assigned && Direction != Direction.Up)
                         {
-                            if (Direction != Direction.UpLeft)
-                            {
-                                Direction = Direction.DownRight;
-                            }
-                        }
-                        else
-                        {
-                            if (Direction != Direction.Up)
-                            {
-                                Direction = Direction.Down;
-                            }
+                            Direction = Direction.Down;
                         }
                     }
                     else if (left)
@@ -392,8 +404,8 @@ namespace SnakeTheResurrection
 
                 while (true)
                 {
-                    X = random.Next(0, Console.WindowWidth);
-                    Y = random.Next(0, Console.WindowHeight);
+                    X = random.Next(0, Console.WindowWidth - Size);
+                    Y = random.Next(0, Console.WindowHeight - Size);
 
                     for (int row = Y; row < Y + Size; row++)
                     {

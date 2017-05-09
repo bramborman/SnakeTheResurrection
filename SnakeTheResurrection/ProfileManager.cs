@@ -38,5 +38,10 @@ namespace SnakeTheResurrection
         {
             //TODO: Load profiles
         }
+
+        public static void CreateProfileBadge()
+        {
+            //TODO: Draw profile badge
+        }
     }
 }
