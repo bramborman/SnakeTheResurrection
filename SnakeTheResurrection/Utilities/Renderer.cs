@@ -20,7 +20,7 @@ namespace SnakeTheResurrection.Utilities
                 // This is brighter, but the other one looks more retro xD
                 // DllImports.SetFont("Consolas", 2, 2);
                 DllImports.SetFont("Lucida Console", 1, 1);
-                DllImports.ConsoleFullscreenMode = true;
+                DllImports.ConsoleFullscreen = true;
 
                 // Make it a real fullscreen :D
                 Console.SetWindowSize(Console.LargestWindowWidth, Console.LargestWindowHeight);

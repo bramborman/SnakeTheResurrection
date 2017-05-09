@@ -8,6 +8,7 @@ namespace SnakeTheResurrection.Utilities
     {
         private const int STD_OUTPUT_HANDLE = -11;
         private const int KEY_PRESSED       = 0x8000;
+        private const int SW_MAXIMIZE       = 3;
 
         public static IntPtr StdOutputHandle
         {
@@ -20,7 +21,7 @@ namespace SnakeTheResurrection.Utilities
                 return stdHandle;
             }
         }
-        public static bool ConsoleFullscreenMode
+        public static bool ConsoleFullscreen
         {
             get
             {
@@ -32,7 +33,12 @@ namespace SnakeTheResurrection.Utilities
             set
             {
                 COORD lpNewScreenBufferDimensions;
-                ExceptionHelper.ValidateMagic(SetConsoleDisplayMode(StdOutputHandle, (uint)(value ? 1 : 2), out lpNewScreenBufferDimensions));
+
+                if (!SetConsoleDisplayMode(StdOutputHandle, (uint)(value ? 1 : 2), out lpNewScreenBufferDimensions))
+                {
+                    // Compatibility with Windows Vista, 7, 8.x
+                    ShowWindow(Process.GetCurrentProcess().MainWindowHandle, SW_MAXIMIZE);
+                }
             }
         }
         
@@ -80,6 +86,9 @@ namespace SnakeTheResurrection.Utilities
 
         [DllImport("user32.dll")]
         private static extern short GetKeyState(int key);
+
+        [DllImport("user32.dll")]
+        public static extern bool ShowWindow(IntPtr hWnd, int cmdShow);
 
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         private static extern int MessageBox(IntPtr hWnd, string lpText, string lpCaption, uint uType);
