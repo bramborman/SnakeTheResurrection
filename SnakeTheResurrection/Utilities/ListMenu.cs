@@ -112,7 +112,7 @@ namespace SnakeTheResurrection.Utilities
 
                         case ConsoleKey.Enter:
                             handled = true;
-                            Renderer.CleanBuffer();
+                            Renderer.ClearBuffer();
                             return SelectedIndex;
                     }
                 }

@@ -11,7 +11,7 @@ namespace SnakeTheResurrection.Utilities
 
         private static CancellationTokenSource cts;
         private static Task inputCachingTask;
-
+        
         public static void StartCaching()
         {
             if (cts != null)
@@ -19,7 +19,7 @@ namespace SnakeTheResurrection.Utilities
                 throw new InvalidOperationException();
             }
 
-            cache.Clear();
+            ClearCache();
             cts = new CancellationTokenSource();
             inputCachingTask = Task.Factory.StartNew(() =>
             {
@@ -29,7 +29,7 @@ namespace SnakeTheResurrection.Utilities
                     {
                         cache.Add(Console.ReadKey(true).Key);
                     }
-
+                
                     Thread.Sleep(10);
                 }
             }, cts.Token);
@@ -52,6 +52,11 @@ namespace SnakeTheResurrection.Utilities
             cts = null;
         }
 
+        public static void ClearCache()
+        {
+            cache.Clear();
+        }
+
         public static bool WasKeyPressed(ConsoleKey key)
         {
             if (cts != null)
@@ -59,7 +64,7 @@ namespace SnakeTheResurrection.Utilities
                 throw new InvalidOperationException();
             }
 
-            return cache.Contains(key) || DllImports.IsKeyDown(key);
+            return DllImports.IsKeyDown(key) || cache.Contains(key);
         }
     }
 }

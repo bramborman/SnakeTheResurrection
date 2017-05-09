@@ -9,25 +9,33 @@ namespace SnakeTheResurrection
 {
     public sealed class Game
     {
-        public void SinglePlayer()
+        public void Singleplayer()
         {
-            Snake snake = new Snake(ProfileManager.CurrentProfile);
-            Berry berry = new Berry();
-
-            while (snake.IsAlive)
+            // Using try-finally to execute things even after 'return'
+            try
             {
-                snake.Update();
-                Renderer.RenderFrame();
-
-                if (InputCacher.WasKeyPressed(ConsoleKey.Escape))
-                {
-                    //TODO: Show pause menu
-                    return;
-                }
+                Snake snake = new Snake(ProfileManager.CurrentProfile);
+                Berry berry = new Berry();
                 
-                InputCacher.StartCaching();
-                Thread.Sleep(100);
-                InputCacher.StopCaching();
+                while (snake.IsAlive)
+                {
+                    snake.Update();
+                    Renderer.RenderFrame();
+
+                    if (InputCacher.WasKeyPressed(ConsoleKey.Escape))
+                    {
+                        //TODO: Show pause menu
+                        return;
+                    }
+
+                    InputCacher.StartCaching();
+                    Thread.Sleep(1000);
+                    InputCacher.StopCaching();
+                }
+            }
+            finally
+            {
+                InputCacher.ClearCache();
             }
         }
 
@@ -206,11 +214,12 @@ namespace SnakeTheResurrection
             public void Update(BendInfo newBendInfo)
             {
                 Renderer.RemoveFromBuffer(X, Y, SIZE, SIZE);
-                
+                bool removeFirstBendInfo = false;
+
                 if (IsHead)
                 {
                     Direction originalDirection = Direction;
-
+                    
                     bool up     = InputCacher.WasKeyPressed(Profile.SnakeControls.Up);
                     bool down   = InputCacher.WasKeyPressed(Profile.SnakeControls.Down);
                     bool left   = InputCacher.WasKeyPressed(Profile.SnakeControls.Left);
@@ -304,7 +313,9 @@ namespace SnakeTheResurrection
                     if (bendInfo.Count >= 1 && bendInfo[0].X == X && bendInfo[0].Y == Y)
                     {
                         Direction = bendInfo[0].Direction;
-                        bendInfo.RemoveAt(0);
+
+                        // Need to remove it after passing it using AddRange to the new SnakeBody
+                        removeFirstBendInfo = true;
                     }
                 }
 
@@ -326,11 +337,18 @@ namespace SnakeTheResurrection
                         if (!IsHead)
                         {
                             NextBody.bendInfo.AddRange(bendInfo);
+
+                            // It's already in the bendInfo list
                             newBendInfo = null;
                         }
                     }
 
                     NextBody.Update(newBendInfo);
+                }
+
+                if (removeFirstBendInfo)
+                {
+                    bendInfo.RemoveAt(0);
                 }
             }
 

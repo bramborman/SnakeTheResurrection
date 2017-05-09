@@ -99,7 +99,7 @@ namespace SnakeTheResurrection.Utilities
             AddToBuffer(Constants.BACKGROUND_COLOR, x, y, height, width);
         }
 
-        public static void CleanBuffer()
+        public static void ClearBuffer()
         {
             Array.Clear(Buffer, 0, Buffer.Length);
             // AddToBuffer(Constants.BACKGROUND_COLOR, 0, 0, bufferHeight, bufferWidth);
