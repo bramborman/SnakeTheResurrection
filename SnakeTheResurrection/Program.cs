@@ -34,7 +34,6 @@ namespace SnakeTheResurrection
         
         public static void MainMenu()
         {
-            AppData.Current.EnableDiagonalMovement = true;
             ListMenu mainMenu = new ListMenu
             {
                 Items = new List<MenuItem>

@@ -33,7 +33,7 @@ namespace SnakeTheResurrection
                         return;
                     }
 
-                    int sleep = InputCacher.WasKeyPressed(ConsoleKey.Spacebar) ? 10 : 500;
+                    int sleep = InputCacher.WasKeyPressed(ConsoleKey.Spacebar) ? 10 : 100;
                     InputCacher.StartCaching();
                     Thread.Sleep(sleep);
                     InputCacher.StopCaching();
@@ -47,28 +47,33 @@ namespace SnakeTheResurrection
 
         private static void CreateGameBoard()
         {
-            int windowWidthExcess       = Console.WindowWidth % SnakeBody.SIZE;
-            int windowHeightExcess      = Console.WindowHeight % SnakeBody.SIZE;
+            int windowWidthOverlap      = Console.WindowWidth % SnakeBody.SIZE;
+            int windowHeightOverlap     = Console.WindowHeight % SnakeBody.SIZE;
 
-            gameBoard.X                 = (int)Math.Round(windowWidthExcess / 2.0);
-            gameBoard.Y                 = (int)Math.Round(windowHeightExcess / 2.0);
+            bool showBorders = windowWidthOverlap >= 1 || windowHeightOverlap >= 1 || AppData.Current.ForceGameBoardBorders;
 
-            int gameBoardBorderRight    = windowWidthExcess - gameBoard.Left;
-            int gameBoardBorderBottom   = windowHeightExcess - gameBoard.Top;
+            if (showBorders)
+            {
+                windowWidthOverlap      += SnakeBody.SIZE * 2;
+                windowHeightOverlap     += SnakeBody.SIZE * 2;
+            }
+
+            gameBoard.X                 = (int)Math.Round(windowWidthOverlap / 2.0);
+            gameBoard.Y                 = (int)Math.Round(windowHeightOverlap / 2.0);
+
+            int gameBoardBorderRight    = windowWidthOverlap - gameBoard.Left;
+            int gameBoardBorderBottom   = windowHeightOverlap - gameBoard.Top;
 
             gameBoard.Width             = Console.WindowWidth - gameBoardBorderRight - gameBoard.Left;
             gameBoard.Height            = Console.WindowHeight - gameBoardBorderBottom - gameBoard.Top;
 
-            if (windowHeightExcess >= 1)
-            {
-                Renderer.AddToBuffer(Constants.ACCENT_COLOR_DARK, 0, 0, Console.WindowWidth, gameBoard.Top);
-                Renderer.AddToBuffer(Constants.ACCENT_COLOR_DARK, 0, gameBoard.Bottom, Console.WindowWidth, gameBoardBorderBottom);
-            }
-
-            if (windowWidthExcess >= 1)
+            if (showBorders)
             {
                 Renderer.AddToBuffer(Constants.ACCENT_COLOR_DARK, 0, 0, gameBoard.Left, Console.WindowHeight);
                 Renderer.AddToBuffer(Constants.ACCENT_COLOR_DARK, gameBoard.Right, 0, gameBoardBorderRight, Console.WindowHeight);
+
+                Renderer.AddToBuffer(Constants.ACCENT_COLOR_DARK, 0, 0, Console.WindowWidth, gameBoard.Top);
+                Renderer.AddToBuffer(Constants.ACCENT_COLOR_DARK, 0, gameBoard.Bottom, Console.WindowWidth, gameBoardBorderBottom);
             }
         }
 
