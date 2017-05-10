@@ -2,34 +2,25 @@
 using SnakeTheResurrection.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Threading;
 
 namespace SnakeTheResurrection
 {
-    public sealed class Game
+    public static class Game
     {
-        public void Singleplayer()
+        private static Rectangle gameBoard = new Rectangle();
+
+        public static void Singleplayer()
         {
             // Using try-finally to execute things even after 'return'
             try
             {
-                int gameBoardWidthExcess    = Console.WindowWidth % SnakeBody.SIZE;
-                int gameBoardHeightExcess   = Console.WindowHeight % SnakeBody.SIZE;
-
-                int gameBoardBorderLeft     = (int)Math.Round(gameBoardWidthExcess / 2.0);
-                int gameBoardBorderTop      = (int)Math.Round(gameBoardHeightExcess / 2.0);
-
-                int gameBoardBorderRight    = gameBoardWidthExcess - gameBoardBorderLeft;
-                int gameBoardBorderBottom   = gameBoardHeightExcess - gameBoardBorderTop;
-
-                Renderer.AddToBuffer(Constants.ACCENT_COLOR_DARK, 0, 0, gameBoardBorderLeft, Console.WindowHeight);
-                Renderer.AddToBuffer(Constants.ACCENT_COLOR_DARK, 0, 0, Console.WindowWidth, gameBoardBorderTop);
-                Renderer.AddToBuffer(Constants.ACCENT_COLOR_DARK, Console.WindowWidth - gameBoardBorderRight, 0, gameBoardBorderRight, Console.WindowHeight);
-                Renderer.AddToBuffer(Constants.ACCENT_COLOR_DARK, 0, Console.WindowHeight - gameBoardBorderBottom, Console.WindowWidth, gameBoardBorderBottom);
+                CreateGameBoard();
 
                 Snake snake = new Snake(ProfileManager.CurrentProfile);
-                Berry berry = new Berry();
+                Berry berry = new Berry(10);
                 
                 while (snake.IsAlive)
                 {
@@ -42,8 +33,9 @@ namespace SnakeTheResurrection
                         return;
                     }
 
+                    int sleep = InputCacher.WasKeyPressed(ConsoleKey.Spacebar) ? 10 : 100;
                     InputCacher.StartCaching();
-                    Thread.Sleep(100);
+                    Thread.Sleep(sleep);
                     InputCacher.StopCaching();
                 }
             }
@@ -51,6 +43,26 @@ namespace SnakeTheResurrection
             {
                 InputCacher.ClearCache();
             }
+        }
+
+        private static void CreateGameBoard()
+        {
+            int gameBoardWidthExcess    = Console.WindowWidth % SnakeBody.SIZE;
+            int gameBoardHeightExcess   = Console.WindowHeight % SnakeBody.SIZE;
+
+            gameBoard.X                 = (int)Math.Round(gameBoardWidthExcess / 2.0);
+            gameBoard.Y                 = (int)Math.Round(gameBoardHeightExcess / 2.0);
+
+            int gameBoardBorderRight    = gameBoardWidthExcess - gameBoard.Left;
+            int gameBoardBorderBottom   = gameBoardHeightExcess - gameBoard.Top;
+
+            gameBoard.Width  = Console.WindowWidth - gameBoardBorderRight - gameBoard.Left;
+            gameBoard.Height = Console.WindowHeight - gameBoardBorderBottom - gameBoard.Top;
+
+            Renderer.AddToBuffer(Constants.ACCENT_COLOR_DARK, 0, 0, gameBoard.Left, Console.WindowHeight);
+            Renderer.AddToBuffer(Constants.ACCENT_COLOR_DARK, 0, 0, Console.WindowWidth, gameBoard.Top);
+            Renderer.AddToBuffer(Constants.ACCENT_COLOR_DARK, gameBoard.Right, 0, gameBoardBorderRight, Console.WindowHeight);
+            Renderer.AddToBuffer(Constants.ACCENT_COLOR_DARK, 0, gameBoard.Bottom, Console.WindowWidth, gameBoardBorderBottom);
         }
 
         private abstract class GameObjectBase
@@ -65,7 +77,7 @@ namespace SnakeTheResurrection
                 {
                     if (_x != value)
                     {
-                        ExceptionHelper.ValidateNumberInWindowHorizontalRange(value, nameof(X));
+                        ExceptionHelper.ValidateNumberInRange(value, gameBoard.Left, gameBoard.Right, nameof(X));
                         _x = value;
                     }
                 }
@@ -77,7 +89,7 @@ namespace SnakeTheResurrection
                 {
                     if (_y != value)
                     {
-                        ExceptionHelper.ValidateNumberInWindowHorizontalRange(value, nameof(Y));
+                        ExceptionHelper.ValidateNumberInRange(value, gameBoard.Top, gameBoard.Bottom, nameof(Y));
                         _y = value;
                     }
                 }
@@ -114,7 +126,7 @@ namespace SnakeTheResurrection
                 {
                     if (head == null)
                     {
-                        head = new SnakeBody(true, (Console.WindowWidth - SnakeBody.SIZE) / 2, (Console.WindowHeight - SnakeBody.SIZE) / 2, Direction.Up, Profile);
+                        head = new SnakeBody(true, (gameBoard.Width / 2) - SnakeBody.SIZE, (gameBoard.Height / 2) - SnakeBody.SIZE, Direction.Up, Profile);
                         tail = head;
                     }
                     else
@@ -442,8 +454,8 @@ namespace SnakeTheResurrection
 
                 while (true)
                 {
-                    X = random.Next(0, Console.WindowWidth - Size);
-                    Y = random.Next(0, Console.WindowHeight - Size);
+                    X = random.Next(0, gameBoard.Width - Size);
+                    Y = random.Next(0, gameBoard.Height - Size);
 
                     for (int row = Y; row < Y + Size; row++)
                     {

@@ -52,16 +52,6 @@ namespace SnakeTheResurrection.Utilities
             }
         }
 
-        public static void ValidateNumberInWindowHorizontalRange(int value, string parameterName)
-        {
-            ValidateNumberInRange(value, 0, Console.WindowWidth, parameterName);
-        }
-
-        public static void ValidateNumberInWindowVerticalRange(int value, string parameterName)
-        {
-            ValidateNumberInRange(value, 0, Console.WindowHeight, parameterName);
-        }
-
         public static void ValidateMagic(bool magic)
         {
             if (!magic)
