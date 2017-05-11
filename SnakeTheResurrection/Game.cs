@@ -112,6 +112,11 @@ namespace SnakeTheResurrection
             {
                 return X <= g.X + g.Size && X + Size >= g.X && Y <= g.Y + g.Size && Y + Size >= g.Y;
             }
+
+            protected bool IsInGameBoard(int newX, int newY)
+            {
+                return newX >= gameBoard.Left && newY >= gameBoard.Top && newX + Size <= gameBoard.Right && newY + Size <= gameBoard.Bottom;
+            }
         }
 
         private sealed class Snake
@@ -119,8 +124,29 @@ namespace SnakeTheResurrection
             private SnakeBody head;
             private SnakeBody tail;
             private int desiredLength = 3;
+
+            private bool _isAlive;
             
-            public bool IsAlive { get; private set; }
+            public bool IsAlive
+            {
+                get { return _isAlive; }
+                set
+                {
+                    if (!_isAlive)
+                    {
+                        if (value)
+                        {
+                            throw new InvalidOperationException("Cannot revive a dead snake.");
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException("Cannot kill a dead snake.");
+                        }
+                    }
+
+                    _isAlive = value;
+                }
+            }
             public int Length { get; private set; }
             public Profile Profile { get; }
 
@@ -128,7 +154,7 @@ namespace SnakeTheResurrection
             {
                 ExceptionHelper.ValidateObjectNotNull(profile, nameof(profile));
 
-                IsAlive = true;
+                _isAlive = true;
                 Profile = profile;
             }
 
@@ -144,7 +170,7 @@ namespace SnakeTheResurrection
                         gameBoardWidthHalf      -= gameBoardWidthHalf % SnakeBody.SIZE;
                         gameBoardHeightHalf     -= gameBoardHeightHalf % SnakeBody.SIZE;
 
-                        head = new SnakeBody(true, gameBoard.Left + gameBoardWidthHalf - SnakeBody.SIZE, gameBoard.Top + gameBoardHeightHalf - SnakeBody.SIZE, Direction.Up, Profile);
+                        head = new SnakeBody(true, gameBoard.Left + gameBoardWidthHalf - SnakeBody.SIZE, gameBoard.Top + gameBoardHeightHalf - SnakeBody.SIZE, Direction.Up, this, Profile);
                         tail = head;
                     }
                     else
@@ -191,7 +217,7 @@ namespace SnakeTheResurrection
 
                         SnakeBody.UpdateCoordinates(inverseDirection, ref newX, ref newY);
 
-                        tail.NextBody   = new SnakeBody(false, newX, newY, tail.Direction, Profile);
+                        tail.NextBody   = new SnakeBody(false, newX, newY, tail.Direction, this, Profile);
                         tail            = tail.NextBody;
                     }
 
@@ -236,17 +262,20 @@ namespace SnakeTheResurrection
                     }
                 }
             }
+            public Snake Snake { get; }
             public Profile Profile { get; }
             public SnakeBody NextBody { get; set; }
 
-            public SnakeBody(bool isHead, int x, int y, Direction direction, Profile profile)
+            public SnakeBody(bool isHead, int x, int y, Direction direction, Snake snake, Profile profile)
             {
+                ExceptionHelper.ValidateObjectNotNull(snake, nameof(snake));
                 ExceptionHelper.ValidateObjectNotNull(profile, nameof(profile));
 
                 IsHead      = isHead;
                 X           = x;
                 Y           = y;
                 Direction   = direction;
+                Snake       = snake;
                 Profile     = profile;
 
                 if (!isHead)
@@ -367,10 +396,23 @@ namespace SnakeTheResurrection
                 int x = X;
                 int y = Y;
                 UpdateCoordinates(Direction, ref x, ref y);
-                X = x;
-                Y = y;
 
+                if (IsHead && !IsInGameBoard(x, y))
+                {
+                    Snake.IsAlive = false;
+                }
+                else
+                {
+                    X = x;
+                    Y = y;
+                }
+                
                 Renderer.AddToBuffer(Profile.Color, X, Y, SIZE, SIZE);
+
+                if (!Snake.IsAlive)
+                {
+                    return;
+                }
 
                 if (NextBody != null)
                 {
@@ -470,8 +512,12 @@ namespace SnakeTheResurrection
                     Renderer.RemoveFromBuffer(X, Y, Size, Size);
                 }
 
-                while (true)
+                bool generate;
+
+                do
                 {
+                    generate = false;
+
                     X = random.Next(gameBoard.Left, gameBoard.Right - Size);
                     Y = random.Next(gameBoard.Top, gameBoard.Bottom - Size);
 
@@ -481,13 +527,17 @@ namespace SnakeTheResurrection
                         {
                             if (Renderer.Buffer[row, column] != Constants.BACKGROUND_COLOR)
                             {
-                                continue;
+                                generate = true;
+                                break;
                             }
                         }
-                    }
 
-                    break;
-                }
+                        if (generate)
+                        {
+                            break;
+                        }
+                    }
+                } while (generate);
 
                 Renderer.AddToBuffer(Color, X, Y, Size, Size);
                 isOnScreen = true;
