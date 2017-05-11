@@ -6,21 +6,24 @@ namespace SnakeTheResurrection.Utilities
 {
     public unsafe static class DllImports
     {
-        private const int STD_OUTPUT_HANDLE = -11;
-        private const int KEY_PRESSED       = 0x8000;
-        private const int SW_MAXIMIZE       = 3;
+        private const int STD_OUTPUT_HANDLE         = -11;
+        private const int KEY_PRESSED               = 0x8000;
+        private const int SW_MAXIMIZE               = 3;
+        private const int CONSOLE_FULLSCREEN_MODE   = 1;
+        private const int CONSOLE_WINDOWED_MODE     = 2;
+        private const int GWL_STYLE                 = -16;
+        private const int WS_OVERLAPPED             = 0;
+        private const int WS_CAPTION                = 0xC00000;
+        private const int WS_SYSMENU                = 0x80000;
+        private const int WS_MINIMIZEBOX            = 0x20000;
+        private const int WS_MAXIMIZEBOX            = 0x10000;
+        private const int INVALID_HANDLE_VALUE      = -1;
+        private const int NULL                      = 0;
 
-        public static IntPtr StdOutputHandle
-        {
-            get
-            {
-                IntPtr stdHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+        private static readonly IntPtr mainWindowHandle;
 
-                // Comparing it with INVALID_HANDLE_VALUE and NULL.
-                ExceptionHelper.ValidateMagic(stdHandle != new IntPtr(-1) && stdHandle != new IntPtr(0));
-                return stdHandle;
-            }
-        }
+        public static IntPtr StdOutputHandle { get; }
+
         public static bool ConsoleFullscreen
         {
             get
@@ -28,20 +31,36 @@ namespace SnakeTheResurrection.Utilities
                 uint lpModeFlags;
                 ExceptionHelper.ValidateMagic(GetConsoleDisplayMode(out lpModeFlags));
 
-                return lpModeFlags == 1;
+                return lpModeFlags == CONSOLE_FULLSCREEN_MODE;
             }
             set
             {
                 COORD lpNewScreenBufferDimensions;
 
-                if (!SetConsoleDisplayMode(StdOutputHandle, (uint)(value ? 1 : 2), out lpNewScreenBufferDimensions))
+                if (!SetConsoleDisplayMode(StdOutputHandle, (uint)(value ? CONSOLE_FULLSCREEN_MODE : CONSOLE_WINDOWED_MODE), out lpNewScreenBufferDimensions))
                 {
                     // Compatibility with Windows Vista, 7, 8.x
-                    ShowWindow(Process.GetCurrentProcess().MainWindowHandle, SW_MAXIMIZE);
+                    ShowWindow(mainWindowHandle, SW_MAXIMIZE);
                 }
             }
         }
-        
+
+        static DllImports()
+        {
+            StdOutputHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+            ExceptionHelper.ValidateMagic(StdOutputHandle != new IntPtr(INVALID_HANDLE_VALUE) && StdOutputHandle != new IntPtr(NULL));
+
+            mainWindowHandle = Process.GetCurrentProcess().MainWindowHandle;
+        }
+
+        public static void DisableWindowButtons()
+        {
+            IntPtr hwnd = mainWindowHandle;
+            // Backup
+            // SetWindowLong(hwnd, GWL_STYLE, GetWindowLong(hwnd, GWL_STYLE) & ~(WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX));
+            SetWindowLong(hwnd, GWL_STYLE, GetWindowLong(hwnd, GWL_STYLE) & ~WS_CAPTION);
+        }
+
         public static bool IsKeyDown(ConsoleKey key)
         {
             return (GetKeyState((int)key) & KEY_PRESSED) != 0;
@@ -86,6 +105,12 @@ namespace SnakeTheResurrection.Utilities
 
         [DllImport("user32.dll")]
         private static extern short GetKeyState(int key);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+
+        [DllImport("user32.dll")]
+        private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
 
         [DllImport("user32.dll")]
         public static extern bool ShowWindow(IntPtr hWnd, int cmdShow);
