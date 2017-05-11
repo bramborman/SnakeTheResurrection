@@ -9,41 +9,24 @@ namespace SnakeTheResurrection.Utilities
         private const int STD_OUTPUT_HANDLE         = -11;
         private const int KEY_PRESSED               = 0x8000;
         private const int SW_MAXIMIZE               = 3;
-        private const int CONSOLE_FULLSCREEN_MODE   = 1;
-        private const int CONSOLE_WINDOWED_MODE     = 2;
         private const int GWL_STYLE                 = -16;
-        private const int WS_OVERLAPPED             = 0;
+        private const int GWL_EXSTYLE               = -20;
+        private const int WS_THICKFRAME             = 0x40000;
         private const int WS_CAPTION                = 0xC00000;
-        private const int WS_SYSMENU                = 0x80000;
-        private const int WS_MINIMIZEBOX            = 0x20000;
-        private const int WS_MAXIMIZEBOX            = 0x10000;
+        private const int WS_EX_DLGMODALFRAME       = 0x00000001;
+        private const int WS_EX_CLIENTEDGE          = 0x00000200;
+        private const int WS_EX_WINDOWEDGE          = 0x00000100;
+        private const int WS_EX_STATICEDGE          = 0x00020000;
+        private const int MONITOR_DEFAULTTONEAREST  = 2;
+        private const int SWP_NOZORDER              = 0x0004;
+        private const int SWP_NOACTIVATE            = 0x0010;
+        private const int SWP_FRAMECHANGED          = 0x0020;
         private const int INVALID_HANDLE_VALUE      = -1;
         private const int NULL                      = 0;
 
         private static readonly IntPtr mainWindowHandle;
 
         public static IntPtr StdOutputHandle { get; }
-
-        public static bool ConsoleFullscreen
-        {
-            get
-            {
-                uint lpModeFlags;
-                ExceptionHelper.ValidateMagic(GetConsoleDisplayMode(out lpModeFlags));
-
-                return lpModeFlags == CONSOLE_FULLSCREEN_MODE;
-            }
-            set
-            {
-                COORD lpNewScreenBufferDimensions;
-
-                if (!SetConsoleDisplayMode(StdOutputHandle, (uint)(value ? CONSOLE_FULLSCREEN_MODE : CONSOLE_WINDOWED_MODE), out lpNewScreenBufferDimensions))
-                {
-                    // Compatibility with Windows Vista, 7, 8.x
-                    ShowWindow(mainWindowHandle, SW_MAXIMIZE);
-                }
-            }
-        }
 
         static DllImports()
         {
@@ -53,17 +36,28 @@ namespace SnakeTheResurrection.Utilities
             mainWindowHandle = Process.GetCurrentProcess().MainWindowHandle;
         }
 
-        public static void DisableWindowButtons()
-        {
-            IntPtr hwnd = mainWindowHandle;
-            // Backup
-            // SetWindowLong(hwnd, GWL_STYLE, GetWindowLong(hwnd, GWL_STYLE) & ~(WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX));
-            SetWindowLong(hwnd, GWL_STYLE, GetWindowLong(hwnd, GWL_STYLE) & ~WS_CAPTION);
-        }
-
         public static bool IsKeyDown(ConsoleKey key)
         {
             return (GetKeyState((int)key) & KEY_PRESSED) != 0;
+        }
+
+        // Original taken from here: https://src.chromium.org/viewvc/chrome/trunk/src/ui/views/win/fullscreen_handler.cc?revision=HEAD&view=markup
+        // http://stackoverflow.com/a/5299718/6843321
+        public static void EnterFullscreenMode()
+        {
+            ShowWindow(mainWindowHandle, SW_MAXIMIZE);
+
+            ExceptionHelper.ValidateMagic(SetWindowLong(mainWindowHandle, GWL_STYLE, GetWindowLong(mainWindowHandle, GWL_STYLE) & ~(WS_CAPTION | WS_THICKFRAME)) != 0);
+            ExceptionHelper.ValidateMagic(SetWindowLong(mainWindowHandle, GWL_EXSTYLE, GetWindowLong(mainWindowHandle, GWL_EXSTYLE) & ~(WS_EX_DLGMODALFRAME | WS_EX_WINDOWEDGE | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE)) != 0);
+
+            MONITORINFO monitor_info = new MONITORINFO
+            {
+                cbSize = Marshal.SizeOf<MONITORINFO>()
+            };
+
+            ExceptionHelper.ValidateMagic(GetMonitorInfo(MonitorFromWindow(mainWindowHandle, MONITOR_DEFAULTTONEAREST), ref monitor_info));
+            RECT window_rect = new RECT(monitor_info.rcMonitor);
+            ExceptionHelper.ValidateMagic(SetWindowPos(mainWindowHandle, new IntPtr(NULL), window_rect.x(), window_rect.y(), window_rect.width(), window_rect.height(), SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED));
         }
 
         public static unsafe void SetFont(string fontName, short x, short y)
@@ -95,12 +89,6 @@ namespace SnakeTheResurrection.Utilities
         private static extern IntPtr GetStdHandle(int nStdHandle);
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        private static extern bool GetConsoleDisplayMode(out uint lpModeFlags);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        private static extern bool SetConsoleDisplayMode(IntPtr hConsoleOutput, uint dwFlags, out COORD lpNewScreenBufferDimensions);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
         private static extern bool SetCurrentConsoleFontEx(IntPtr hConsoleOutput, bool bMaximumWindow, ref CONSOLE_FONT_INFOEX lpConsoleCurrentFontEx);
 
         [DllImport("user32.dll")]
@@ -115,8 +103,64 @@ namespace SnakeTheResurrection.Utilities
         [DllImport("user32.dll")]
         public static extern bool ShowWindow(IntPtr hWnd, int cmdShow);
 
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
+
+        [DllImport("user32.dll")]
+        private static extern bool GetMonitorInfo(IntPtr hMonitor, ref MONITORINFO lpmi);
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr MonitorFromWindow(IntPtr hwnd, uint dwFlags);
+
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         private static extern int MessageBox(IntPtr hWnd, string lpText, string lpCaption, uint uType);
+
+#pragma warning disable IDE1006 // Naming Styles
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        private unsafe struct MONITORINFO
+        {
+            public int cbSize;
+            public RECT rcMonitor;
+            public RECT rcWork;
+            public int dwFlags;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct RECT
+        {
+            public long left;
+            public long top;
+            public long right;
+            public long bottom;
+
+            public RECT(RECT rect)
+            {
+                left    = rect.left;
+                top     = rect.top;
+                right   = rect.right;
+                bottom  = rect.bottom;
+            }
+
+            public int x()
+            {
+                return (int)left;
+            }
+
+            public int y()
+            {
+                return (int)top;
+            }
+
+            public int width()
+            {
+                return (int)(right - left);
+            }
+
+            public int height()
+            {
+                return (int)(bottom - top);
+            }
+        }
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
         private unsafe struct CONSOLE_FONT_INFOEX
@@ -177,5 +221,6 @@ namespace SnakeTheResurrection.Utilities
                 Bottom  = bottom;
             }
         }
+#pragma warning restore IDE1006 // Naming Styles
     }
 }
