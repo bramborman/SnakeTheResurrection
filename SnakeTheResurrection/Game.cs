@@ -10,6 +10,8 @@ namespace SnakeTheResurrection
 {
     public static class Game
     {
+        private const int BLOCK_SIZE = 5;
+
         private static Rectangle gameBoard = new Rectangle();
 
         public static void Singleplayer()
@@ -53,15 +55,15 @@ namespace SnakeTheResurrection
 
         private static void CreateGameBoard()
         {
-            int windowWidthOverlap      = Console.WindowWidth % SnakeBody.SIZE;
-            int windowHeightOverlap     = Console.WindowHeight % SnakeBody.SIZE;
+            int windowWidthOverlap      = Console.WindowWidth % BLOCK_SIZE;
+            int windowHeightOverlap     = Console.WindowHeight % BLOCK_SIZE;
 
             bool showBorders = windowWidthOverlap >= 1 || windowHeightOverlap >= 1 || AppData.Current.ForceGameBoardBorders;
 
             if (showBorders)
             {
-                windowWidthOverlap      += SnakeBody.SIZE * 2;
-                windowHeightOverlap     += SnakeBody.SIZE * 2;
+                windowWidthOverlap      += BLOCK_SIZE * 2;
+                windowHeightOverlap     += BLOCK_SIZE * 2;
             }
 
             gameBoard.X                 = (int)Math.Round(windowWidthOverlap / 2.0);
@@ -116,7 +118,7 @@ namespace SnakeTheResurrection
             
             public bool HitTest(GameObjectBase g)
             {
-                return X <= g.X + g.Size && X + Size >= g.X && Y <= g.Y + g.Size && Y + Size >= g.Y;
+                return X <= g.X + g.Size - 1 && X + Size - 1 >= g.X && Y <= g.Y + g.Size - 1 && Y + Size - 1 >= g.Y;
             }
 
             protected bool IsInGameBoard(int newX, int newY)
@@ -126,8 +128,9 @@ namespace SnakeTheResurrection
 
             public void AlignPosition()
             {
-                X -= X % Size - gameBoard.Left % Size;
-                Y -= Y % Size - gameBoard.Top % Size;
+                int alignment = (BLOCK_SIZE % Size) / 2;
+                X = X - (X % BLOCK_SIZE) + (gameBoard.Left % BLOCK_SIZE) + alignment;
+                Y = Y - (Y % BLOCK_SIZE) + (gameBoard.Top % BLOCK_SIZE) + alignment;
             }
         }
 
@@ -176,7 +179,7 @@ namespace SnakeTheResurrection
                 {
                     if (head == null)
                     {
-                        head = new SnakeBody(true, gameBoard.Left + (gameBoard.Width / 2) - SnakeBody.SIZE, gameBoard.Top + (gameBoard.Height / 2) - SnakeBody.SIZE, Direction.Up, this, Profile);
+                        head = new SnakeBody(true, gameBoard.Left + (gameBoard.Width / 2) - BLOCK_SIZE, gameBoard.Top + (gameBoard.Height / 2) - BLOCK_SIZE, Direction.Up, this, Profile);
                         tail = head;
 
                         head.AlignPosition();
@@ -245,8 +248,6 @@ namespace SnakeTheResurrection
 
         private sealed class SnakeBody : GameObjectBase
         {
-            public const int SIZE = 5;
-
             private readonly List<BendInfo> bendInfo;
 
             private bool isNew = true;
@@ -256,7 +257,7 @@ namespace SnakeTheResurrection
             public bool IsHead { get; }
             public override int Size
             {
-                get { return SIZE; }
+                get { return BLOCK_SIZE; }
             }
             public Direction Direction
             {
@@ -294,7 +295,7 @@ namespace SnakeTheResurrection
             
             public void Update(BendInfo newBendInfo)
             {
-                Renderer.RemoveFromBuffer(X, Y, SIZE, SIZE);
+                Renderer.RemoveFromBuffer(X, Y, Size, Size);
                 bool removeFirstBendInfo = false;
 
                 if (IsHead)
@@ -415,7 +416,7 @@ namespace SnakeTheResurrection
                     Y = y;
                 }
                 
-                Renderer.AddToBuffer(Profile.Color, X, Y, SIZE, SIZE);
+                Renderer.AddToBuffer(Profile.Color, X, Y, Size, Size);
 
                 if (!Snake.IsAlive)
                 {
@@ -450,20 +451,20 @@ namespace SnakeTheResurrection
             {
                 if (direction == Direction.UpLeft || direction == Direction.Up || direction == Direction.UpRight)
                 {
-                    y -= SIZE;
+                    y -= BLOCK_SIZE;
                 }
                 else if (direction == Direction.DownLeft || direction == Direction.Down || direction == Direction.DownRight)
                 {
-                    y += SIZE;
+                    y += BLOCK_SIZE;
                 }
 
                 if (direction == Direction.UpLeft || direction == Direction.Left || direction == Direction.DownLeft)
                 {
-                    x -= SIZE;
+                    x -= BLOCK_SIZE;
                 }
                 else if (direction == Direction.UpRight || direction == Direction.Right || direction == Direction.DownRight)
                 {
-                    x += SIZE;
+                    x += BLOCK_SIZE;
                 }
             }
         }
@@ -483,9 +484,8 @@ namespace SnakeTheResurrection
                 { x, x, x, x, x },
                 { _, x, x, x, _ }
             };
-
-            private static bool isOnScreen = false;
-
+            private static readonly int textureSize             = texture.GetLength(0);
+            
             public static IEnumerable<Berry> Current
             {
                 get
@@ -496,7 +496,7 @@ namespace SnakeTheResurrection
             
             public override int Size
             {
-                get { return 5; }
+                get { return textureSize; }
             }
             public ConsoleColor Color { get; }
             public int Power { get; }
@@ -514,53 +514,54 @@ namespace SnakeTheResurrection
                 Power = power;
 
                 _current.Add(this);
-                GenerateNewPosition();
+                GenerateNewPosition(false);
             }
             
             public int Eat()
             {
-                GenerateNewPosition();
+                GenerateNewPosition(true);
                 return Power;
             }
 
-            private void GenerateNewPosition()
+            private void GenerateNewPosition(bool removePrevious)
             {
                 // It will remove the Game board border on 0,0 without this condition
-                if (isOnScreen)
+                if (removePrevious)
                 {
-                    Renderer.RemoveFromBuffer(X, Y, Size, Size);
+                    int size = Size;
+                    Renderer.AddToBuffer(ConsoleColor.White, X, Y, size, size);
                 }
 
-                bool generate;
+                bool regenerate;
 
                 do
                 {
-                    generate = false;
+                    regenerate = false;
 
                     X = random.Next(gameBoard.Left, gameBoard.Right - Size);
                     Y = random.Next(gameBoard.Top, gameBoard.Bottom - Size);
 
+                    // Do not generate berry in a snake xD
                     for (int row = Y; row < Y + Size; row++)
                     {
                         for (int column = X; column < X + Size; column++)
                         {
                             if (Renderer.Buffer[row, column] != Constants.BACKGROUND_COLOR)
                             {
-                                generate = true;
+                                regenerate = true;
                                 break;
                             }
                         }
 
-                        if (generate)
+                        if (regenerate)
                         {
                             break;
                         }
                     }
-                } while (generate);
+                } while (regenerate);
 
                 AlignPosition();
                 Renderer.AddToBuffer(texture, X, Y);
-                isOnScreen = true;
             }
         }
 
