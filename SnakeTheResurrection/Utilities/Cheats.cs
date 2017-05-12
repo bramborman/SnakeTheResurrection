@@ -55,17 +55,19 @@ namespace SnakeTheResurrection.Utilities
 
                     Task.Run(async () =>
                     {
-                        const string CHEAT_ACTIVATED_MESSAGE = " Cheat activated ";
-                        const string CHEAT_DEACTIVATED_MESSAGE = " Cheat deactivated ";
+                        const string CHEAT_ACTIVATED_MESSAGE    = " Cheat activated ";
+                        const string CHEAT_DEACTIVATED_MESSAGE  = " Cheat deactivated ";
 
                         previousCts?.Cancel();
 
                         lock (Symtext.SyncRoot)
                         {
                             Symtext.SetCursorPosition(0, 0);
-                            Symtext.FontSize = 1;
-                            Symtext.BackgroundColor = ConsoleColor.Gray;
-                            Symtext.ForegroundColor = ConsoleColor.Black;
+                            Symtext.FontSize            = 1;
+                            Symtext.BackgroundColor     = ConsoleColor.Gray;
+                            Symtext.ForegroundColor     = ConsoleColor.Black;
+                            Symtext.HorizontalAlignment = HorizontalAlignment.None;
+                            Symtext.VerticalAlignment   = VerticalAlignment.None;
 
                             Renderer.RemoveFromBuffer(0, 0, Symtext.CharHeight, Symtext.GetSymtextWidth(CHEAT_DEACTIVATED_MESSAGE));
                             Symtext.Write(cheatCodeInfo[currentCode] ? CHEAT_ACTIVATED_MESSAGE : CHEAT_DEACTIVATED_MESSAGE);

@@ -55,10 +55,9 @@ namespace SnakeTheResurrection.Utilities
 
         public static void DisableWindowButtons()
         {
-            IntPtr hwnd = mainWindowHandle;
             // Backup
-            // SetWindowLong(hwnd, GWL_STYLE, GetWindowLong(hwnd, GWL_STYLE) & ~(WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX));
-            SetWindowLong(hwnd, GWL_STYLE, GetWindowLong(hwnd, GWL_STYLE) & ~WS_CAPTION);
+            // SetWindowLong(mainWindowHandle, GWL_STYLE, GetWindowLong(mainWindowHandle, GWL_STYLE) & ~(WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX));
+            SetWindowLong(mainWindowHandle, GWL_STYLE, GetWindowLong(mainWindowHandle, GWL_STYLE) & ~WS_CAPTION);
         }
 
         public static bool IsKeyDown(ConsoleKey key)

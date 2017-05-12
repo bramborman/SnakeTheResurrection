@@ -27,21 +27,27 @@ namespace SnakeTheResurrection
                     snake.Update();
                     Renderer.RenderFrame();
 
-                    if (InputCacher.WasKeyPressed(ConsoleKey.Escape))
+                    if (InputHelper.WasKeyPressed(ConsoleKey.Escape))
                     {
                         //TODO: Show pause menu
                         return;
                     }
+#if DEBUG
+                    else if (InputHelper.WasKeyPressed(ConsoleKey.B))
+                    {
+                        while (Console.ReadKey(true).Key != ConsoleKey.B) ;
+                    }
+#endif
 
-                    int sleep = InputCacher.WasKeyPressed(ConsoleKey.Spacebar) ? 10 : 100;
-                    InputCacher.StartCaching();
+                    int sleep = InputHelper.WasKeyPressed(ConsoleKey.Spacebar) ? 5 : 100;
+                    InputHelper.StartCaching();
                     Thread.Sleep(sleep);
-                    InputCacher.StopCaching();
+                    InputHelper.StopCaching();
                 }
             }
             finally
             {
-                InputCacher.ClearCache();
+                InputHelper.ClearCache();
             }
         }
 
@@ -117,6 +123,12 @@ namespace SnakeTheResurrection
             {
                 return newX >= gameBoard.Left && newY >= gameBoard.Top && newX + Size <= gameBoard.Right && newY + Size <= gameBoard.Bottom;
             }
+
+            public void AlignPosition()
+            {
+                X -= X % Size - gameBoard.Left % Size;
+                Y -= Y % Size - gameBoard.Top % Size;
+            }
         }
 
         private sealed class Snake
@@ -164,14 +176,10 @@ namespace SnakeTheResurrection
                 {
                     if (head == null)
                     {
-                        int gameBoardWidthHalf  = gameBoard.Width / 2;
-                        int gameBoardHeightHalf = gameBoard.Height / 2;
-
-                        gameBoardWidthHalf      -= gameBoardWidthHalf % SnakeBody.SIZE;
-                        gameBoardHeightHalf     -= gameBoardHeightHalf % SnakeBody.SIZE;
-
-                        head = new SnakeBody(true, gameBoard.Left + gameBoardWidthHalf - SnakeBody.SIZE, gameBoard.Top + gameBoardHeightHalf - SnakeBody.SIZE, Direction.Up, this, Profile);
+                        head = new SnakeBody(true, gameBoard.Left + (gameBoard.Width / 2) - SnakeBody.SIZE, gameBoard.Top + (gameBoard.Height / 2) - SnakeBody.SIZE, Direction.Up, this, Profile);
                         tail = head;
+
+                        head.AlignPosition();
                     }
                     else
                     {
@@ -293,10 +301,10 @@ namespace SnakeTheResurrection
                 {
                     Direction originalDirection = Direction;
                     
-                    bool up     = InputCacher.WasKeyPressed(Profile.SnakeControls.Up);
-                    bool down   = InputCacher.WasKeyPressed(Profile.SnakeControls.Down);
-                    bool left   = InputCacher.WasKeyPressed(Profile.SnakeControls.Left);
-                    bool right  = InputCacher.WasKeyPressed(Profile.SnakeControls.Right);
+                    bool up     = InputHelper.WasKeyPressed(Profile.SnakeControls.Up);
+                    bool down   = InputHelper.WasKeyPressed(Profile.SnakeControls.Down);
+                    bool left   = InputHelper.WasKeyPressed(Profile.SnakeControls.Left);
+                    bool right  = InputHelper.WasKeyPressed(Profile.SnakeControls.Right);
                     
                     if (up)
                     {
@@ -462,8 +470,19 @@ namespace SnakeTheResurrection
 
         private sealed class Berry : GameObjectBase
         {
-            private static readonly List<Berry> _current    = new List<Berry>();
-            private static readonly Random random           = new Random();
+            private const ConsoleColor x = ConsoleColor.Red;
+            private const ConsoleColor _ = Constants.BACKGROUND_COLOR;
+
+            private static readonly List<Berry> _current        = new List<Berry>();
+            private static readonly Random random               = new Random();
+            private static readonly ConsoleColor[,] texture     = new ConsoleColor[,]
+            {
+                { _, x, x, x, _ },
+                { x, x, x, x, x },
+                { x, x, x, x, x },
+                { x, x, x, x, x },
+                { _, x, x, x, _ }
+            };
 
             private static bool isOnScreen = false;
 
@@ -477,7 +496,7 @@ namespace SnakeTheResurrection
             
             public override int Size
             {
-                get { return 2; }
+                get { return 5; }
             }
             public ConsoleColor Color { get; }
             public int Power { get; }
@@ -539,7 +558,8 @@ namespace SnakeTheResurrection
                     }
                 } while (generate);
 
-                Renderer.AddToBuffer(Color, X, Y, Size, Size);
+                AlignPosition();
+                Renderer.AddToBuffer(texture, X, Y);
                 isOnScreen = true;
             }
         }

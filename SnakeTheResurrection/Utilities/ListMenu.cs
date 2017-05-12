@@ -90,7 +90,7 @@ namespace SnakeTheResurrection.Utilities
 
                 while (!handled)
                 {
-                    switch (Helpers.ReadKey().Key)
+                    switch (InputHelper.ReadKey().Key)
                     {
                         case ConsoleKey.UpArrow:
                             if (SelectedIndex != 0)

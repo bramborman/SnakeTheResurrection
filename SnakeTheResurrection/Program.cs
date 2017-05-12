@@ -55,7 +55,7 @@ namespace SnakeTheResurrection
                 Symtext.WriteTitle(Constants.APP_SHORT_NAME, 7);
                 
                 mainMenu.InvokeResult();
-                Helpers.ClearInputBuffer();
+                InputHelper.ClearInputBuffer();
             }
         }
 
