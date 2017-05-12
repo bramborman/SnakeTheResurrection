@@ -405,12 +405,31 @@ namespace SnakeTheResurrection
                 int x = X;
                 int y = Y;
                 UpdateCoordinates(Direction, ref x, ref y);
-
-                if (IsHead && !IsInGameBoard(x, y))
+                
+                if (IsHead)
                 {
-                    Snake.IsAlive = false;
+                    if (!IsInGameBoard(x, y))
+                    {
+                        Snake.IsAlive = false;
+                    }
+                    else
+                    {
+                        SnakeBody nextBody = NextBody;
+
+                        while (nextBody != null)
+                        {
+                            if (HitTest(nextBody))
+                            {
+                                Snake.IsAlive = false;
+                                break;
+                            }
+
+                            nextBody = nextBody.NextBody;
+                        }
+                    }
                 }
-                else
+
+                if (Snake.IsAlive)
                 {
                     X = x;
                     Y = y;
