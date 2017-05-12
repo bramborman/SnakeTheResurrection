@@ -134,9 +134,8 @@ namespace SnakeTheResurrection
             }
         }
 
-        private sealed class Snake
+        private sealed class Snake : SnakeBody
         {
-            private SnakeBody head;
             private SnakeBody tail;
             private int desiredLength = 3;
 
@@ -163,26 +162,20 @@ namespace SnakeTheResurrection
                 }
             }
             public int Length { get; private set; }
-            public Profile Profile { get; }
 
-            public Snake(Profile profile)
+            public Snake(Profile profile) : base(gameBoard.Left + (gameBoard.Width / 2) - BLOCK_SIZE, gameBoard.Top + (gameBoard.Height / 2) - BLOCK_SIZE, Direction.Up, profile)
             {
-                ExceptionHelper.ValidateObjectNotNull(profile, nameof(profile));
-
                 _isAlive = true;
-                Profile = profile;
             }
 
             public void Update()
             {
                 if (Length < desiredLength)
                 {
-                    if (head == null)
+                    if (tail == null)
                     {
-                        head = new SnakeBody(true, gameBoard.Left + (gameBoard.Width / 2) - BLOCK_SIZE, gameBoard.Top + (gameBoard.Height / 2) - BLOCK_SIZE, Direction.Up, this, Profile);
-                        tail = head;
-
-                        head.AlignPosition();
+                        AlignPosition();
+                        tail = this;
                     }
                     else
                     {
@@ -226,18 +219,18 @@ namespace SnakeTheResurrection
                                 break;
                         }
 
-                        SnakeBody.UpdateCoordinates(inverseDirection, ref newX, ref newY);
+                        UpdateCoordinates(inverseDirection, ref newX, ref newY);
 
-                        tail.NextBody   = new SnakeBody(false, newX, newY, tail.Direction, this, Profile);
+                        tail.NextBody   = new SnakeBody(newX, newY, tail.Direction, Profile);
                         tail            = tail.NextBody;
                     }
 
                     Length++;
                 }
 
-                head.Update(null);
+                Update(null);
 
-                Berry berry = Berry.Current.FirstOrDefault(b => head.HitTest(b));
+                Berry berry = Berry.Current.FirstOrDefault(b => HitTest(b));
 
                 if (berry != null)
                 {
@@ -246,7 +239,7 @@ namespace SnakeTheResurrection
             }
         }
 
-        private sealed class SnakeBody : GameObjectBase
+        private class SnakeBody : GameObjectBase
         {
             private readonly List<BendInfo> bendInfo;
 
@@ -254,7 +247,11 @@ namespace SnakeTheResurrection
 
             private Direction _direction;
 
-            public bool IsHead { get; }
+            private bool IsHead
+            {
+                get { return this is Snake; }
+            }
+
             public override int Size
             {
                 get { return BLOCK_SIZE; }
@@ -271,29 +268,25 @@ namespace SnakeTheResurrection
                     }
                 }
             }
-            public Snake Snake { get; }
             public Profile Profile { get; }
             public SnakeBody NextBody { get; set; }
 
-            public SnakeBody(bool isHead, int x, int y, Direction direction, Snake snake, Profile profile)
+            public SnakeBody(int x, int y, Direction direction, Profile profile)
             {
-                ExceptionHelper.ValidateObjectNotNull(snake, nameof(snake));
                 ExceptionHelper.ValidateObjectNotNull(profile, nameof(profile));
-
-                IsHead      = isHead;
+                
                 X           = x;
                 Y           = y;
                 Direction   = direction;
-                Snake       = snake;
                 Profile     = profile;
 
-                if (!isHead)
+                if (!IsHead)
                 {
                     bendInfo = new List<BendInfo>();
                 }
             }
             
-            public void Update(BendInfo newBendInfo)
+            protected void Update(BendInfo newBendInfo)
             {
                 Renderer.RemoveFromBuffer(X, Y, Size, Size);
                 bool removeFirstBendInfo = false;
@@ -405,12 +398,14 @@ namespace SnakeTheResurrection
                 int x = X;
                 int y = Y;
                 UpdateCoordinates(Direction, ref x, ref y);
+
+                Snake snake = this as Snake;
                 
                 if (IsHead)
                 {
                     if (!IsInGameBoard(x, y))
                     {
-                        Snake.IsAlive = false;
+                        snake.IsAlive = false;
                     }
                     else
                     {
@@ -420,7 +415,7 @@ namespace SnakeTheResurrection
                         {
                             if (HitTest(nextBody))
                             {
-                                Snake.IsAlive = false;
+                                snake.IsAlive = false;
                                 break;
                             }
 
@@ -429,7 +424,9 @@ namespace SnakeTheResurrection
                     }
                 }
 
-                if (Snake.IsAlive)
+                bool isAlive = snake?.IsAlive != false;
+
+                if (isAlive)
                 {
                     X = x;
                     Y = y;
@@ -437,7 +434,7 @@ namespace SnakeTheResurrection
                 
                 Renderer.AddToBuffer(Profile.Color, X, Y, Size, Size);
 
-                if (!Snake.IsAlive)
+                if (!isAlive)
                 {
                     return;
                 }
@@ -466,7 +463,7 @@ namespace SnakeTheResurrection
                 }
             }
 
-            public static void UpdateCoordinates(Direction direction, ref int x, ref int y)
+            protected static void UpdateCoordinates(Direction direction, ref int x, ref int y)
             {
                 if (direction == Direction.UpLeft || direction == Direction.Up || direction == Direction.UpRight)
                 {
