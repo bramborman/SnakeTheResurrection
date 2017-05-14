@@ -14,17 +14,16 @@ namespace SnakeTheResurrection
 
         private static Rectangle gameBoard = new Rectangle();
 
-        public static void Singleplayer()
+        public static bool Singleplayer()
         {
-            bool restart = false;
-
             // Using try-finally to execute things even after 'return'
             try
             {
+                Renderer.ClearBuffer();
                 CreateGameBoard();
 
                 Snake snake = new Snake(ProfileManager.CurrentProfile);
-                new Berry(10);
+                new Berry();
                 
                 while (snake.IsAlive)
                 {
@@ -36,11 +35,10 @@ namespace SnakeTheResurrection
                         switch (PauseMenu())
                         {
                             case MenuResult.Restart:
-                                restart = true;
-                                return;
+                                return true;
                             
                             case MenuResult.MainMenu:
-                                return;
+                                return false;
                             
                             case MenuResult.QuitGame:
                                 Program.Exit();
@@ -59,16 +57,12 @@ namespace SnakeTheResurrection
                     Thread.Sleep(sleep);
                     InputHelper.StopCaching();
                 }
+
+                return false;
             }
             finally
             {
                 InputHelper.ClearCache();
-
-                if (restart)
-                {
-                    Renderer.ClearBuffer();
-                    Singleplayer();
-                }
             }
         }
 
