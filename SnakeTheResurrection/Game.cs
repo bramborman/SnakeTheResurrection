@@ -17,15 +17,34 @@ namespace SnakeTheResurrection
 
         public static bool Play()
         {
-            bool? gameMode = GetGameMode();
+            Renderer.ClearBuffer();
+            int delay;
 
-            if (gameMode == null)
+            while (true)
             {
-                return false;
-            }
-            else
-            {
-                BorderlessMode = gameMode.Value;
+                bool? getGameModeOutput = GetGameMode();
+
+                if (getGameModeOutput == null)
+                {
+                    return false;
+                }
+                else
+                {
+                    BorderlessMode = getGameModeOutput.Value;
+                }
+
+                int? getDelayOutput = GetDelay();
+
+                if (getDelayOutput == null)
+                {
+                    continue;
+                }
+                else
+                {
+                    delay = getDelayOutput.Value;
+                }
+
+                break;
             }
 
             // Using try-finally to execute things even after 'return'
@@ -64,9 +83,8 @@ namespace SnakeTheResurrection
                     }
 #endif
 
-                    int sleep = AppData.Current.EnableRunning && InputHelper.WasKeyPressed(ConsoleKey.Spacebar) ? 5 : 100;
                     InputHelper.StartCaching();
-                    Thread.Sleep(sleep);
+                    Thread.Sleep(delay);
                     InputHelper.StopCaching();
                 }
 
@@ -114,7 +132,7 @@ namespace SnakeTheResurrection
         {
             bool? output = null;
 
-            Symtext.WriteTitle("Mode", 10);
+            Symtext.WriteTitle("Mode", 7);
             new ListMenu
             {
                 Items = new List<MenuItem>
@@ -124,6 +142,27 @@ namespace SnakeTheResurrection
                     new MenuItem(null,          null                    ),
                     new MenuItem("Back",        () => output = null     )
                 }
+            }.InvokeResult();
+
+            return output;
+        }
+
+        private static int? GetDelay()
+        {
+            int? output = null;
+
+            Symtext.WriteTitle("Level", 0);
+            new ListMenu
+            {
+                Items = new List<MenuItem>
+                {
+                    new MenuItem("Easy",    () => output = 200  ),
+                    new MenuItem("Medium",  () => output = 50   ),
+                    new MenuItem("Hard",    () => output = 30   ),
+                    new MenuItem(null,      null                ),
+                    new MenuItem("Back",    () => output = null )
+                },
+                SelectedIndex = 1
             }.InvokeResult();
 
             return output;
