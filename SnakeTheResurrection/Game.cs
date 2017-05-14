@@ -24,33 +24,62 @@ namespace SnakeTheResurrection
         public static bool Play(bool multiplayer)
         {
             Renderer.ClearBuffer();
-            int delay;
+            int delay = 0;
+            Snake[] snakes = null;
 
-            while (true)
+            for (int i = 0;; i++)
             {
-                bool? getGameModeOutput = GetGameMode();
-
-                if (getGameModeOutput == null)
+                // Not using switch to be able to use continue and break
+                if (i == 0)
                 {
-                    return false;
+                    bool? getGameModeOutput = GetGameMode();
+
+                    if (getGameModeOutput == null)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        BorderlessMode = getGameModeOutput.Value;
+                    }
+                }
+                else if (i == 1)
+                {
+                    int? getDelayOutput = GetDelay();
+
+                    if (getDelayOutput == null)
+                    {
+                        i--;
+                        continue;
+                    }
+                    else
+                    {
+                        delay = getDelayOutput.Value;
+                    }
+                }
+                else if (i == 2)
+                {
+                    int playerCount = 1;
+
+                    if (multiplayer)
+                    {
+                        int? getPlayerCountOutput = GetPlayerCount();
+
+                        if (getPlayerCountOutput == null)
+                        {
+                            i--;
+                            continue;
+                        }
+
+                        playerCount = getPlayerCountOutput.Value;
+                    }
+
+                    snakes = new Snake[playerCount];
                 }
                 else
                 {
-                    BorderlessMode = getGameModeOutput.Value;
+                    break;
                 }
-
-                int? getDelayOutput = GetDelay();
-
-                if (getDelayOutput == null)
-                {
-                    continue;
-                }
-                else
-                {
-                    delay = getDelayOutput.Value;
-                }
-
-                break;
             }
 
             // Using try-finally to execute things even after 'return'
@@ -58,13 +87,42 @@ namespace SnakeTheResurrection
             {
                 Renderer.ClearBuffer();
                 CreateGameBoard();
-
-                Snake snake = new Snake(ProfileManager.CurrentProfile);
-                new Berry();
                 
-                while (snake.IsAlive)
+                for (int i = 0; i < snakes.Length; i++)
                 {
-                    snake.Update();
+                    switch (i)
+                    {
+                        case 0:
+                            snakes[i] = new Snake(ProfileManager.CurrentProfile, i, snakes.Length);
+                            break;
+
+                        case 1:
+                            snakes[i] = new Snake(new Profile
+                            {
+                                Name = "Frogpanda",
+                                Color = ConsoleColor.Yellow
+                            }, i, snakes.Length);
+                            snakes[i].Profile.SnakeControls.Left    = ConsoleKey.A;
+                            snakes[i].Profile.SnakeControls.Up      = ConsoleKey.W;
+                            snakes[i].Profile.SnakeControls.Right   = ConsoleKey.D;
+                            snakes[i].Profile.SnakeControls.Down    = ConsoleKey.S;
+
+                            break;
+                    }
+
+                    new Berry();
+                }
+
+                while (snakes.Any(s => s.IsAlive))
+                {
+                    foreach (Snake snake in snakes)
+                    {
+                        if (snake.IsAlive)
+                        {
+                            snake.Update();
+                        }
+                    }
+
                     Renderer.RenderFrame();
 
                     if (InputHelper.WasKeyPressed(ConsoleKey.Escape))
@@ -176,6 +234,11 @@ namespace SnakeTheResurrection
             return output;
         }
 
+        private static int? GetPlayerCount()
+        {
+            return 2;
+        }
+
         private static MenuResult PauseMenu()
         {
             object gameBufferKey    = Renderer.BackupBuffer();
@@ -256,6 +319,16 @@ namespace SnakeTheResurrection
 
         private sealed class Snake : SnakeBody, IEnumerable<SnakeBody>
         {
+            private static readonly List<Snake> _current = new List<Snake>();
+
+            public static IEnumerable<Snake> Current
+            {
+                get
+                {
+                    return _current.AsEnumerable();
+                }
+            }
+
             private SnakeBody tail;
             private int desiredLength = 3;
 
@@ -283,9 +356,10 @@ namespace SnakeTheResurrection
             }
             public int Length { get; private set; }
 
-            public Snake(Profile profile) : base(gameBoardLeft + (gameBoardWidth / 2) - BLOCK_SIZE, gameBoardTop + (gameBoardHeight / 2) - BLOCK_SIZE, Direction.Up, profile)
+            public Snake(Profile profile, int index, int totalSnakeCount) : base(GetX(index, totalSnakeCount), gameBoardTop + (gameBoardHeight / 2) - BLOCK_SIZE, Direction.Up, profile)
             {
                 _isAlive = true;
+                _current.Add(this);
             }
 
             public void Update()
@@ -376,7 +450,12 @@ namespace SnakeTheResurrection
 
             public static void Reset()
             {
-                //_current.Clear();
+                _current.Clear();
+            }
+
+            private static int GetX(int index, int totalSnakeCount)
+            {
+                return gameBoardLeft + ((gameBoardWidth / (totalSnakeCount + 1)) * (index + 1)) - BLOCK_SIZE;
             }
         }
 
@@ -542,28 +621,36 @@ namespace SnakeTheResurrection
                 int y = Y;
                 UpdateCoordinates(Direction, ref x, ref y);
 
-                Snake snake = this as Snake;
+                Snake thisSnake = this as Snake;
                 
                 if (IsHead)
                 {
                     if (!IsInGameBoard(x, y))
                     {
-                        snake.IsAlive = false;
+                        thisSnake.IsAlive = false;
                     }
                     else
                     {
-                        foreach (SnakeBody body in snake)
+                        foreach (Snake snake in Snake.Current)
                         {
-                            if (!ReferenceEquals(this, body) && HitTest(body))
+                            foreach (SnakeBody body in snake)
                             {
-                                snake.IsAlive = false;
+                                if (!ReferenceEquals(this, body) && HitTest(body))
+                                {
+                                    thisSnake.IsAlive = false;
+                                    break;
+                                }
+                            }
+
+                            if (!thisSnake.IsAlive)
+                            {
                                 break;
                             }
                         }
                     }
                 }
 
-                bool isAlive = snake?.IsAlive != false;
+                bool isAlive = thisSnake?.IsAlive != false;
 
                 if (isAlive)
                 {
