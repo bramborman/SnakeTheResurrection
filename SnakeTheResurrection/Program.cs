@@ -78,7 +78,7 @@ namespace SnakeTheResurrection
                 Symtext.WriteTitle("About", 0);
                 Symtext.SetCenteredTextProperties();
                 
-                Symtext.WriteLine($"{Constants.APP_SHORT_NAME} v2.0.0 '{Constants.APP_NAME_ADDITION}'");
+                Symtext.WriteLine($"{Constants.APP_SHORT_NAME} v2.0.1 '{Constants.APP_NAME_ADDITION}'");
                 Symtext.WriteLine("© 2017 Marian Dolinský\n");
 
                 aboutMenu.InvokeResult();
