@@ -99,13 +99,39 @@ namespace SnakeTheResurrection
                         case 1:
                             snakes[i] = new Snake(new Profile
                             {
-                                Name = "Frogpanda",
-                                Color = ConsoleColor.Yellow
+                                Name    = "Frogpanda",
+                                Color   = ConsoleColor.Yellow
                             }, i, snakes.Length);
                             snakes[i].Profile.SnakeControls.Left    = ConsoleKey.A;
                             snakes[i].Profile.SnakeControls.Up      = ConsoleKey.W;
                             snakes[i].Profile.SnakeControls.Right   = ConsoleKey.D;
                             snakes[i].Profile.SnakeControls.Down    = ConsoleKey.S;
+
+                            break;
+
+                        case 2:
+                            snakes[i] = new Snake(new Profile
+                            {
+                                Name    = "Strawberryraspberry",
+                                Color   = ConsoleColor.Green
+                            }, i, snakes.Length);
+                            snakes[i].Profile.SnakeControls.Left    = ConsoleKey.NumPad4;
+                            snakes[i].Profile.SnakeControls.Up      = ConsoleKey.NumPad8;
+                            snakes[i].Profile.SnakeControls.Right   = ConsoleKey.NumPad6;
+                            snakes[i].Profile.SnakeControls.Down    = ConsoleKey.NumPad5;
+
+                            break;
+
+                        case 3:
+                            snakes[i] = new Snake(new Profile
+                            {
+                                Name    = "Lifeescape",
+                                Color   = ConsoleColor.Cyan
+                            }, i, snakes.Length);
+                            snakes[i].Profile.SnakeControls.Left    = ConsoleKey.J;
+                            snakes[i].Profile.SnakeControls.Up      = ConsoleKey.I;
+                            snakes[i].Profile.SnakeControls.Right   = ConsoleKey.L;
+                            snakes[i].Profile.SnakeControls.Down    = ConsoleKey.K;
 
                             break;
                     }
@@ -236,6 +262,7 @@ namespace SnakeTheResurrection
 
         private static int? GetPlayerCount()
         {
+            //TODO: Selection UI
             return 2;
         }
 
