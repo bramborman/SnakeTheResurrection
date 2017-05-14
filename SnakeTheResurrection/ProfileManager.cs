@@ -1,4 +1,5 @@
 ﻿using SnakeTheResurrection.Data;
+using System;
 using System.Collections.Generic;
 
 namespace SnakeTheResurrection
@@ -22,7 +23,11 @@ namespace SnakeTheResurrection
 
         private static void CreateNewProfile()
         {
-            Profile newProfile = new Profile { Color = Constants.ACCENT_COLOR };
+            Profile newProfile = new Profile
+            {
+                Name = "Pandafrog",
+                Color = ConsoleColor.Magenta
+            };
 
             //TODO: UI for customization
 
@@ -37,11 +42,6 @@ namespace SnakeTheResurrection
         public static void LoadProfiles()
         {
             //TODO: Load profiles
-        }
-
-        public static void CreateProfileBadge()
-        {
-            //TODO: Draw profile badge
         }
     }
 }

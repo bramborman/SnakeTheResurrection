@@ -1,8 +1,8 @@
 ﻿using SnakeTheResurrection.Data;
 using SnakeTheResurrection.Utilities;
 using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Threading;
 
@@ -12,10 +12,16 @@ namespace SnakeTheResurrection
     {
         private const int BLOCK_SIZE = 5;
 
-        private static Rectangle gameBoard = new Rectangle();
+        private static int gameBoardLeft;
+        private static int gameBoardTop;
+        private static int gameBoardRight;
+        private static int gameBoardBottom;
+        private static int gameBoardWidth;
+        private static int gameBoardHeight;
+
         private static bool BorderlessMode { get; set; }
 
-        public static bool Play()
+        public static bool Play(bool multiplayer)
         {
             Renderer.ClearBuffer();
             int delay;
@@ -93,39 +99,41 @@ namespace SnakeTheResurrection
             finally
             {
                 InputHelper.ClearCache();
+                Berry.Reset();
+                Snake.Reset();
             }
         }
 
         private static void CreateGameBoard()
         {
-            int windowWidthOverlap      = Console.WindowWidth % BLOCK_SIZE;
-            int windowHeightOverlap     = Console.WindowHeight % BLOCK_SIZE;
-
-            bool showBorders = windowWidthOverlap >= 1 || windowHeightOverlap >= 1 || AppData.Current.ForceGameBoardBorders;
-
-            if (showBorders)
+            int windowWidthOverlap  = Console.WindowWidth % BLOCK_SIZE;
+            int windowHeightOverlap = Console.WindowHeight % BLOCK_SIZE;
+            
+            if (windowWidthOverlap >= 1 || windowHeightOverlap >= 1 || AppData.Current.ForceGameBoardBorders)
             {
-                windowWidthOverlap      += BLOCK_SIZE * 2;
-                windowHeightOverlap     += BLOCK_SIZE * 2;
+                windowWidthOverlap  += BLOCK_SIZE * 2;
+                windowHeightOverlap += BLOCK_SIZE * 2;
             }
 
-            gameBoard.X                 = (int)Math.Round(windowWidthOverlap / 2.0);
-            gameBoard.Y                 = (int)Math.Round(windowHeightOverlap / 2.0);
+            gameBoardLeft                   = (int)Math.Round(windowWidthOverlap / 2.0);
+            gameBoardTop                    = (int)Math.Round(windowHeightOverlap / 2.0);
 
-            int gameBoardBorderRight    = windowWidthOverlap - gameBoard.Left;
-            int gameBoardBorderBottom   = windowHeightOverlap - gameBoard.Top;
+            int gameBoardBorderRightSize    = windowWidthOverlap - gameBoardLeft;
+            int gameBoardBorderBottomSize   = windowHeightOverlap - gameBoardTop;
 
-            gameBoard.Width             = Console.WindowWidth - gameBoardBorderRight - gameBoard.Left;
-            gameBoard.Height            = Console.WindowHeight - gameBoardBorderBottom - gameBoard.Top;
+            gameBoardRight                  = Console.WindowWidth - gameBoardBorderRightSize;
+            gameBoardBottom                 = Console.WindowHeight - gameBoardBorderBottomSize;
 
-            if (showBorders)
-            {
-                Renderer.AddToBuffer(Constants.ACCENT_COLOR_DARK, 0, 0, gameBoard.Left, Console.WindowHeight);
-                Renderer.AddToBuffer(Constants.ACCENT_COLOR_DARK, gameBoard.Right, 0, gameBoardBorderRight, Console.WindowHeight);
+            gameBoardTop                    += gameBoardTop >= 1 ? BLOCK_SIZE : (BLOCK_SIZE * 2);
 
-                Renderer.AddToBuffer(Constants.ACCENT_COLOR_DARK, 0, 0, Console.WindowWidth, gameBoard.Top);
-                Renderer.AddToBuffer(Constants.ACCENT_COLOR_DARK, 0, gameBoard.Bottom, Console.WindowWidth, gameBoardBorderBottom);
-            }
+            Renderer.AddToBuffer(Constants.ACCENT_COLOR_DARK, 0, 0, gameBoardLeft, Console.WindowHeight);
+            Renderer.AddToBuffer(Constants.ACCENT_COLOR_DARK, gameBoardRight, 0, gameBoardBorderRightSize, Console.WindowHeight);
+
+            Renderer.AddToBuffer(Constants.ACCENT_COLOR_DARK, 0, 0, Console.WindowWidth, gameBoardTop);
+            Renderer.AddToBuffer(Constants.ACCENT_COLOR_DARK, 0, gameBoardBottom, Console.WindowWidth, gameBoardBorderBottomSize);
+
+            gameBoardWidth  = gameBoardRight - gameBoardLeft;
+            gameBoardHeight = gameBoardBottom - gameBoardTop;
         }
 
         private static bool? GetGameMode()
@@ -209,7 +217,7 @@ namespace SnakeTheResurrection
                 {
                     if (_x != value)
                     {
-                        ExceptionHelper.ValidateNumberInRange(value, gameBoard.Left, gameBoard.Right - Size, nameof(X));
+                        ExceptionHelper.ValidateNumberInRange(value, gameBoardLeft, gameBoardRight - Size, nameof(X));
                         _x = value;
                     }
                 }
@@ -221,7 +229,7 @@ namespace SnakeTheResurrection
                 {
                     if (_y != value)
                     {
-                        ExceptionHelper.ValidateNumberInRange(value, gameBoard.Top, gameBoard.Bottom - Size, nameof(Y));
+                        ExceptionHelper.ValidateNumberInRange(value, gameBoardTop, gameBoardBottom - Size, nameof(Y));
                         _y = value;
                     }
                 }
@@ -235,18 +243,18 @@ namespace SnakeTheResurrection
 
             protected bool IsInGameBoard(int newX, int newY)
             {
-                return newX >= gameBoard.Left && newY >= gameBoard.Top && newX + Size <= gameBoard.Right && newY + Size <= gameBoard.Bottom;
+                return newX >= gameBoardLeft && newY >= gameBoardTop && newX + Size <= gameBoardRight && newY + Size <= gameBoardBottom;
             }
 
             public void AlignPosition()
             {
                 int alignment = (BLOCK_SIZE % Size) / 2;
-                X = X - (X % BLOCK_SIZE) + (gameBoard.Left % BLOCK_SIZE) + alignment;
-                Y = Y - (Y % BLOCK_SIZE) + (gameBoard.Top % BLOCK_SIZE) + alignment;
+                X = X - (X % BLOCK_SIZE) + (gameBoardLeft % BLOCK_SIZE) + alignment;
+                Y = Y - (Y % BLOCK_SIZE) + (gameBoardTop % BLOCK_SIZE) + alignment;
             }
         }
 
-        private sealed class Snake : SnakeBody
+        private sealed class Snake : SnakeBody, IEnumerable<SnakeBody>
         {
             private SnakeBody tail;
             private int desiredLength = 3;
@@ -275,7 +283,7 @@ namespace SnakeTheResurrection
             }
             public int Length { get; private set; }
 
-            public Snake(Profile profile) : base(gameBoard.Left + (gameBoard.Width / 2) - BLOCK_SIZE, gameBoard.Top + (gameBoard.Height / 2) - BLOCK_SIZE, Direction.Up, profile)
+            public Snake(Profile profile) : base(gameBoardLeft + (gameBoardWidth / 2) - BLOCK_SIZE, gameBoardTop + (gameBoardHeight / 2) - BLOCK_SIZE, Direction.Up, profile)
             {
                 _isAlive = true;
             }
@@ -348,6 +356,27 @@ namespace SnakeTheResurrection
                 {
                     desiredLength += berry.Eat();
                 }
+            }
+
+            public IEnumerator<SnakeBody> GetEnumerator()
+            {
+                SnakeBody body = this;
+
+                while (body != null)
+                {
+                    yield return body;
+                    body = body.NextBody;
+                }
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+
+            public static void Reset()
+            {
+                //_current.Clear();
             }
         }
 
@@ -523,17 +552,13 @@ namespace SnakeTheResurrection
                     }
                     else
                     {
-                        SnakeBody nextBody = NextBody;
-
-                        while (nextBody != null)
+                        foreach (SnakeBody body in snake)
                         {
-                            if (HitTest(nextBody))
+                            if (!ReferenceEquals(this, body) && HitTest(body))
                             {
                                 snake.IsAlive = false;
                                 break;
                             }
-
-                            nextBody = nextBody.NextBody;
                         }
                     }
                 }
@@ -599,22 +624,22 @@ namespace SnakeTheResurrection
 
                 if (BorderlessMode)
                 {
-                    if (y < 0)
+                    if (y < gameBoardTop)
                     {
-                        y = gameBoard.Bottom - SIZE;
+                        y = gameBoardBottom - SIZE;
                     }
-                    else if (y > gameBoard.Bottom - SIZE)
+                    else if (y > gameBoardBottom - SIZE)
                     {
-                        y = 0;
+                        y = gameBoardTop;
                     }
 
-                    if (x < 0)
+                    if (x < gameBoardLeft)
                     {
-                        x = gameBoard.Right - SIZE;
+                        x = gameBoardRight - SIZE;
                     }
-                    else if (x > gameBoard.Right - SIZE)
+                    else if (x > gameBoardRight - SIZE)
                     {
-                        x = 0;
+                        x = gameBoardLeft;
                     }
                 }
             }
@@ -689,8 +714,8 @@ namespace SnakeTheResurrection
                 {
                     regenerate = false;
 
-                    X = random.Next(gameBoard.Left, gameBoard.Right - Size);
-                    Y = random.Next(gameBoard.Top, gameBoard.Bottom - Size);
+                    X = random.Next(gameBoardLeft, gameBoardRight - Size);
+                    Y = random.Next(gameBoardTop, gameBoardBottom - Size);
 
                     // Do not generate berry in a snake xD
                     for (int row = Y; row < Y + Size; row++)
@@ -713,6 +738,11 @@ namespace SnakeTheResurrection
 
                 AlignPosition();
                 Renderer.AddToBuffer(texture, X, Y);
+            }
+
+            public static void Reset()
+            {
+                _current.Clear();
             }
         }
 
