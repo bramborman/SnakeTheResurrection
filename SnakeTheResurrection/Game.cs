@@ -27,7 +27,7 @@ namespace SnakeTheResurrection
             int delay = 0;
             Snake[] snakes = null;
 
-            for (int i = 0;; i++)
+            for (int i = 0; ; i++)
             {
                 // Not using switch to be able to use continue and break
                 if (i == 0)
@@ -146,6 +146,14 @@ namespace SnakeTheResurrection
                         if (snake.IsAlive)
                         {
                             snake.Update();
+                        }
+                    }
+
+                    foreach (Snake snake in snakes)
+                    {
+                        if (snake.IsAlive)
+                        {
+                            snake.LateUpdate();
                         }
                     }
 
@@ -352,7 +360,17 @@ namespace SnakeTheResurrection
             {
                 get
                 {
-                    return _current.AsEnumerable();
+                    foreach (Snake snake in _current.ToList())
+                    {
+                        if (snake.IsAlive)
+                        {
+                            yield return snake;
+                        }
+                        else
+                        {
+                            _current.Remove(snake);
+                        }
+                    }
                 }
             }
 
@@ -383,7 +401,7 @@ namespace SnakeTheResurrection
             }
             public int Length { get; private set; }
 
-            public Snake(Profile profile, int index, int totalSnakeCount) : base(GetX(index, totalSnakeCount), gameBoardTop + (gameBoardHeight / 2) - BLOCK_SIZE, Direction.Up, profile)
+            public Snake(Profile profile, int index, int totalSnakeCount) : base(GetX(index, totalSnakeCount), gameBoardTop + (gameBoardHeight / 2) - BLOCK_SIZE, Direction.Up, profile, null)
             {
                 _isAlive = true;
                 _current.Add(this);
@@ -442,7 +460,7 @@ namespace SnakeTheResurrection
 
                         UpdateCoordinates(inverseDirection, ref newX, ref newY);
 
-                        tail.NextBody   = new SnakeBody(newX, newY, tail.Direction, Profile);
+                        tail.NextBody   = new SnakeBody(newX, newY, tail.Direction, Profile, this);
                         tail            = tail.NextBody;
                     }
 
@@ -458,7 +476,7 @@ namespace SnakeTheResurrection
                     desiredLength += berry.Eat();
                 }
             }
-
+            
             public IEnumerator<SnakeBody> GetEnumerator()
             {
                 SnakeBody body = this;
@@ -491,6 +509,7 @@ namespace SnakeTheResurrection
             private const int SIZE = BLOCK_SIZE;
 
             private readonly List<BendInfo> bendInfo;
+            private readonly Snake snake;
 
             private bool isNew = true;
 
@@ -520,10 +539,11 @@ namespace SnakeTheResurrection
             public Profile Profile { get; }
             public SnakeBody NextBody { get; set; }
 
-            public SnakeBody(int x, int y, Direction direction, Profile profile)
+            public SnakeBody(int x, int y, Direction direction, Profile profile, Snake snake)
             {
                 ExceptionHelper.ValidateObjectNotNull(profile, nameof(profile));
-                
+
+                this.snake  = snake ?? (Snake)this;
                 X           = x;
                 Y           = y;
                 Direction   = direction;
@@ -647,49 +667,16 @@ namespace SnakeTheResurrection
                 int x = X;
                 int y = Y;
                 UpdateCoordinates(Direction, ref x, ref y);
-
-                Snake thisSnake = this as Snake;
                 
-                if (IsHead)
+                if (IsHead && !IsInGameBoard(x, y))
                 {
-                    if (!IsInGameBoard(x, y))
-                    {
-                        thisSnake.IsAlive = false;
-                    }
-                    else
-                    {
-                        foreach (Snake snake in Snake.Current)
-                        {
-                            foreach (SnakeBody body in snake)
-                            {
-                                if (!ReferenceEquals(this, body) && HitTest(body))
-                                {
-                                    thisSnake.IsAlive = false;
-                                    break;
-                                }
-                            }
-
-                            if (!thisSnake.IsAlive)
-                            {
-                                break;
-                            }
-                        }
-                    }
+                    snake.IsAlive = false;
+                    return;
                 }
-
-                bool isAlive = thisSnake?.IsAlive != false;
-
-                if (isAlive)
+                else
                 {
                     X = x;
                     Y = y;
-                }
-                
-                Renderer.AddToBuffer(Profile.Color, X, Y, Size, Size);
-
-                if (!isAlive)
-                {
-                    return;
                 }
 
                 if (NextBody != null)
@@ -713,6 +700,32 @@ namespace SnakeTheResurrection
                 if (removeFirstBendInfo)
                 {
                     bendInfo.RemoveAt(0);
+                }
+            }
+
+            public void LateUpdate()
+            {
+                foreach (Snake otherSnake in Snake.Current)
+                {
+                    foreach (SnakeBody body in otherSnake)
+                    {
+                        if (!ReferenceEquals(this, body) && HitTest(body))
+                        {
+                            snake.IsAlive = false;
+                            break;
+                        }
+                    }
+
+                    if (!snake.IsAlive)
+                    {
+                        break;
+                    }
+                }
+
+                if (snake.IsAlive)
+                {
+                    Renderer.AddToBuffer(Profile.Color, X, Y, Size, Size);
+                    NextBody?.LateUpdate();
                 }
             }
 
