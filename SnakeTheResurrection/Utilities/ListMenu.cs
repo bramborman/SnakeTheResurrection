@@ -97,6 +97,11 @@ namespace SnakeTheResurrection.Utilities
                             {
                                 handled = true;
                                 SelectedIndex--;
+
+                                if (string.IsNullOrWhiteSpace(SelectedItem.Text))
+                                {
+                                    SelectedIndex--;
+                                }
                             }
 
                             break;
@@ -106,6 +111,11 @@ namespace SnakeTheResurrection.Utilities
                             {
                                 handled = true;
                                 SelectedIndex++;
+
+                                if (string.IsNullOrWhiteSpace(SelectedItem.Text))
+                                {
+                                    SelectedIndex++;
+                                }
                             }
 
                             break;

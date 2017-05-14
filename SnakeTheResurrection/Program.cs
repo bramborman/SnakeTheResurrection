@@ -39,12 +39,12 @@ namespace SnakeTheResurrection
                 Items = new List<MenuItem>
                 {
                     // I hope we're not filling the call stack using the while instead of calling the method in itself again to restart
-                    new MenuItem("Singleplayer",    () => { while (Game.Singleplayer()) ; } ),
-                 // new MenuItem("Multiplayer",     null                                    ),
-                    new MenuItem("Profiles",        ProfileManager.ShowProfileSelection     ),
-                 // new MenuItem("Options",         null                                    ),
-                    new MenuItem("About",           About                                   ),
-                    new MenuItem("Quit game",       () => Exit()                            )
+                    new MenuItem("Singleplayer",    () => { while (Game.Play()) ; }     ),
+                 // new MenuItem("Multiplayer",     null                                ),
+                    new MenuItem("Profiles",        ProfileManager.ShowProfileSelection ),
+                 // new MenuItem("Options",         null                                ),
+                    new MenuItem("About",           About                               ),
+                    new MenuItem("Quit game",       () => Exit()                        )
                 }
             };
 

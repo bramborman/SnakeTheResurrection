@@ -13,9 +13,21 @@ namespace SnakeTheResurrection
         private const int BLOCK_SIZE = 5;
 
         private static Rectangle gameBoard = new Rectangle();
+        private static bool BorderlessMode { get; set; }
 
-        public static bool Singleplayer()
+        public static bool Play()
         {
+            bool? gameMode = GetGameMode();
+
+            if (gameMode == null)
+            {
+                return false;
+            }
+            else
+            {
+                BorderlessMode = gameMode.Value;
+            }
+
             // Using try-finally to execute things even after 'return'
             try
             {
@@ -98,25 +110,41 @@ namespace SnakeTheResurrection
             }
         }
 
+        private static bool? GetGameMode()
+        {
+            bool? output = null;
+
+            Symtext.WriteTitle("Mode", 10);
+            new ListMenu
+            {
+                Items = new List<MenuItem>
+                {
+                    new MenuItem("Classic",     () => output = false    ),
+                    new MenuItem("Borderless",  () => output = true     ),
+                    new MenuItem(null,          null                    ),
+                    new MenuItem("Back",        () => output = null     )
+                }
+            }.InvokeResult();
+
+            return output;
+        }
+
         private static MenuResult PauseMenu()
         {
             object gameBufferKey    = Renderer.BackupBuffer();
             MenuResult output       = default(MenuResult);
-
-            ListMenu pauseMenu = new ListMenu
+            
+            Symtext.WriteTitle("Pause", 7);
+            new ListMenu
             {
                 Items = new List<MenuItem>
                 {
-                    new MenuItem("Resume",      () => output = MenuResult.Resume    ),
+                    new MenuItem("Continue",    () => output = MenuResult.Continue  ),
                     new MenuItem("Restart",     () => output = MenuResult.Restart   ),
                     new MenuItem("Main menu",   () => output = MenuResult.MainMenu  ),
                     new MenuItem("Quit game",   () => output = MenuResult.QuitGame  )
                 }
-            };
-            
-            Symtext.Reset();
-            Symtext.CursorTop = (Console.WindowHeight - (pauseMenu.Items.Count * Symtext.CharHeight)) / 2;
-            pauseMenu.InvokeResult();
+            }.InvokeResult();
 
             Renderer.RestoreBuffer(gameBufferKey);
             return output;
@@ -124,7 +152,7 @@ namespace SnakeTheResurrection
 
         private enum MenuResult
         {
-            Resume,
+            Continue,
             Restart,
             MainMenu,
             QuitGame
@@ -286,6 +314,8 @@ namespace SnakeTheResurrection
 
         private class SnakeBody : GameObjectBase
         {
+            private const int SIZE = BLOCK_SIZE;
+
             private readonly List<BendInfo> bendInfo;
 
             private bool isNew = true;
@@ -299,7 +329,7 @@ namespace SnakeTheResurrection
 
             public override int Size
             {
-                get { return BLOCK_SIZE; }
+                get { return SIZE; }
             }
             public Direction Direction
             {
@@ -512,20 +542,41 @@ namespace SnakeTheResurrection
             {
                 if (direction == Direction.UpLeft || direction == Direction.Up || direction == Direction.UpRight)
                 {
-                    y -= BLOCK_SIZE;
+                    y -= SIZE;
                 }
                 else if (direction == Direction.DownLeft || direction == Direction.Down || direction == Direction.DownRight)
                 {
-                    y += BLOCK_SIZE;
+                    y += SIZE;
                 }
 
                 if (direction == Direction.UpLeft || direction == Direction.Left || direction == Direction.DownLeft)
                 {
-                    x -= BLOCK_SIZE;
+                    x -= SIZE;
                 }
                 else if (direction == Direction.UpRight || direction == Direction.Right || direction == Direction.DownRight)
                 {
-                    x += BLOCK_SIZE;
+                    x += SIZE;
+                }
+
+                if (BorderlessMode)
+                {
+                    if (y < 0)
+                    {
+                        y = gameBoard.Bottom - SIZE;
+                    }
+                    else if (y > gameBoard.Bottom - SIZE)
+                    {
+                        y = 0;
+                    }
+
+                    if (x < 0)
+                    {
+                        x = gameBoard.Right - SIZE;
+                    }
+                    else if (x > gameBoard.Right - SIZE)
+                    {
+                        x = 0;
+                    }
                 }
             }
         }
