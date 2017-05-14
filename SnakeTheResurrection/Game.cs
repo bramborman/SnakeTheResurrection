@@ -24,8 +24,8 @@ namespace SnakeTheResurrection
         public static bool Play(bool multiplayer)
         {
             Renderer.ClearBuffer();
-            int delay = 0;
-            Snake[] snakes = null;
+            int delay       = 0;
+            int playerCount = 1;
 
             for (int i = 0; ; i++)
             {
@@ -59,8 +59,6 @@ namespace SnakeTheResurrection
                 }
                 else if (i == 2)
                 {
-                    int playerCount = 1;
-
                     if (multiplayer)
                     {
                         int? getPlayerCountOutput = GetPlayerCount();
@@ -73,8 +71,6 @@ namespace SnakeTheResurrection
 
                         playerCount = getPlayerCountOutput.Value;
                     }
-
-                    snakes = new Snake[playerCount];
                 }
                 else
                 {
@@ -88,73 +84,74 @@ namespace SnakeTheResurrection
                 Renderer.ClearBuffer();
                 CreateGameBoard();
                 
-                for (int i = 0; i < snakes.Length; i++)
+                for (int i = 0; i < playerCount; i++)
                 {
+                    //TODO: Load real profiles here
                     switch (i)
                     {
                         case 0:
-                            snakes[i] = new Snake(ProfileManager.CurrentProfile, i, snakes.Length);
+                            new Snake(ProfileManager.CurrentProfile, i, playerCount);
                             break;
 
                         case 1:
-                            snakes[i] = new Snake(new Profile
                             {
-                                Name    = "Frogpanda",
-                                Color   = ConsoleColor.Yellow
-                            }, i, snakes.Length);
-                            snakes[i].Profile.SnakeControls.Left    = ConsoleKey.A;
-                            snakes[i].Profile.SnakeControls.Up      = ConsoleKey.W;
-                            snakes[i].Profile.SnakeControls.Right   = ConsoleKey.D;
-                            snakes[i].Profile.SnakeControls.Down    = ConsoleKey.S;
+                                Snake snake = new Snake(new Profile
+                                {
+                                    Name    = "Frogpanda",
+                                    Color   = ConsoleColor.Cyan
+                                }, i, playerCount);
+                                snake.Profile.SnakeControls.Left    = ConsoleKey.A;
+                                snake.Profile.SnakeControls.Up      = ConsoleKey.W;
+                                snake.Profile.SnakeControls.Right   = ConsoleKey.D;
+                                snake.Profile.SnakeControls.Down    = ConsoleKey.S;
 
-                            break;
+                                break;
+                            }
 
                         case 2:
-                            snakes[i] = new Snake(new Profile
                             {
-                                Name    = "Strawberryraspberry",
-                                Color   = ConsoleColor.Green
-                            }, i, snakes.Length);
-                            snakes[i].Profile.SnakeControls.Left    = ConsoleKey.NumPad4;
-                            snakes[i].Profile.SnakeControls.Up      = ConsoleKey.NumPad8;
-                            snakes[i].Profile.SnakeControls.Right   = ConsoleKey.NumPad6;
-                            snakes[i].Profile.SnakeControls.Down    = ConsoleKey.NumPad5;
+                                Snake snake = new Snake(new Profile
+                                {
+                                    Name    = "Strawberryraspberry",
+                                    Color   = ConsoleColor.Magenta
+                                }, i, playerCount);
+                                snake.Profile.SnakeControls.Left    = ConsoleKey.NumPad4;
+                                snake.Profile.SnakeControls.Up      = ConsoleKey.NumPad8;
+                                snake.Profile.SnakeControls.Right   = ConsoleKey.NumPad6;
+                                snake.Profile.SnakeControls.Down    = ConsoleKey.NumPad5;
 
-                            break;
+                                break;
+                            }
 
                         case 3:
-                            snakes[i] = new Snake(new Profile
                             {
-                                Name    = "Lifeescape",
-                                Color   = ConsoleColor.Cyan
-                            }, i, snakes.Length);
-                            snakes[i].Profile.SnakeControls.Left    = ConsoleKey.J;
-                            snakes[i].Profile.SnakeControls.Up      = ConsoleKey.I;
-                            snakes[i].Profile.SnakeControls.Right   = ConsoleKey.L;
-                            snakes[i].Profile.SnakeControls.Down    = ConsoleKey.K;
+                                Snake snake = new Snake(new Profile
+                                {
+                                    Name    = "Lifeescape",
+                                    Color   = ConsoleColor.Yellow
+                                }, i, playerCount);
+                                snake.Profile.SnakeControls.Left    = ConsoleKey.J;
+                                snake.Profile.SnakeControls.Up      = ConsoleKey.I;
+                                snake.Profile.SnakeControls.Right   = ConsoleKey.L;
+                                snake.Profile.SnakeControls.Down    = ConsoleKey.K;
 
-                            break;
+                                break;
+                            }
                     }
 
-                    new Berry();
+                    new Berry(10);
                 }
 
-                while (snakes.Any(s => s.IsAlive))
+                while (Snake.Current.Any(s => s.IsAlive))
                 {
-                    foreach (Snake snake in snakes)
+                    foreach (Snake snake in Snake.Current)
                     {
-                        if (snake.IsAlive)
-                        {
-                            snake.Update();
-                        }
+                        snake.Update();
                     }
 
-                    foreach (Snake snake in snakes)
+                    foreach (Snake snake in Snake.Current)
                     {
-                        if (snake.IsAlive)
-                        {
-                            snake.LateUpdate();
-                        }
+                        snake.LateUpdate();
                     }
 
                     Renderer.RenderFrame();
@@ -216,7 +213,8 @@ namespace SnakeTheResurrection
             gameBoardRight                  = Console.WindowWidth - gameBoardBorderRightSize;
             gameBoardBottom                 = Console.WindowHeight - gameBoardBorderBottomSize;
 
-            gameBoardTop                    += gameBoardTop >= 1 ? BLOCK_SIZE : (BLOCK_SIZE * 2);
+            //TODO: Status bar
+            // gameBoardTop                    += gameBoardTop >= 1 ? BLOCK_SIZE : (BLOCK_SIZE * 2);
 
             Renderer.AddToBuffer(Constants.ACCENT_COLOR_DARK, 0, 0, gameBoardLeft, Console.WindowHeight);
             Renderer.AddToBuffer(Constants.ACCENT_COLOR_DARK, gameBoardRight, 0, gameBoardBorderRightSize, Console.WindowHeight);
