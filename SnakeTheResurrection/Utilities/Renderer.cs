@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace SnakeTheResurrection.Utilities
@@ -10,8 +11,10 @@ namespace SnakeTheResurrection.Utilities
         private static readonly int bufferHeight;
         private static readonly int bufferWidth;
         private static readonly short[] lpAttribute;
-        
-        public static ConsoleColor[,] Buffer { get; }
+
+        private static Dictionary<object, ConsoleColor[,]> bufferBackups;
+
+        public static ConsoleColor[,] Buffer { get; private set; }
 
         static Renderer()
         {
@@ -104,6 +107,39 @@ namespace SnakeTheResurrection.Utilities
         {
             Array.Clear(Buffer, 0, Buffer.Length);
             // AddToBuffer(Constants.BACKGROUND_COLOR, 0, 0, bufferHeight, bufferWidth);
+        }
+
+        public static object BackupBuffer()
+        {
+            lock (syncRoot)
+            {
+                if (bufferBackups == null)
+                {
+                    bufferBackups = new Dictionary<object, ConsoleColor[,]>();
+                }
+
+                object key = new object();
+                bufferBackups.Add(key, Buffer);
+                Buffer = new ConsoleColor[bufferHeight, bufferWidth];
+
+                return key;
+            }
+        }
+
+        public static void RestoreBuffer(object key)
+        {
+            lock (syncRoot)
+            {
+                ExceptionHelper.ValidateObjectNotNull(key, nameof(key));
+                ExceptionHelper.ValidateObjectNotNull(bufferBackups, null);
+
+                Buffer = bufferBackups[key];
+
+                if (bufferBackups.Count == 0)
+                {
+                    bufferBackups = null;
+                }
+            }
         }
 
         [DllImport("kernel32.dll")]

@@ -743,9 +743,7 @@ namespace SnakeTheResurrection.Utilities
         static Symtext()
         {
             SyncRoot            = new object();
-            FontSize            = 1;
-            ForegroundColor     = Constants.FOREGROUND_COLOR;
-            BackgroundColor     = Constants.BACKGROUND_COLOR;
+            Reset();
         }
         
         private static void FillCharacterSpacingBackgroundFiller()
@@ -763,6 +761,21 @@ namespace SnakeTheResurrection.Utilities
         {
             CursorLeft   = left;
             CursorTop   = top;
+        }
+
+        public static void Reset()
+        {
+            lock (SyncRoot)
+            {
+                CursorLeft          = 0;
+                CursorTop           = 0;
+                FontSize            = 1;
+                ScalingStyle        = default(SymtextScalingStyle);
+                ForegroundColor     = Constants.FOREGROUND_COLOR;
+                BackgroundColor     = Constants.BACKGROUND_COLOR;
+                HorizontalAlignment = default(HorizontalAlignment);
+                VerticalAlignment   = default(VerticalAlignment);
+            }
         }
 
         public static void Write(object value)

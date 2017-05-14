@@ -23,11 +23,17 @@ namespace SnakeTheResurrection.Data
             get { return (bool)GetValue(); }
             set { SetValue(value); }
         }
+        public bool EnableRunning
+        {
+            get { return (bool)GetValue(); }
+            set { SetValue(value); }
+        }
         
         public AppData()
         {
             RegisterProperty(nameof(EnableDiagonalMovement), typeof(bool), true);
             RegisterProperty(nameof(ForceGameBoardBorders), typeof(bool), false);
+            RegisterProperty(nameof(EnableRunning), typeof(bool), true);
         }
         
         public void Save()

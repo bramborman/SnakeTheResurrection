@@ -16,13 +16,15 @@ namespace SnakeTheResurrection
 
         public static void Singleplayer()
         {
+            bool restart = false;
+
             // Using try-finally to execute things even after 'return'
             try
             {
                 CreateGameBoard();
 
                 Snake snake = new Snake(ProfileManager.CurrentProfile);
-                Berry berry = new Berry(10);
+                new Berry(10);
                 
                 while (snake.IsAlive)
                 {
@@ -31,8 +33,19 @@ namespace SnakeTheResurrection
 
                     if (InputHelper.WasKeyPressed(ConsoleKey.Escape))
                     {
-                        //TODO: Show pause menu
-                        return;
+                        switch (PauseMenu())
+                        {
+                            case MenuResult.Restart:
+                                restart = true;
+                                return;
+                            
+                            case MenuResult.MainMenu:
+                                return;
+                            
+                            case MenuResult.QuitGame:
+                                Program.Exit();
+                                break;
+                        }
                     }
 #if DEBUG
                     else if (InputHelper.WasKeyPressed(ConsoleKey.B))
@@ -41,7 +54,7 @@ namespace SnakeTheResurrection
                     }
 #endif
 
-                    int sleep = InputHelper.WasKeyPressed(ConsoleKey.Spacebar) ? 5 : 100;
+                    int sleep = AppData.Current.EnableRunning && InputHelper.WasKeyPressed(ConsoleKey.Spacebar) ? 5 : 100;
                     InputHelper.StartCaching();
                     Thread.Sleep(sleep);
                     InputHelper.StopCaching();
@@ -50,6 +63,12 @@ namespace SnakeTheResurrection
             finally
             {
                 InputHelper.ClearCache();
+
+                if (restart)
+                {
+                    Renderer.ClearBuffer();
+                    Singleplayer();
+                }
             }
         }
 
@@ -83,6 +102,38 @@ namespace SnakeTheResurrection
                 Renderer.AddToBuffer(Constants.ACCENT_COLOR_DARK, 0, 0, Console.WindowWidth, gameBoard.Top);
                 Renderer.AddToBuffer(Constants.ACCENT_COLOR_DARK, 0, gameBoard.Bottom, Console.WindowWidth, gameBoardBorderBottom);
             }
+        }
+
+        private static MenuResult PauseMenu()
+        {
+            object gameBufferKey    = Renderer.BackupBuffer();
+            MenuResult output       = default(MenuResult);
+
+            ListMenu pauseMenu = new ListMenu
+            {
+                Items = new List<MenuItem>
+                {
+                    new MenuItem("Resume",      () => output = MenuResult.Resume    ),
+                    new MenuItem("Restart",     () => output = MenuResult.Restart   ),
+                    new MenuItem("Main menu",   () => output = MenuResult.MainMenu  ),
+                    new MenuItem("Quit game",   () => output = MenuResult.QuitGame  )
+                }
+            };
+            
+            Symtext.Reset();
+            Symtext.CursorTop = (Console.WindowHeight - (pauseMenu.Items.Count * Symtext.CharHeight)) / 2;
+            pauseMenu.InvokeResult();
+
+            Renderer.RestoreBuffer(gameBufferKey);
+            return output;
+        }
+
+        private enum MenuResult
+        {
+            Resume,
+            Restart,
+            MainMenu,
+            QuitGame
         }
 
         private abstract class GameObjectBase

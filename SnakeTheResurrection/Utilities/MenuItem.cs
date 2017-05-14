@@ -31,7 +31,7 @@ namespace SnakeTheResurrection.Utilities
                 }
             }
         }
-
+        
         public MenuItem(string text, Action action)
         {
             Text    = text;
