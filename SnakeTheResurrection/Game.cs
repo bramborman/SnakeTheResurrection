@@ -23,7 +23,6 @@ namespace SnakeTheResurrection
 
         public static bool Play(bool multiplayer)
         {
-            AppData.Current.ForceGameBoardBorders = true;
             Renderer.ClearBuffer();
             int delay       = 0;
             int playerCount = 1;
