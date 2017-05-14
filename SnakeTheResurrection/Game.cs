@@ -23,6 +23,7 @@ namespace SnakeTheResurrection
 
         public static bool Play(bool multiplayer)
         {
+            AppData.Current.ForceGameBoardBorders = true;
             Renderer.ClearBuffer();
             int delay       = 0;
             int playerCount = 1;
@@ -49,7 +50,7 @@ namespace SnakeTheResurrection
 
                     if (getDelayOutput == null)
                     {
-                        i--;
+                        i -= 2;
                         continue;
                     }
                     else
@@ -65,7 +66,7 @@ namespace SnakeTheResurrection
 
                         if (getPlayerCountOutput == null)
                         {
-                            i--;
+                            i -= 2;
                             continue;
                         }
 
@@ -703,20 +704,23 @@ namespace SnakeTheResurrection
 
             public void LateUpdate()
             {
-                foreach (Snake otherSnake in Snake.Current)
+                if (IsHead)
                 {
-                    foreach (SnakeBody body in otherSnake)
+                    foreach (Snake otherSnake in Snake.Current)
                     {
-                        if (!ReferenceEquals(this, body) && HitTest(body))
+                        foreach (SnakeBody body in otherSnake)
                         {
-                            snake.IsAlive = false;
+                            if (!ReferenceEquals(this, body) && HitTest(body))
+                            {
+                                snake.IsAlive = false;
+                                break;
+                            }
+                        }
+
+                        if (!snake.IsAlive)
+                        {
                             break;
                         }
-                    }
-
-                    if (!snake.IsAlive)
-                    {
-                        break;
                     }
                 }
 

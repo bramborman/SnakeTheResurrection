@@ -120,10 +120,49 @@ namespace SnakeTheResurrection.Utilities
 
                             break;
 
+                        case ConsoleKey.LeftArrow:
+                            {
+                                MenuSwitchItem selectedMenuSwitchItem = SelectedItem as MenuSwitchItem;
+
+                                if (selectedMenuSwitchItem != null)
+                                {
+                                    handled = true;
+                                    selectedMenuSwitchItem.IsOn = true;
+                                }
+
+                                break;
+                            }
+
+                        case ConsoleKey.RightArrow:
+                            {
+                                MenuSwitchItem selectedMenuSwitchItem = SelectedItem as MenuSwitchItem;
+
+                                if (selectedMenuSwitchItem != null)
+                                {
+                                    handled = true;
+                                    selectedMenuSwitchItem.IsOn = false;
+                                }
+
+                                break;
+                            }
+
                         case ConsoleKey.Enter:
-                            handled = true;
-                            Renderer.ClearBuffer();
-                            return SelectedIndex;
+                            {
+                                handled = true;
+
+                                MenuSwitchItem selectedMenuSwitchItem = SelectedItem as MenuSwitchItem;
+
+                                if (selectedMenuSwitchItem != null)
+                                {
+                                    selectedMenuSwitchItem.IsOn = !selectedMenuSwitchItem.IsOn;
+                                    break;
+                                }
+                                else
+                                {
+                                    Renderer.ClearBuffer();
+                                    return SelectedIndex;
+                                }
+                            }
                     }
                 }
             }
