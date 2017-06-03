@@ -17,12 +17,27 @@ namespace SnakeTheResurrection
             // Console.InputEncoding   = Constants.encoding;
             // Console.OutputEncoding  = Constants.encoding;
 
-            // Run the static constructor of Renderer
-            RuntimeHelpers.RunClassConstructor(typeof(Renderer).TypeHandle);
-
             AppData.Load();
+
+            List<string> appDataParseStatus = AppData.Current.TryParse(args);
+            appDataParseStatus.ForEach(Console.WriteLine);
+
+            if (appDataParseStatus.Count != 0)
+            {
+                Console.Write("Press any key to continue or press escape to exit . . .");
+
+                if (Console.ReadKey(true).Key == ConsoleKey.Escape)
+                {
+                    return;
+                }
+
+                Console.Clear();
+            }
+
             ProfileManager.LoadProfiles();
 
+            // Run the static constructor of Renderer
+            RuntimeHelpers.RunClassConstructor(typeof(Renderer).TypeHandle);
             MainMenu();
 
 #if DEBUG
@@ -38,11 +53,13 @@ namespace SnakeTheResurrection
             {
                 Items = new List<MenuItem>
                 {
+#pragma warning disable IDE0011 // Add braces
                     // I hope we're not filling the call stack using the while instead of calling the method in itself again to restart
                     new MenuItem("Singleplayer",    () => { while (Game.Play(false)) ; }    ),
                     new MenuItem("Multiplayer",     () => { while (Game.Play(true)) ; }     ),
                     new MenuItem("About",           About                                   ),
                     new MenuItem("Quit game",       () => Exit()                            )
+#pragma warning restore IDE0011 // Add braces
                 }
             };
 

@@ -172,10 +172,12 @@ namespace SnakeTheResurrection
                         }
                     }
 #if DEBUG
+#pragma warning disable IDE0011 // Add braces
                     else if (InputHelper.WasKeyPressed(ConsoleKey.B))
                     {
                         while (Console.ReadKey(true).Key != ConsoleKey.B) ;
                     }
+#pragma warning restore IDE0011 // Add braces
 #endif
 
                     InputHelper.StartCaching();
