@@ -3,6 +3,7 @@ using SnakeTheResurrection.Utilities;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 
@@ -19,14 +20,177 @@ namespace SnakeTheResurrection
         private static int gameBoardWidth;
         private static int gameBoardHeight;
 
-        private static bool BorderlessMode { get; set; }
+        private static bool borderlessMode;
+        private static int delay;
+        private static int playerCount = 1;
 
         public static bool Play(bool multiplayer)
         {
-            Renderer.ClearBuffer();
-            int delay       = 0;
-            int playerCount = 1;
+            InputHelper.ClearCache();
+            Berry.Reset();
+            Snake.Reset();
 
+            Renderer.ClearBuffer();
+
+            if (!GetGameSettings(multiplayer))
+            {
+                return false;
+            }
+
+            Renderer.ClearBuffer();
+            CreateGameBoard();
+                
+            for (int i = 0; i < playerCount; i++)
+            {
+                //TODO: Load real profiles here
+                switch (i)
+                {
+                    case 0:
+                        new Snake(ProfileManager.CurrentProfile, i, playerCount);
+                        break;
+
+                    case 1:
+                        {
+                            Snake snake = new Snake(new Profile
+                            {
+                                Name = "Frogpanda",
+                                Color = ConsoleColor.Cyan
+                            }, i, playerCount);
+                            snake.Profile.SnakeControls.Left    = ConsoleKey.A;
+                            snake.Profile.SnakeControls.Up      = ConsoleKey.W;
+                            snake.Profile.SnakeControls.Right   = ConsoleKey.D;
+                            snake.Profile.SnakeControls.Down    = ConsoleKey.S;
+
+                            break;
+                        }
+
+                    case 2:
+                        {
+                            Snake snake = new Snake(new Profile
+                            {
+                                Name = "Strawberryraspberry",
+                                Color = ConsoleColor.Magenta
+                            }, i, playerCount);
+                            snake.Profile.SnakeControls.Left    = ConsoleKey.NumPad4;
+                            snake.Profile.SnakeControls.Up      = ConsoleKey.NumPad8;
+                            snake.Profile.SnakeControls.Right   = ConsoleKey.NumPad6;
+                            snake.Profile.SnakeControls.Down    = ConsoleKey.NumPad5;
+
+                            break;
+                        }
+
+                    case 3:
+                        {
+                            Snake snake = new Snake(new Profile
+                            {
+                                Name = "Lifeescape",
+                                Color = ConsoleColor.Yellow
+                            }, i, playerCount);
+                            snake.Profile.SnakeControls.Left    = ConsoleKey.J;
+                            snake.Profile.SnakeControls.Up      = ConsoleKey.I;
+                            snake.Profile.SnakeControls.Right   = ConsoleKey.L;
+                            snake.Profile.SnakeControls.Down    = ConsoleKey.K;
+
+                            break;
+                        }
+                }
+
+                new Berry(10);
+            }
+
+            Stopwatch stopwatch = new Stopwatch();
+
+            while (Snake.Current.Any(s => s.IsAlive))
+            {
+                stopwatch.Restart();
+
+                foreach (Snake snake in Snake.Current)
+                {
+                    snake.Update();
+                }
+
+                foreach (Snake snake in Snake.Current)
+                {
+                    snake.LateUpdate();
+                }
+
+                Renderer.RenderFrame();
+
+                if (InputHelper.WasKeyPressed(ConsoleKey.Escape))
+                {
+                    switch (PauseMenu())
+                    {
+                        case MenuResult.Restart:
+                            return true;
+                            
+                        case MenuResult.MainMenu:
+                            return false;
+                            
+                        case MenuResult.QuitGame:
+                            Program.Exit();
+                            break;
+                    }
+                }
+#if DEBUG
+#pragma warning disable IDE0011 // Add braces
+                else if (InputHelper.WasKeyPressed(ConsoleKey.Pause))
+                {
+                    while (Console.ReadKey(true).Key != ConsoleKey.Pause) ;
+                }
+#pragma warning restore IDE0011 // Add braces
+#endif
+
+                InputHelper.ClearCache();
+                stopwatch.Stop();
+
+                int currentDelay = Math.Max(0, delay - stopwatch.Elapsed.Milliseconds);
+
+                if (currentDelay != 0)
+                {
+                    InputHelper.StartCaching();
+                    Thread.Sleep(currentDelay);
+                    InputHelper.StopCaching();
+                }
+            }
+
+            return false;
+        }
+
+        private static void CreateGameBoard()
+        {
+            int windowWidthOverlap  = Console.WindowWidth % BLOCK_SIZE;
+            int windowHeightOverlap = Console.WindowHeight % BLOCK_SIZE;
+            
+            if (windowWidthOverlap >= 1 || windowHeightOverlap >= 1 || AppData.Current.ForceGameBoardBorders)
+            {
+                windowWidthOverlap  += BLOCK_SIZE * 2;
+                windowHeightOverlap += BLOCK_SIZE * 2;
+            }
+
+            gameBoardLeft                   = (int)Math.Round(windowWidthOverlap / 2.0);
+            gameBoardTop                    = (int)Math.Round(windowHeightOverlap / 2.0);
+
+            int gameBoardBorderRightSize    = windowWidthOverlap - gameBoardLeft;
+            int gameBoardBorderBottomSize   = windowHeightOverlap - gameBoardTop;
+
+            gameBoardRight                  = Console.WindowWidth - gameBoardBorderRightSize;
+            gameBoardBottom                 = Console.WindowHeight - gameBoardBorderBottomSize;
+
+            //TODO: Status bar
+            // gameBoardTop                    += gameBoardTop >= 1 ? BLOCK_SIZE : (BLOCK_SIZE * 2);
+
+            Renderer.AddToBuffer(Constants.ACCENT_COLOR_DARK, 0, 0, gameBoardLeft, Console.WindowHeight);
+            Renderer.AddToBuffer(Constants.ACCENT_COLOR_DARK, gameBoardRight, 0, gameBoardBorderRightSize, Console.WindowHeight);
+
+            Renderer.AddToBuffer(Constants.ACCENT_COLOR_DARK, 0, 0, Console.WindowWidth, gameBoardTop);
+            Renderer.AddToBuffer(Constants.ACCENT_COLOR_DARK, 0, gameBoardBottom, Console.WindowWidth, gameBoardBorderBottomSize);
+
+            gameBoardWidth  = gameBoardRight - gameBoardLeft;
+            gameBoardHeight = gameBoardBottom - gameBoardTop;
+        }
+
+        private static bool GetGameSettings(bool multiplayer)
+        {
             for (int i = 0; ; i++)
             {
                 // Not using switch to be able to use continue and break
@@ -40,7 +204,7 @@ namespace SnakeTheResurrection
                     }
                     else
                     {
-                        BorderlessMode = getGameModeOutput.Value;
+                        borderlessMode = getGameModeOutput.Value;
                     }
                 }
                 else if (i == 1)
@@ -78,154 +242,7 @@ namespace SnakeTheResurrection
                 }
             }
 
-            // Using try-finally to execute things even after 'return'
-            try
-            {
-                Renderer.ClearBuffer();
-                CreateGameBoard();
-                
-                for (int i = 0; i < playerCount; i++)
-                {
-                    //TODO: Load real profiles here
-                    switch (i)
-                    {
-                        case 0:
-                            new Snake(ProfileManager.CurrentProfile, i, playerCount);
-                            break;
-
-                        case 1:
-                            {
-                                Snake snake = new Snake(new Profile
-                                {
-                                    Name    = "Frogpanda",
-                                    Color   = ConsoleColor.Cyan
-                                }, i, playerCount);
-                                snake.Profile.SnakeControls.Left    = ConsoleKey.A;
-                                snake.Profile.SnakeControls.Up      = ConsoleKey.W;
-                                snake.Profile.SnakeControls.Right   = ConsoleKey.D;
-                                snake.Profile.SnakeControls.Down    = ConsoleKey.S;
-
-                                break;
-                            }
-
-                        case 2:
-                            {
-                                Snake snake = new Snake(new Profile
-                                {
-                                    Name    = "Strawberryraspberry",
-                                    Color   = ConsoleColor.Magenta
-                                }, i, playerCount);
-                                snake.Profile.SnakeControls.Left    = ConsoleKey.NumPad4;
-                                snake.Profile.SnakeControls.Up      = ConsoleKey.NumPad8;
-                                snake.Profile.SnakeControls.Right   = ConsoleKey.NumPad6;
-                                snake.Profile.SnakeControls.Down    = ConsoleKey.NumPad5;
-
-                                break;
-                            }
-
-                        case 3:
-                            {
-                                Snake snake = new Snake(new Profile
-                                {
-                                    Name    = "Lifeescape",
-                                    Color   = ConsoleColor.Yellow
-                                }, i, playerCount);
-                                snake.Profile.SnakeControls.Left    = ConsoleKey.J;
-                                snake.Profile.SnakeControls.Up      = ConsoleKey.I;
-                                snake.Profile.SnakeControls.Right   = ConsoleKey.L;
-                                snake.Profile.SnakeControls.Down    = ConsoleKey.K;
-
-                                break;
-                            }
-                    }
-
-                    new Berry(10);
-                }
-
-                while (Snake.Current.Any(s => s.IsAlive))
-                {
-                    foreach (Snake snake in Snake.Current)
-                    {
-                        snake.Update();
-                    }
-
-                    foreach (Snake snake in Snake.Current)
-                    {
-                        snake.LateUpdate();
-                    }
-
-                    Renderer.RenderFrame();
-
-                    if (InputHelper.WasKeyPressed(ConsoleKey.Escape))
-                    {
-                        switch (PauseMenu())
-                        {
-                            case MenuResult.Restart:
-                                return true;
-                            
-                            case MenuResult.MainMenu:
-                                return false;
-                            
-                            case MenuResult.QuitGame:
-                                Program.Exit();
-                                break;
-                        }
-                    }
-#if DEBUG
-#pragma warning disable IDE0011 // Add braces
-                    else if (InputHelper.WasKeyPressed(ConsoleKey.B))
-                    {
-                        while (Console.ReadKey(true).Key != ConsoleKey.B) ;
-                    }
-#pragma warning restore IDE0011 // Add braces
-#endif
-
-                    InputHelper.StartCaching();
-                    Thread.Sleep(delay);
-                    InputHelper.StopCaching();
-                }
-
-                return false;
-            }
-            finally
-            {
-                InputHelper.ClearCache();
-                Berry.Reset();
-                Snake.Reset();
-            }
-        }
-
-        private static void CreateGameBoard()
-        {
-            int windowWidthOverlap  = Console.WindowWidth % BLOCK_SIZE;
-            int windowHeightOverlap = Console.WindowHeight % BLOCK_SIZE;
-            
-            if (windowWidthOverlap >= 1 || windowHeightOverlap >= 1 || AppData.Current.ForceGameBoardBorders)
-            {
-                windowWidthOverlap  += BLOCK_SIZE * 2;
-                windowHeightOverlap += BLOCK_SIZE * 2;
-            }
-
-            gameBoardLeft                   = (int)Math.Round(windowWidthOverlap / 2.0);
-            gameBoardTop                    = (int)Math.Round(windowHeightOverlap / 2.0);
-
-            int gameBoardBorderRightSize    = windowWidthOverlap - gameBoardLeft;
-            int gameBoardBorderBottomSize   = windowHeightOverlap - gameBoardTop;
-
-            gameBoardRight                  = Console.WindowWidth - gameBoardBorderRightSize;
-            gameBoardBottom                 = Console.WindowHeight - gameBoardBorderBottomSize;
-
-            //TODO: Status bar
-            // gameBoardTop                    += gameBoardTop >= 1 ? BLOCK_SIZE : (BLOCK_SIZE * 2);
-
-            Renderer.AddToBuffer(Constants.ACCENT_COLOR_DARK, 0, 0, gameBoardLeft, Console.WindowHeight);
-            Renderer.AddToBuffer(Constants.ACCENT_COLOR_DARK, gameBoardRight, 0, gameBoardBorderRightSize, Console.WindowHeight);
-
-            Renderer.AddToBuffer(Constants.ACCENT_COLOR_DARK, 0, 0, Console.WindowWidth, gameBoardTop);
-            Renderer.AddToBuffer(Constants.ACCENT_COLOR_DARK, 0, gameBoardBottom, Console.WindowWidth, gameBoardBorderBottomSize);
-
-            gameBoardWidth  = gameBoardRight - gameBoardLeft;
-            gameBoardHeight = gameBoardBottom - gameBoardTop;
+            return true;
         }
 
         private static bool? GetGameMode()
@@ -344,11 +361,11 @@ namespace SnakeTheResurrection
                 return newX >= gameBoardLeft && newY >= gameBoardTop && newX + Size <= gameBoardRight && newY + Size <= gameBoardBottom;
             }
 
-            public void AlignPosition()
+            public void AlignToGrid()
             {
-                int alignment = (BLOCK_SIZE % Size) / 2;
-                X = X - (X % BLOCK_SIZE) + (gameBoardLeft % BLOCK_SIZE) + alignment;
-                Y = Y - (Y % BLOCK_SIZE) + (gameBoardTop % BLOCK_SIZE) + alignment;
+                int padding = (BLOCK_SIZE % Size) / 2;
+                X = X - (X % BLOCK_SIZE) + (gameBoardLeft % BLOCK_SIZE) + padding;
+                Y = Y - (Y % BLOCK_SIZE) + (gameBoardTop % BLOCK_SIZE) + padding;
             }
         }
 
@@ -413,7 +430,7 @@ namespace SnakeTheResurrection
                 {
                     if (tail == null)
                     {
-                        AlignPosition();
+                        AlignToGrid();
                         tail = this;
                     }
                     else
@@ -752,7 +769,7 @@ namespace SnakeTheResurrection
                     x += SIZE;
                 }
 
-                if (BorderlessMode)
+                if (borderlessMode)
                 {
                     if (y < gameBoardTop)
                     {
@@ -847,6 +864,8 @@ namespace SnakeTheResurrection
                     X = random.Next(gameBoardLeft, gameBoardRight - Size);
                     Y = random.Next(gameBoardTop, gameBoardBottom - Size);
 
+                    AlignToGrid();
+
                     // Do not generate berry in a snake xD
                     for (int row = Y; row < Y + Size; row++)
                     {
@@ -866,7 +885,6 @@ namespace SnakeTheResurrection
                     }
                 } while (regenerate);
 
-                AlignPosition();
                 Renderer.AddToBuffer(texture, X, Y);
             }
 
