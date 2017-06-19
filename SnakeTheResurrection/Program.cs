@@ -44,7 +44,7 @@ namespace SnakeTheResurrection
 #if DEBUG
             throw new Exception("Y u do dis ಠ_ಠ");
 #else
-            Exit();
+            FullExit();
 #endif
         }
         
