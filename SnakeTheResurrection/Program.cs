@@ -3,6 +3,7 @@ using SnakeTheResurrection.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace SnakeTheResurrection
@@ -94,15 +95,16 @@ namespace SnakeTheResurrection
             {
                 Symtext.WriteTitle("About", 0);
                 Symtext.SetCenteredTextProperties();
-                
-                Symtext.WriteLine($"{Constants.APP_SHORT_NAME} v2.0.1 '{Constants.APP_NAME_ADDITION}'");
+
+                Version gameVersion = Assembly.GetExecutingAssembly().GetName().Version;
+                Symtext.WriteLine($"{Constants.APP_SHORT_NAME} v{gameVersion.Major}.{gameVersion.Minor}.{gameVersion.Build} '{Constants.APP_NAME_ADDITION}'");
                 Symtext.WriteLine("© 2017 Marian Dolinský\n");
 
                 aboutMenu.InvokeResult();
             } while (!goBack);
         }
 
-        public static void FullExit(bool error = false, [CallerMemberName]string callerMemberName = null)
+        public static void FullExit(bool error = false)
         {
             if (!error)
             {
@@ -110,7 +112,7 @@ namespace SnakeTheResurrection
                 ProfileManager.SaveProfiles();
             }
 
-            Environment.Exit(error || callerMemberName == nameof(Main)? 1 : 0);
+            Environment.Exit(error ? 1 : 0);
         }
     }
 }
