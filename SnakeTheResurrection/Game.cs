@@ -127,7 +127,7 @@ namespace SnakeTheResurrection
                             return false;
                             
                         case MenuResult.QuitGame:
-                            Program.Exit();
+                            Program.FullExit();
                             break;
                     }
                 }

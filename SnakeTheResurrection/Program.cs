@@ -58,7 +58,7 @@ namespace SnakeTheResurrection
                     new MenuItem("Singleplayer",    () => { while (Game.Play(false)) ; }    ),
                     new MenuItem("Multiplayer",     () => { while (Game.Play(true)) ; }     ),
                     new MenuItem("About",           About                                   ),
-                    new MenuItem("Quit game",       () => Exit()                            )
+                    new MenuItem("Quit game",       () => FullExit()                        )
 #pragma warning restore IDE0011 // Add braces
                 }
             };
@@ -102,16 +102,15 @@ namespace SnakeTheResurrection
             } while (!goBack);
         }
 
-        public static void Exit([CallerMemberName]string callerMemberName = null)
+        public static void FullExit(bool error = false, [CallerMemberName]string callerMemberName = null)
         {
-            AppData.Current.Save();
-            ProfileManager.SaveProfiles();
-            Environment.Exit(callerMemberName == nameof(Main) ? 1 : 0);
-        }
+            if (!error)
+            {
+                AppData.Current.Save();
+                ProfileManager.SaveProfiles();
+            }
 
-        public static void ExitWithError()
-        {
-            Environment.Exit(1);
+            Environment.Exit(error || callerMemberName == nameof(Main)? 1 : 0);
         }
     }
 }

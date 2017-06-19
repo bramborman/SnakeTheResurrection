@@ -80,7 +80,7 @@ namespace SnakeTheResurrection.Utilities
 
             if (exitProgram)
             {
-                Program.ExitWithError();
+                Program.FullExit(true);
             }
 
             return output;
