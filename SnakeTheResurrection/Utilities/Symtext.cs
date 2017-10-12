@@ -960,7 +960,7 @@ namespace SnakeTheResurrection.Utilities
 
         private static bool[,] GetBoolChar(char ch)
         {
-            switch (char.ToLower(ch))
+            switch (char.ToLowerInvariant(ch))
             {
                 case 'a': return a;
                 case 'b': return b;

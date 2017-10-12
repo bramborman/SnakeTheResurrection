@@ -3,6 +3,7 @@ using SnakeTheResurrection.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace SnakeTheResurrection
@@ -17,18 +18,33 @@ namespace SnakeTheResurrection
             // Console.InputEncoding   = Constants.encoding;
             // Console.OutputEncoding  = Constants.encoding;
 
-            // Run the static constructor of Renderer
-            RuntimeHelpers.RunClassConstructor(typeof(Renderer).TypeHandle);
-
             AppData.Load();
+
+            List<string> appDataParseStatus = AppData.Current.TryParse(args);
+            appDataParseStatus.ForEach(Console.WriteLine);
+
+            if (appDataParseStatus.Count != 0)
+            {
+                Console.Write("Press any key to continue or press escape to exit . . .");
+
+                if (Console.ReadKey(true).Key == ConsoleKey.Escape)
+                {
+                    return;
+                }
+
+                Console.Clear();
+            }
+
             ProfileManager.LoadProfiles();
 
+            // Run the static constructor of Renderer
+            RuntimeHelpers.RunClassConstructor(typeof(Renderer).TypeHandle);
             MainMenu();
 
 #if DEBUG
             throw new Exception("Y u do dis ಠ_ಠ");
 #else
-            Exit();
+            FullExit();
 #endif
         }
         
@@ -38,11 +54,13 @@ namespace SnakeTheResurrection
             {
                 Items = new List<MenuItem>
                 {
+#pragma warning disable IDE0011 // Add braces
                     // I hope we're not filling the call stack using the while instead of calling the method in itself again to restart
                     new MenuItem("Singleplayer",    () => { while (Game.Play(false)) ; }    ),
                     new MenuItem("Multiplayer",     () => { while (Game.Play(true)) ; }     ),
                     new MenuItem("About",           About                                   ),
-                    new MenuItem("Quit game",       () => Exit()                            )
+                    new MenuItem("Quit game",       () => FullExit()                        )
+#pragma warning restore IDE0011 // Add braces
                 }
             };
 
@@ -77,24 +95,24 @@ namespace SnakeTheResurrection
             {
                 Symtext.WriteTitle("About", 0);
                 Symtext.SetCenteredTextProperties();
-                
-                Symtext.WriteLine($"{Constants.APP_SHORT_NAME} v2.0.1 '{Constants.APP_NAME_ADDITION}'");
+
+                Version gameVersion = Assembly.GetExecutingAssembly().GetName().Version;
+                Symtext.WriteLine($"{Constants.APP_SHORT_NAME} v{gameVersion.Major}.{gameVersion.Minor}.{gameVersion.Build} '{Constants.APP_NAME_ADDITION}'");
                 Symtext.WriteLine("© 2017 Marian Dolinský\n");
 
                 aboutMenu.InvokeResult();
             } while (!goBack);
         }
 
-        public static void Exit([CallerMemberName]string callerMemberName = null)
+        public static void FullExit(bool error = false)
         {
-            AppData.Current.Save();
-            ProfileManager.SaveProfiles();
-            Environment.Exit(callerMemberName == nameof(Main) ? 1 : 0);
-        }
+            if (!error)
+            {
+                AppData.Current.Save();
+                ProfileManager.SaveProfiles();
+            }
 
-        public static void ExitWithError()
-        {
-            Environment.Exit(1);
+            Environment.Exit(error ? 1 : 0);
         }
     }
 }

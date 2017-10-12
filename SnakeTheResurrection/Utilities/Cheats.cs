@@ -34,7 +34,7 @@ namespace SnakeTheResurrection.Utilities
             if (char.IsLetter(pressedKeyInfo.KeyChar))
             {
                 // We don't currently support more cheats starting with the same letter
-                string currentCheatCode = Enum.GetNames(typeof(CheatCode)).FirstOrDefault(c => char.ToLower(c[0]) == char.ToLower(pressedKeyInfo.KeyChar));
+                string currentCheatCode = Enum.GetNames(typeof(CheatCode)).FirstOrDefault(c => char.ToLowerInvariant(c[0]) == char.ToLowerInvariant(pressedKeyInfo.KeyChar));
 
                 if (currentCheatCode != null)
                 {
@@ -42,7 +42,7 @@ namespace SnakeTheResurrection.Utilities
                     {
                         pressedKeyInfo = Console.ReadKey(true);
 
-                        if (char.ToLower(currentCheatCode[i]) != char.ToLower(pressedKeyInfo.KeyChar))
+                        if (char.ToLowerInvariant(currentCheatCode[i]) != char.ToLowerInvariant(pressedKeyInfo.KeyChar))
                         {
                             return pressedKeyInfo;
                         }

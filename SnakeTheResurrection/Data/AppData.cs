@@ -2,6 +2,8 @@
 using NotifyPropertyChangedBase;
 using SnakeTheResurrection.Utilities;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SnakeTheResurrection.Data
 {
@@ -44,7 +46,7 @@ namespace SnakeTheResurrection.Data
             }
 #endif
 
-            var loadObjectAsyncResult = FileHelper.LoadObject<AppData>(filePath);
+            FileHelper.LoadObjectAsyncResult<AppData> loadObjectAsyncResult = FileHelper.LoadObject<AppData>(filePath);
             Current                   = loadObjectAsyncResult.Object;
             Current.ShowLoadingError  = !loadObjectAsyncResult.Success;
 
@@ -52,6 +54,79 @@ namespace SnakeTheResurrection.Data
             {
                 Current.Save();
             };
+        }
+
+        public List<string> TryParse(string[] args)
+        {
+            //TODO: fully support these args
+            if (args.Any(a => a.StartsWith("snake://", StringComparison.InvariantCultureIgnoreCase) ||
+                a.StartsWith("md-snaketheresurrection://", StringComparison.InvariantCultureIgnoreCase)))
+            {
+                return new List<string>();
+            }
+
+            IsPropertyChangedEventInvokingEnabled = false;
+            List<string> status = new List<string>();
+
+            // We require pairs - arg & value
+            if (args.Length % 2 != 0)
+            {
+                status.Add("Invalid arguments count.");
+            }
+            else
+            {
+                for (int i = 0; i < args.Length; i += 2)
+                {
+                    string arg = args[i];
+                    string value = args[i + 1];
+
+                    try
+                    {
+                        if (arg.StartsWith("-") || arg.StartsWith("/"))
+                        {
+                            arg = arg.Substring(1);
+
+                            // I may use reflection here, but would it be secure?
+                            if (arg.Equals(nameof(EnableDiagonalMovement), StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                EnableDiagonalMovement = TryGetBool(value);
+                            }
+                            else if (arg.Equals(nameof(ForceGameBoardBorders), StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                ForceGameBoardBorders = TryGetBool(value);
+                            }
+                            else
+                            {
+                                throw new Exception();
+                            }
+
+                            status.Add($"Successfully set value '{value}' to property '{arg}'.");
+                        }
+                        else
+                        {
+                            throw new Exception();
+                        }
+                    }
+                    catch
+                    {
+                        status.Add($"Unable to find property '{arg}' or assign value '{value}' into it.");
+                    }
+                }
+            }
+
+            Save();
+            IsPropertyChangedEventInvokingEnabled = true;
+            return status;
+        }
+
+        private bool TryGetBool(string value)
+        {
+            if (bool.TryParse(value, out bool result))
+            {
+                return result;
+            }
+
+            throw new Exception();
         }
     }
 }

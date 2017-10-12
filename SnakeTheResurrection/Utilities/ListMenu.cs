@@ -122,9 +122,7 @@ namespace SnakeTheResurrection.Utilities
 
                         case ConsoleKey.LeftArrow:
                             {
-                                MenuSwitchItem selectedMenuSwitchItem = SelectedItem as MenuSwitchItem;
-
-                                if (selectedMenuSwitchItem != null)
+                                if (SelectedItem is MenuSwitchItem selectedMenuSwitchItem)
                                 {
                                     handled = true;
                                     selectedMenuSwitchItem.IsOn = true;
@@ -135,9 +133,7 @@ namespace SnakeTheResurrection.Utilities
 
                         case ConsoleKey.RightArrow:
                             {
-                                MenuSwitchItem selectedMenuSwitchItem = SelectedItem as MenuSwitchItem;
-
-                                if (selectedMenuSwitchItem != null)
+                                if (SelectedItem is MenuSwitchItem selectedMenuSwitchItem)
                                 {
                                     handled = true;
                                     selectedMenuSwitchItem.IsOn = false;
@@ -149,10 +145,8 @@ namespace SnakeTheResurrection.Utilities
                         case ConsoleKey.Enter:
                             {
                                 handled = true;
-
-                                MenuSwitchItem selectedMenuSwitchItem = SelectedItem as MenuSwitchItem;
-
-                                if (selectedMenuSwitchItem != null)
+                                
+                                if (SelectedItem is MenuSwitchItem selectedMenuSwitchItem)
                                 {
                                     selectedMenuSwitchItem.IsOn = !selectedMenuSwitchItem.IsOn;
                                     break;

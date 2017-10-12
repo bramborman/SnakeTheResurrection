@@ -28,16 +28,12 @@ namespace SnakeTheResurrection.Utilities
         {
             get
             {
-                uint lpModeFlags;
-                ExceptionHelper.ValidateMagic(GetConsoleDisplayMode(out lpModeFlags));
-
+                ExceptionHelper.ValidateMagic(GetConsoleDisplayMode(out uint lpModeFlags));
                 return lpModeFlags == CONSOLE_FULLSCREEN_MODE;
             }
             set
             {
-                COORD lpNewScreenBufferDimensions;
-
-                if (!SetConsoleDisplayMode(StdOutputHandle, (uint)(value ? CONSOLE_FULLSCREEN_MODE : CONSOLE_WINDOWED_MODE), out lpNewScreenBufferDimensions))
+                if (!SetConsoleDisplayMode(StdOutputHandle, (uint)(value ? CONSOLE_FULLSCREEN_MODE : CONSOLE_WINDOWED_MODE), out COORD lpNewScreenBufferDimensions))
                 {
                     // Compatibility with Windows Vista, 7, 8.x
                     ShowWindow(mainWindowHandle, SW_MAXIMIZE);
@@ -84,7 +80,7 @@ namespace SnakeTheResurrection.Utilities
 
             if (exitProgram)
             {
-                Program.ExitWithError();
+                Program.FullExit(true);
             }
 
             return output;

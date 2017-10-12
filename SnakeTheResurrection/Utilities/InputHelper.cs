@@ -18,8 +18,7 @@ namespace SnakeTheResurrection.Utilities
             {
                 throw new InvalidOperationException();
             }
-
-            ClearCache();
+            
             cts = new CancellationTokenSource();
             inputCachingTask = Task.Factory.StartNew(() =>
             {
