@@ -29,7 +29,6 @@ namespace SnakeTheResurrection
             InputHelper.ClearCache();
             Berry.Reset();
             Snake.Reset();
-
             Renderer.ClearBuffer();
 
             if (!GetGameSettings(multiplayer))

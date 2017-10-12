@@ -3,6 +3,7 @@ using NotifyPropertyChangedBase;
 using SnakeTheResurrection.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SnakeTheResurrection.Data
 {
@@ -57,6 +58,13 @@ namespace SnakeTheResurrection.Data
 
         public List<string> TryParse(string[] args)
         {
+            //TODO: fully support these args
+            if (args.Any(a => a.StartsWith("snake://", StringComparison.InvariantCultureIgnoreCase) ||
+                a.StartsWith("md-snaketheresurrection://", StringComparison.InvariantCultureIgnoreCase)))
+            {
+                return new List<string>();
+            }
+
             IsPropertyChangedEventInvokingEnabled = false;
             List<string> status = new List<string>();
 
@@ -76,14 +84,14 @@ namespace SnakeTheResurrection.Data
                     {
                         if (arg.StartsWith("-") || arg.StartsWith("/"))
                         {
-                            arg = arg.Substring(1).ToLower();
+                            arg = arg.Substring(1);
 
                             // I may use reflection here, but would it be secure?
-                            if (arg == nameof(EnableDiagonalMovement).ToLower())
+                            if (arg.Equals(nameof(EnableDiagonalMovement), StringComparison.InvariantCultureIgnoreCase))
                             {
                                 EnableDiagonalMovement = TryGetBool(value);
                             }
-                            else if (arg == nameof(ForceGameBoardBorders).ToLower())
+                            else if (arg.Equals(nameof(ForceGameBoardBorders), StringComparison.InvariantCultureIgnoreCase))
                             {
                                 ForceGameBoardBorders = TryGetBool(value);
                             }
