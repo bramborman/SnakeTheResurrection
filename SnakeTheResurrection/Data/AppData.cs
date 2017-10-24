@@ -4,6 +4,7 @@ using SnakeTheResurrection.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace SnakeTheResurrection.Data
 {
@@ -15,6 +16,11 @@ namespace SnakeTheResurrection.Data
 
         [JsonIgnore]
         public bool ShowLoadingError { get; set; }
+        public Version LastRunAppVersion
+        {
+            get { return (Version)GetValue(); }
+            set { SetValue(value); }
+        }
         public bool EnableDiagonalMovement
         {
             get { return (bool)GetValue(); }
@@ -28,6 +34,7 @@ namespace SnakeTheResurrection.Data
         
         public AppData()
         {
+            RegisterProperty(nameof(LastRunAppVersion), typeof(Version), null);
             RegisterProperty(nameof(EnableDiagonalMovement), typeof(bool), true);
             RegisterProperty(nameof(ForceGameBoardBorders), typeof(bool), false);
         }
@@ -49,6 +56,7 @@ namespace SnakeTheResurrection.Data
             FileHelper.LoadObjectAsyncResult<AppData> loadObjectAsyncResult = FileHelper.LoadObject<AppData>(filePath);
             Current                   = loadObjectAsyncResult.Object;
             Current.ShowLoadingError  = !loadObjectAsyncResult.Success;
+            Current.LastRunAppVersion = Assembly.GetExecutingAssembly().GetName().Version;
 
             Current.PropertyChanged += (sender, e) =>
             {

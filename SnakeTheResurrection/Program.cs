@@ -3,7 +3,6 @@ using SnakeTheResurrection.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace SnakeTheResurrection
@@ -96,7 +95,7 @@ namespace SnakeTheResurrection
                 Symtext.WriteTitle("About", 0);
                 Symtext.SetCenteredTextProperties();
 
-                Version gameVersion = Assembly.GetExecutingAssembly().GetName().Version;
+                Version gameVersion = AppData.Current.LastRunAppVersion;
                 Symtext.WriteLine($"{Constants.APP_SHORT_NAME} v{gameVersion.Major}.{gameVersion.Minor}.{gameVersion.Build} '{Constants.APP_NAME_ADDITION}'");
                 Symtext.WriteLine("© 2017 Marian Dolinský\n");
 
