@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2002
+VisualStudioVersion = 15.0.27004.2005
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnakeTheResurrection", "SnakeTheResurrection\SnakeTheResurrection.csproj", "{AFA51C0B-A152-493B-8F43-E125A3641245}"
 EndProject
@@ -9,6 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
+		GetItOnWindows10.png = GetItOnWindows10.png
 		LICENSE.md = LICENSE.md
 		README.md = README.md
 	EndProjectSection

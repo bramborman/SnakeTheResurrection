@@ -1,13 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities" IgnorableNamespaces="uap mp rescap">
-  <Identity Name="58714MarianDolinsk.SnakeTheResurrection" Publisher="CN=25AB577D-CD73-454E-B3F3-D78D41E3AFFA" Version="2.0.4.0" />
+  <Identity Name="58714MarianDolinsk.SnakeTheResurrection" Publisher="CN=25AB577D-CD73-454E-B3F3-D78D41E3AFFA" Version="2.0.5.0" />
   <Properties>
     <DisplayName>Snake The Resurrection</DisplayName>
     <PublisherDisplayName>Marian Dolinský</PublisherDisplayName>
     <Logo>Assets\Icons\StoreLogo.png</Logo>
   </Properties>
   <Dependencies>
-    <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.0.0" MaxVersionTested="10.0.0.0" />
     <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.0.0" MaxVersionTested="10.0.0.0" />
   </Dependencies>
   <Resources>
@@ -27,10 +26,10 @@
       </uap:VisualElements>
       <Extensions>
         <uap:Extension Category="windows.protocol">
-          <uap:Protocol Name="snake" />
+          <uap:Protocol Name="md-snaketheresurrection" />
         </uap:Extension>
         <uap:Extension Category="windows.protocol">
-          <uap:Protocol Name="md-snaketheresurrection" />
+          <uap:Protocol Name="snake" />
         </uap:Extension>
       </Extensions>
     </Application>
