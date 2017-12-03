@@ -20,7 +20,7 @@ namespace SnakeTheResurrection.Utilities
             }
             
             cts = new CancellationTokenSource();
-            inputCachingTask = Task.Factory.StartNew(() =>
+            inputCachingTask = Task.Run(() =>
             {
                 while (!cts.IsCancellationRequested)
                 {
@@ -45,6 +45,10 @@ namespace SnakeTheResurrection.Utilities
             {
                 cts.Cancel();
                 inputCachingTask.Wait();
+            }
+            catch
+            {
+
             }
             finally
             {

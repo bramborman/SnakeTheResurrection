@@ -35,7 +35,7 @@ namespace SnakeTheResurrection.Data
         public AppData()
         {
             RegisterProperty(nameof(LastRunAppVersion), typeof(Version), null);
-            RegisterProperty(nameof(EnableDiagonalMovement), typeof(bool), true);
+            RegisterProperty(nameof(EnableDiagonalMovement), typeof(bool), false);
             RegisterProperty(nameof(ForceGameBoardBorders), typeof(bool), false);
         }
         
