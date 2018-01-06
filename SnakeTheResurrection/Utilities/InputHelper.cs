@@ -7,7 +7,7 @@ namespace SnakeTheResurrection.Utilities
 {
     public static class InputHelper
     {
-        private static readonly List<ConsoleKey> cache = new List<ConsoleKey>();
+        private static readonly HashSet<ConsoleKey> cache = new HashSet<ConsoleKey>();
 
         private static CancellationTokenSource cts;
         private static Task inputCachingTask;
@@ -74,6 +74,7 @@ namespace SnakeTheResurrection.Utilities
 
             return DllImports.IsKeyDown(key) || cache.Contains(key);
         }
+
         public static ConsoleKeyInfo ReadKey()
         {
             return Cheats.ValidateCheat(Console.ReadKey(true));

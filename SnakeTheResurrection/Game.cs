@@ -117,6 +117,8 @@ namespace SnakeTheResurrection
 
                 if (InputHelper.WasKeyPressed(ConsoleKey.Escape))
                 {
+                    InputHelper.ClearInputBuffer();
+
                     switch (PauseMenu())
                     {
                         case MenuResult.Restart:
@@ -585,77 +587,21 @@ namespace SnakeTheResurrection
                     bool left   = InputHelper.WasKeyPressed(Profile.SnakeControls.Left);
                     bool right  = InputHelper.WasKeyPressed(Profile.SnakeControls.Right);
                     
-                    if (up)
+                    if (up && originalDirection != Direction.Up && originalDirection != Direction.Down)
                     {
-                        bool assigned = false;
-
-                        if (AppData.Current.EnableDiagonalMovement)
-                        {
-                            if (left)
-                            {
-                                if (Direction != Direction.DownRight)
-                                {
-                                    assigned = true;
-                                    Direction = Direction.UpLeft;
-                                }
-                            }
-                            else if (right)
-                            {
-                                if (Direction != Direction.DownLeft)
-                                {
-                                    assigned = true;
-                                    Direction = Direction.UpRight;
-                                }
-                            }
-                        }
-
-                        if (!assigned && Direction != Direction.Down)
-                        {
-                            Direction = Direction.Up;
-                        }
+                        Direction = Direction.Up;
                     }
-                    else if (down)
+                    else if (down && originalDirection != Direction.Down && originalDirection != Direction.Up)
                     {
-                        bool assigned = false;
-
-                        if (AppData.Current.EnableDiagonalMovement)
-                        {
-                            if (left)
-                            {
-                                if (Direction != Direction.UpRight)
-                                {
-                                    assigned = true;
-                                    Direction = Direction.DownLeft;
-                                }
-                            }
-                            else if (right)
-                            {
-                                if (Direction != Direction.UpLeft)
-                                {
-                                    assigned = true;
-                                    Direction = Direction.DownRight;
-                                }
-                            }
-                        }
-
-                        if (!assigned && Direction != Direction.Up)
-                        {
-                            Direction = Direction.Down;
-                        }
+                        Direction = Direction.Down;
                     }
-                    else if (left)
+                    else if (left && originalDirection != Direction.Left && originalDirection != Direction.Right)
                     {
-                        if (Direction != Direction.Right)
-                        {
-                            Direction = Direction.Left;
-                        }
+                        Direction = Direction.Left;
                     }
-                    else if (right)
+                    else if (right && originalDirection != Direction.Right && originalDirection != Direction.Left)
                     {
-                        if (Direction != Direction.Left)
-                        {
-                            Direction = Direction.Right;
-                        }
+                        Direction = Direction.Right;
                     }
 
                     if (Direction != originalDirection)

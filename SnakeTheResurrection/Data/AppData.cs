@@ -21,11 +21,6 @@ namespace SnakeTheResurrection.Data
             get { return (Version)GetValue(); }
             set { SetValue(value); }
         }
-        public bool EnableDiagonalMovement
-        {
-            get { return (bool)GetValue(); }
-            set { SetValue(value); }
-        }
         public bool ForceGameBoardBorders
         {
             get { return (bool)GetValue(); }
@@ -35,7 +30,6 @@ namespace SnakeTheResurrection.Data
         public AppData()
         {
             RegisterProperty(nameof(LastRunAppVersion), typeof(Version), null);
-            RegisterProperty(nameof(EnableDiagonalMovement), typeof(bool), false);
             RegisterProperty(nameof(ForceGameBoardBorders), typeof(bool), false);
         }
         
@@ -94,12 +88,8 @@ namespace SnakeTheResurrection.Data
                         {
                             arg = arg.Substring(1);
 
-                            // I may use reflection here, but would it be secure?
-                            if (arg.Equals(nameof(EnableDiagonalMovement), StringComparison.InvariantCultureIgnoreCase))
-                            {
-                                EnableDiagonalMovement = TryGetBool(value);
-                            }
-                            else if (arg.Equals(nameof(ForceGameBoardBorders), StringComparison.InvariantCultureIgnoreCase))
+                            // We may use reflection here, but would it be secure?
+                            if (arg.Equals(nameof(ForceGameBoardBorders), StringComparison.InvariantCultureIgnoreCase))
                             {
                                 ForceGameBoardBorders = TryGetBool(value);
                             }
