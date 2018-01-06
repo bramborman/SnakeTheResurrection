@@ -40,7 +40,7 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <PackageCertificateKeyFile>SnakeTheResurrection.DesktopBridge_StoreKey.pfx</PackageCertificateKeyFile>
     <EntryPointProjectUniqueName>..\SnakeTheResurrection\SnakeTheResurrection.csproj</EntryPointProjectUniqueName>
-    <PackageCertificateThumbprint>D66E36A75B8B572EED8B1836EFB3B80F3824707F</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>5F523545FCE35E5A3691D532E92FEA787C28E034</PackageCertificateThumbprint>
     <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
     <AppxBundlePlatforms>neutral</AppxBundlePlatforms>
   </PropertyGroup>
