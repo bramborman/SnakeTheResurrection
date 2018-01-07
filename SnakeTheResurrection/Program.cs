@@ -9,8 +9,18 @@ namespace SnakeTheResurrection
 {
     public static class Program
     {
+        private static int originalWindowLeft;
+        private static int originalWindowTop;
+        private static int originalWindowWidth;
+        private static int originalWindowHeight;
+
         public static void Main(string[] args)
         {
+            originalWindowLeft      = Console.WindowLeft;
+            originalWindowTop       = Console.WindowTop; 
+            originalWindowWidth     = Console.WindowWidth;
+            originalWindowHeight    = Console.WindowHeight;
+
             Console.Title = Constants.APP_NAME;
 
             // Don't you dare try uncommenting this (ง⸟ᨎ⸟)ง
@@ -110,6 +120,20 @@ namespace SnakeTheResurrection
                 AppData.Current.Save();
                 ProfileManager.SaveProfiles();
             }
+
+            // Cleanup
+            Renderer.ClearBuffer();
+            Renderer.RenderFrame();
+
+            DllImports.ConsoleFullscreen = false;
+
+            Console.WindowLeft   = originalWindowLeft;
+            Console.WindowTop    = originalWindowTop;
+            Console.WindowWidth  = originalWindowWidth;
+            Console.WindowHeight = originalWindowHeight;
+            DllImports.SetFont("Consolas", 7, 14);
+
+            Console.Clear();
 
             Environment.Exit(error ? 1 : 0);
         }
