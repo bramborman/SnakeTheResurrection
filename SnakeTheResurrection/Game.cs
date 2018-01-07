@@ -372,7 +372,7 @@ namespace SnakeTheResurrection
 
         private sealed class Snake : SnakeBody, IEnumerable<SnakeBody>
         {
-            private static readonly List<Snake> _current = new List<Snake>();
+            private static readonly HashSet<Snake> _current = new HashSet<Snake>();
 
             public static IEnumerable<Snake> Current
             {
@@ -637,8 +637,9 @@ namespace SnakeTheResurrection
                 
                 if (IsHead && !IsInGameBoard(x, y))
                 {
+                    // Cannot return after this as the snake
+                    // wouldn't then be removed from game board
                     snake.IsAlive = false;
-                    return;
                 }
                 else
                 {
@@ -684,22 +685,14 @@ namespace SnakeTheResurrection
                             if (!ReferenceEquals(this, body) && HitTest(body))
                             {
                                 snake.IsAlive = false;
-                                break;
+                                return;
                             }
-                        }
-
-                        if (!snake.IsAlive)
-                        {
-                            break;
                         }
                     }
                 }
 
-                if (snake.IsAlive)
-                {
-                    Renderer.AddToBuffer(Profile.Color, X, Y, Size, Size);
-                    NextBody?.LateUpdate();
-                }
+                Renderer.AddToBuffer(Profile.Color, X, Y, Size, Size);
+                NextBody?.LateUpdate();
             }
 
             protected static void UpdateCoordinates(Direction direction, ref int x, ref int y)
@@ -750,7 +743,7 @@ namespace SnakeTheResurrection
             private const ConsoleColor x = ConsoleColor.Red;
             private const ConsoleColor _ = Constants.BACKGROUND_COLOR;
 
-            private static readonly List<Berry> _current        = new List<Berry>();
+            private static readonly HashSet<Berry> _current     = new HashSet<Berry>();
             private static readonly Random random               = new Random();
             private static readonly ConsoleColor[,] texture     = new ConsoleColor[,]
             {
