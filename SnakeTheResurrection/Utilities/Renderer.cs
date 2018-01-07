@@ -133,6 +133,7 @@ namespace SnakeTheResurrection.Utilities
                 ExceptionHelper.ValidateObjectNotNull(bufferBackups, null);
 
                 Buffer = bufferBackups[key];
+                bufferBackups.Remove(key);
 
                 if (bufferBackups.Count == 0)
                 {

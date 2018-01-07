@@ -526,7 +526,7 @@ namespace SnakeTheResurrection
         {
             private const int SIZE = BLOCK_SIZE;
 
-            private readonly List<BendInfo> bendInfo;
+            private readonly Queue<BendInfo> bendInfo;
             private readonly Snake snake;
 
             private bool isNew = true;
@@ -569,7 +569,7 @@ namespace SnakeTheResurrection
 
                 if (!IsHead)
                 {
-                    bendInfo = new List<BendInfo>();
+                    bendInfo = new Queue<BendInfo>();
                 }
             }
             
@@ -613,15 +613,20 @@ namespace SnakeTheResurrection
                 {
                     if (newBendInfo != null)
                     {
-                        bendInfo.Add(newBendInfo);
+                        bendInfo.Enqueue(newBendInfo);
                     }
                     
-                    if (bendInfo.Count >= 1 && bendInfo[0].X == X && bendInfo[0].Y == Y)
+                    if (bendInfo.Count >= 1)
                     {
-                        Direction = bendInfo[0].Direction;
+                        BendInfo info = bendInfo.Peek();
 
-                        // Need to remove it after passing it using AddRange to the new SnakeBody
-                        removeFirstBendInfo = true;
+                        if (info.X == X && info.Y == Y)
+                        {
+                            Direction = info.Direction;
+
+                            // Need to remove it after passing it using AddRange to the new SnakeBody
+                            removeFirstBendInfo = true;
+                        }
                     }
                 }
 
@@ -649,9 +654,12 @@ namespace SnakeTheResurrection
 
                         if (!IsHead)
                         {
-                            NextBody.bendInfo.AddRange(bendInfo);
+                            foreach (BendInfo info in bendInfo)
+                            {
+                                NextBody.bendInfo.Enqueue(info);
+                            }
 
-                            // It's already in the bendInfo list
+                            // It's already in the bendInfo queue
                             newBendInfo = null;
                         }
                     }
@@ -661,7 +669,7 @@ namespace SnakeTheResurrection
 
                 if (removeFirstBendInfo)
                 {
-                    bendInfo.RemoveAt(0);
+                    bendInfo.Dequeue();
                 }
             }
 
