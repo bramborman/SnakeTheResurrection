@@ -113,6 +113,11 @@ namespace SnakeTheResurrection
                     snake.LateUpdate();
                 }
 
+                foreach (Berry berry in Berry.Current)
+                {
+                    berry.Update();
+                }
+
                 Renderer.RenderFrame();
 
                 if (InputHelper.WasKeyPressed(ConsoleKey.Escape))
@@ -487,14 +492,14 @@ namespace SnakeTheResurrection
 
                 Update(null);
 
-                Berry berry = Berry.Current.FirstOrDefault(b => HitTest(b));
+                Berry berry = Berry.Current.FirstOrDefault(HitTest);
 
                 if (berry != null)
                 {
                     desiredLength += berry.Eat();
                 }
             }
-            
+
             public IEnumerator<SnakeBody> GetEnumerator()
             {
                 SnakeBody body = this;
@@ -762,6 +767,8 @@ namespace SnakeTheResurrection
                     return _current.AsEnumerable();
                 }
             }
+
+            private bool generateNew = true;
             
             public override int Size
             {
@@ -769,11 +776,6 @@ namespace SnakeTheResurrection
             }
             public ConsoleColor Color { get; }
             public int Power { get; }
-
-            public Berry() : this(1)
-            {
-
-            }
 
             public Berry(int power)
             {
@@ -783,55 +785,53 @@ namespace SnakeTheResurrection
                 Power = power;
 
                 _current.Add(this);
-                GenerateNewPosition(false);
+            }
+
+            public void Update()
+            {
+                if (generateNew)
+                {
+                    generateNew = false;
+                    bool regenerate;
+
+                    do
+                    {
+                        regenerate = false;
+
+                        X = random.Next(gameBoardLeft, gameBoardRight - Size);
+                        Y = random.Next(gameBoardTop, gameBoardBottom - Size);
+
+                        AlignToGrid();
+
+                        // Do not generate berry in a snake xD
+                        for (int row = Y; row < Y + Size; row++)
+                        {
+                            for (int column = X; column < X + Size; column++)
+                            {
+                                if (Renderer.Buffer[row, column] != Constants.BACKGROUND_COLOR)
+                                {
+                                    regenerate = true;
+                                    break;
+                                }
+                            }
+
+                            if (regenerate)
+                            {
+                                break;
+                            }
+                        }
+                    } while (regenerate);
+
+                    Renderer.AddToBuffer(texture, X, Y);
+                }
             }
             
             public int Eat()
             {
-                GenerateNewPosition(true);
+                Renderer.AddToBuffer(ConsoleColor.White, X, Y, Size, Size);
+                generateNew = true;
+
                 return Power;
-            }
-
-            private void GenerateNewPosition(bool removePrevious)
-            {
-                // It will remove the Game board border on 0,0 without this condition
-                if (removePrevious)
-                {
-                    int size = Size;
-                    Renderer.AddToBuffer(ConsoleColor.White, X, Y, size, size);
-                }
-
-                bool regenerate;
-
-                do
-                {
-                    regenerate = false;
-
-                    X = random.Next(gameBoardLeft, gameBoardRight - Size);
-                    Y = random.Next(gameBoardTop, gameBoardBottom - Size);
-
-                    AlignToGrid();
-
-                    // Do not generate berry in a snake xD
-                    for (int row = Y; row < Y + Size; row++)
-                    {
-                        for (int column = X; column < X + Size; column++)
-                        {
-                            if (Renderer.Buffer[row, column] != Constants.BACKGROUND_COLOR)
-                            {
-                                regenerate = true;
-                                break;
-                            }
-                        }
-
-                        if (regenerate)
-                        {
-                            break;
-                        }
-                    }
-                } while (regenerate);
-
-                Renderer.AddToBuffer(texture, X, Y);
             }
 
             public static void Reset()
