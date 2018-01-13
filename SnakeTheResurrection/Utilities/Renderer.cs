@@ -56,17 +56,26 @@ namespace SnakeTheResurrection.Utilities
 
         public static void RenderFrame()
         {
+            RenderRectangle(0, 0, bufferWidth, bufferHeight);
+            DisplayFrame();
+        }
+
+        public static void DisplayFrame()
+        {
+            ExceptionHelper.ValidateMagic(WriteConsoleOutputAttribute(DllImports.StdOutputHandle, lpAttribute, lpAttribute.Length, new DllImports.COORD(), out int lpNumberOfAttrsWritten));
+        }
+
+        private static void RenderRectangle(int x, int y, int width, int height)
+        {
             lock (syncRoot)
             {
-                for (int row = 0; row < bufferHeight; row++)
+                for (int row = y; row < y + height; row++)
                 {
-                    for (int column = 0; column < bufferWidth; column++)
+                    for (int column = x; column < x + width; column++)
                     {
                         lpAttribute[(row * bufferWidth) + column] = (short)Buffer[row, column];
                     }
                 }
-
-                ExceptionHelper.ValidateMagic(WriteConsoleOutputAttribute(DllImports.StdOutputHandle, lpAttribute, lpAttribute.Length, new DllImports.COORD(), out int lpNumberOfAttrsWritten));
             }
         }
 
@@ -97,9 +106,27 @@ namespace SnakeTheResurrection.Utilities
             }
         }
 
+        public static void AddToBufferAndRender(ConsoleColor[,] element, int x, int y)
+        {
+            AddToBuffer(element, x, y);
+            RenderRectangle(x, y, element.GetLength(1), element.GetLength(0));
+        }
+
+        public static void AddToBufferAndRender(ConsoleColor color, int x, int y, int width, int height)
+        {
+            AddToBuffer(color, x, y, width, height);
+            RenderRectangle(x, y, width, height);
+        }
+
         public static void RemoveFromBuffer(int x, int y, int height, int width)
         {
             AddToBuffer(Constants.BACKGROUND_COLOR, x, y, width, height);
+        }
+
+        public static void RemoveFromBufferAndRender(int x, int y, int height, int width)
+        {
+            RemoveFromBuffer(x, y, height, width);
+            RenderRectangle(x, y, width, height);
         }
 
         public static void ClearBuffer()

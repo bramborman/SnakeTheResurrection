@@ -1,7 +1,6 @@
 ﻿using SnakeTheResurrection.Data;
 using SnakeTheResurrection.Utilities;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -11,16 +10,16 @@ namespace SnakeTheResurrection
 {
     public static class Game
     {
-        private const int BLOCK_SIZE = 5;
+        public const int BLOCK_SIZE = 5;
 
-        private static int gameBoardLeft;
-        private static int gameBoardTop;
-        private static int gameBoardRight;
-        private static int gameBoardBottom;
-        private static int gameBoardWidth;
-        private static int gameBoardHeight;
+        public static int gameBoardLeft;
+        public static int gameBoardTop;
+        public static int gameBoardRight;
+        public static int gameBoardBottom;
+        public static int gameBoardWidth;
+        public static int gameBoardHeight;
 
-        private static bool borderlessMode;
+        public static bool borderlessMode;
         private static int delay;
         private static int playerCount = 1;
 
@@ -41,63 +40,61 @@ namespace SnakeTheResurrection
                 
             for (int i = 0; i < playerCount; i++)
             {
+                Profile profile = null;
+
                 //TODO: Load real profiles here
                 switch (i)
                 {
                     case 0:
-                        new Snake(ProfileManager.CurrentProfile, i, playerCount);
+                        profile = ProfileManager.CurrentProfile;
+                        break;
+                        
+                    case 1:
+                        profile = new Profile
+                        {
+                            Name = "Frogpanda",
+                            Color = ConsoleColor.Cyan
+                        };
+                        profile.SnakeControls.Left  = ConsoleKey.A;
+                        profile.SnakeControls.Up    = ConsoleKey.W;
+                        profile.SnakeControls.Right = ConsoleKey.D;
+                        profile.SnakeControls.Down  = ConsoleKey.S;
+
                         break;
 
-                    case 1:
-                        {
-                            Snake snake = new Snake(new Profile
-                            {
-                                Name = "Frogpanda",
-                                Color = ConsoleColor.Cyan
-                            }, i, playerCount);
-                            snake.Profile.SnakeControls.Left    = ConsoleKey.A;
-                            snake.Profile.SnakeControls.Up      = ConsoleKey.W;
-                            snake.Profile.SnakeControls.Right   = ConsoleKey.D;
-                            snake.Profile.SnakeControls.Down    = ConsoleKey.S;
-
-                            break;
-                        }
-
                     case 2:
+                        profile = new Profile
                         {
-                            Snake snake = new Snake(new Profile
-                            {
-                                Name = "Strawberryraspberry",
-                                Color = ConsoleColor.Magenta
-                            }, i, playerCount);
-                            snake.Profile.SnakeControls.Left    = ConsoleKey.NumPad4;
-                            snake.Profile.SnakeControls.Up      = ConsoleKey.NumPad8;
-                            snake.Profile.SnakeControls.Right   = ConsoleKey.NumPad6;
-                            snake.Profile.SnakeControls.Down    = ConsoleKey.NumPad5;
+                            Name = "Strawberryraspberry",
+                            Color = ConsoleColor.Magenta
+                        };
+                        profile.SnakeControls.Left  = ConsoleKey.NumPad4;
+                        profile.SnakeControls.Up    = ConsoleKey.NumPad8;
+                        profile.SnakeControls.Right = ConsoleKey.NumPad6;
+                        profile.SnakeControls.Down  = ConsoleKey.NumPad5;
 
-                            break;
-                        }
+                        break;
 
                     case 3:
+                        profile = new Profile
                         {
-                            Snake snake = new Snake(new Profile
-                            {
-                                Name = "Lifeescape",
-                                Color = ConsoleColor.Yellow
-                            }, i, playerCount);
-                            snake.Profile.SnakeControls.Left    = ConsoleKey.J;
-                            snake.Profile.SnakeControls.Up      = ConsoleKey.I;
-                            snake.Profile.SnakeControls.Right   = ConsoleKey.L;
-                            snake.Profile.SnakeControls.Down    = ConsoleKey.K;
+                            Name = "Lifeescape",
+                            Color = ConsoleColor.Yellow
+                        };
+                        profile.SnakeControls.Left  = ConsoleKey.J;
+                        profile.SnakeControls.Up    = ConsoleKey.I;
+                        profile.SnakeControls.Right = ConsoleKey.L;
+                        profile.SnakeControls.Down  = ConsoleKey.K;
 
-                            break;
-                        }
+                        break;
                 }
 
+                new Snake(profile, i, playerCount);
                 new Berry(10);
             }
 
             Stopwatch stopwatch = new Stopwatch();
+            Renderer.RenderFrame();
 
             while (Snake.Current.Any(s => s.IsAlive))
             {
@@ -118,7 +115,7 @@ namespace SnakeTheResurrection
                     berry.Update();
                 }
 
-                Renderer.RenderFrame();
+                Renderer.DisplayFrame();
 
                 if (InputHelper.WasKeyPressed(ConsoleKey.Escape))
                 {
@@ -148,7 +145,7 @@ namespace SnakeTheResurrection
 
                 InputHelper.ClearCache();
                 stopwatch.Stop();
-
+                
                 int currentDelay = Math.Max(0, delay - stopwatch.Elapsed.Milliseconds);
 
                 if (currentDelay != 0)
@@ -300,7 +297,7 @@ namespace SnakeTheResurrection
         private static MenuResult PauseMenu()
         {
             object gameBufferKey    = Renderer.BackupBuffer();
-            MenuResult output       = default(MenuResult);
+            MenuResult output       = default;
             
             Symtext.WriteTitle("Pause", 7);
             new ListMenu
@@ -324,546 +321,6 @@ namespace SnakeTheResurrection
             Restart,
             MainMenu,
             QuitGame
-        }
-
-        private abstract class GameObjectBase
-        {
-            private int _x;
-            private int _y;
-
-            public int X
-            {
-                get { return _x; }
-                protected set
-                {
-                    if (_x != value)
-                    {
-                        ExceptionHelper.ValidateNumberInRange(value, gameBoardLeft, gameBoardRight - Size, nameof(X));
-                        _x = value;
-                    }
-                }
-            }
-            public int Y
-            {
-                get { return _y; }
-                protected set
-                {
-                    if (_y != value)
-                    {
-                        ExceptionHelper.ValidateNumberInRange(value, gameBoardTop, gameBoardBottom - Size, nameof(Y));
-                        _y = value;
-                    }
-                }
-            }
-            public abstract int Size { get; }
-            
-            public bool HitTest(GameObjectBase g)
-            {
-                return X <= g.X + g.Size - 1 && X + Size - 1 >= g.X && Y <= g.Y + g.Size - 1 && Y + Size - 1 >= g.Y;
-            }
-
-            protected bool IsInGameBoard(int newX, int newY)
-            {
-                return newX >= gameBoardLeft && newY >= gameBoardTop && newX + Size <= gameBoardRight && newY + Size <= gameBoardBottom;
-            }
-
-            public void AlignToGrid()
-            {
-                int padding = (BLOCK_SIZE % Size) / 2;
-                X = X - (X % BLOCK_SIZE) + (gameBoardLeft % BLOCK_SIZE) + padding;
-                Y = Y - (Y % BLOCK_SIZE) + (gameBoardTop % BLOCK_SIZE) + padding;
-            }
-        }
-
-        private sealed class Snake : SnakeBody, IEnumerable<SnakeBody>
-        {
-            private static readonly HashSet<Snake> _current = new HashSet<Snake>();
-
-            public static IEnumerable<Snake> Current
-            {
-                get
-                {
-                    foreach (Snake snake in _current.ToList())
-                    {
-                        if (snake.IsAlive)
-                        {
-                            yield return snake;
-                        }
-                        else
-                        {
-                            _current.Remove(snake);
-                        }
-                    }
-                }
-            }
-
-            private SnakeBody tail;
-            private int desiredLength = 3;
-
-            private bool _isAlive;
-            
-            public bool IsAlive
-            {
-                get { return _isAlive; }
-                set
-                {
-                    if (!_isAlive)
-                    {
-                        if (value)
-                        {
-                            throw new InvalidOperationException("Cannot revive a dead snake.");
-                        }
-                        else
-                        {
-                            throw new InvalidOperationException("Cannot kill a dead snake.");
-                        }
-                    }
-
-                    _isAlive = value;
-                }
-            }
-            public int Length { get; private set; }
-
-            public Snake(Profile profile, int index, int totalSnakeCount) : base(GetX(index, totalSnakeCount), gameBoardTop + (gameBoardHeight / 2) - BLOCK_SIZE, Direction.Up, profile, null)
-            {
-                _isAlive = true;
-                _current.Add(this);
-            }
-
-            public void Update()
-            {
-                if (Length < desiredLength)
-                {
-                    if (tail == null)
-                    {
-                        AlignToGrid();
-                        tail = this;
-                    }
-                    else
-                    {
-                        int newX = tail.X;
-                        int newY = tail.Y;
-
-                        Direction inverseDirection = tail.Direction;
-
-                        switch (tail.Direction)
-                        {
-                            case Direction.Left:
-                                inverseDirection = Direction.Right;
-                                break;
-                            
-                            case Direction.UpLeft:
-                                inverseDirection = Direction.DownRight;
-                                break;
-                            
-                            case Direction.Up:
-                                inverseDirection = Direction.Down;
-                                break;
-                            
-                            case Direction.UpRight:
-                                inverseDirection = Direction.DownLeft;
-                                break;
-                            
-                            case Direction.Right:
-                                inverseDirection = Direction.Left;
-                                break;
-                            
-                            case Direction.DownRight:
-                                inverseDirection = Direction.UpLeft;
-                                break;
-                            
-                            case Direction.Down:
-                                inverseDirection = Direction.Up;
-                                break;
-                            
-                            case Direction.DownLeft:
-                                inverseDirection = Direction.UpRight;
-                                break;
-                        }
-
-                        UpdateCoordinates(inverseDirection, ref newX, ref newY);
-
-                        tail.NextBody   = new SnakeBody(newX, newY, tail.Direction, Profile, this);
-                        tail            = tail.NextBody;
-                    }
-
-                    Length++;
-                }
-
-                Update(null);
-
-                Berry berry = Berry.Current.FirstOrDefault(HitTest);
-
-                if (berry != null)
-                {
-                    desiredLength += berry.Eat();
-                }
-            }
-
-            public IEnumerator<SnakeBody> GetEnumerator()
-            {
-                SnakeBody body = this;
-
-                while (body != null)
-                {
-                    yield return body;
-                    body = body.NextBody;
-                }
-            }
-
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return GetEnumerator();
-            }
-
-            public static void Reset()
-            {
-                _current.Clear();
-            }
-
-            private static int GetX(int index, int totalSnakeCount)
-            {
-                return gameBoardLeft + ((gameBoardWidth / (totalSnakeCount + 1)) * (index + 1)) - BLOCK_SIZE;
-            }
-        }
-
-        private class SnakeBody : GameObjectBase
-        {
-            private const int SIZE = BLOCK_SIZE;
-
-            private readonly Queue<BendInfo> bendInfo;
-            private readonly Snake snake;
-
-            private bool isNew = true;
-
-            private Direction _direction;
-
-            private bool IsHead
-            {
-                get { return this is Snake; }
-            }
-
-            public override int Size
-            {
-                get { return SIZE; }
-            }
-            public Direction Direction
-            {
-                get { return _direction; }
-                private set
-                {
-                    if (_direction != value)
-                    {
-                        ExceptionHelper.ValidateEnumValueDefined(value, nameof(Direction));
-                        _direction = value;
-                    }
-                }
-            }
-            public Profile Profile { get; }
-            public SnakeBody NextBody { get; set; }
-
-            public SnakeBody(int x, int y, Direction direction, Profile profile, Snake snake)
-            {
-                ExceptionHelper.ValidateObjectNotNull(profile, nameof(profile));
-
-                this.snake  = snake ?? (Snake)this;
-                X           = x;
-                Y           = y;
-                Direction   = direction;
-                Profile     = profile;
-
-                if (!IsHead)
-                {
-                    bendInfo = new Queue<BendInfo>();
-                }
-            }
-            
-            protected void Update(BendInfo newBendInfo)
-            {
-                Renderer.RemoveFromBuffer(X, Y, Size, Size);
-                bool removeFirstBendInfo = false;
-
-                if (IsHead)
-                {
-                    Direction originalDirection = Direction;
-                    
-                    bool up     = InputHelper.WasKeyPressed(Profile.SnakeControls.Up);
-                    bool down   = InputHelper.WasKeyPressed(Profile.SnakeControls.Down);
-                    bool left   = InputHelper.WasKeyPressed(Profile.SnakeControls.Left);
-                    bool right  = InputHelper.WasKeyPressed(Profile.SnakeControls.Right);
-                    
-                    if (up && originalDirection != Direction.Up && originalDirection != Direction.Down)
-                    {
-                        Direction = Direction.Up;
-                    }
-                    else if (down && originalDirection != Direction.Down && originalDirection != Direction.Up)
-                    {
-                        Direction = Direction.Down;
-                    }
-                    else if (left && originalDirection != Direction.Left && originalDirection != Direction.Right)
-                    {
-                        Direction = Direction.Left;
-                    }
-                    else if (right && originalDirection != Direction.Right && originalDirection != Direction.Left)
-                    {
-                        Direction = Direction.Right;
-                    }
-
-                    if (Direction != originalDirection)
-                    {
-                        newBendInfo = new BendInfo(X, Y, Direction);
-                    }
-                }
-                else
-                {
-                    if (newBendInfo != null)
-                    {
-                        bendInfo.Enqueue(newBendInfo);
-                    }
-                    
-                    if (bendInfo.Count >= 1)
-                    {
-                        BendInfo info = bendInfo.Peek();
-
-                        if (info.X == X && info.Y == Y)
-                        {
-                            Direction = info.Direction;
-
-                            // Need to remove it after passing it using AddRange to the new SnakeBody
-                            removeFirstBendInfo = true;
-                        }
-                    }
-                }
-
-                // Cannot pass property as ref or out parameter
-                int x = X;
-                int y = Y;
-                UpdateCoordinates(Direction, ref x, ref y);
-                
-                if (IsHead && !IsInGameBoard(x, y))
-                {
-                    // Cannot return after this as the snake
-                    // wouldn't then be removed from game board
-                    snake.IsAlive = false;
-                }
-                else
-                {
-                    X = x;
-                    Y = y;
-                }
-
-                if (NextBody != null)
-                {
-                    if (NextBody.isNew)
-                    {
-                        NextBody.isNew = false;
-
-                        if (!IsHead)
-                        {
-                            foreach (BendInfo info in bendInfo)
-                            {
-                                NextBody.bendInfo.Enqueue(info);
-                            }
-
-                            // It's already in the bendInfo queue
-                            newBendInfo = null;
-                        }
-                    }
-
-                    NextBody.Update(newBendInfo);
-                }
-
-                if (removeFirstBendInfo)
-                {
-                    bendInfo.Dequeue();
-                }
-            }
-
-            public void LateUpdate()
-            {
-                if (IsHead)
-                {
-                    foreach (Snake otherSnake in Snake.Current)
-                    {
-                        foreach (SnakeBody body in otherSnake)
-                        {
-                            if (!ReferenceEquals(this, body) && HitTest(body))
-                            {
-                                snake.IsAlive = false;
-                                return;
-                            }
-                        }
-                    }
-                }
-
-                Renderer.AddToBuffer(Profile.Color, X, Y, Size, Size);
-                NextBody?.LateUpdate();
-            }
-
-            protected static void UpdateCoordinates(Direction direction, ref int x, ref int y)
-            {
-                if (direction == Direction.UpLeft || direction == Direction.Up || direction == Direction.UpRight)
-                {
-                    y -= SIZE;
-                }
-                else if (direction == Direction.DownLeft || direction == Direction.Down || direction == Direction.DownRight)
-                {
-                    y += SIZE;
-                }
-
-                if (direction == Direction.UpLeft || direction == Direction.Left || direction == Direction.DownLeft)
-                {
-                    x -= SIZE;
-                }
-                else if (direction == Direction.UpRight || direction == Direction.Right || direction == Direction.DownRight)
-                {
-                    x += SIZE;
-                }
-
-                if (borderlessMode)
-                {
-                    if (y < gameBoardTop)
-                    {
-                        y = gameBoardBottom - SIZE;
-                    }
-                    else if (y > gameBoardBottom - SIZE)
-                    {
-                        y = gameBoardTop;
-                    }
-
-                    if (x < gameBoardLeft)
-                    {
-                        x = gameBoardRight - SIZE;
-                    }
-                    else if (x > gameBoardRight - SIZE)
-                    {
-                        x = gameBoardLeft;
-                    }
-                }
-            }
-        }
-
-        private sealed class Berry : GameObjectBase
-        {
-            private const ConsoleColor x = ConsoleColor.Red;
-            private const ConsoleColor _ = Constants.BACKGROUND_COLOR;
-
-            private static readonly HashSet<Berry> _current     = new HashSet<Berry>();
-            private static readonly Random random               = new Random();
-            private static readonly ConsoleColor[,] texture     = new ConsoleColor[,]
-            {
-                { _, x, x, x, _ },
-                { x, x, x, x, x },
-                { x, x, x, x, x },
-                { x, x, x, x, x },
-                { _, x, x, x, _ }
-            };
-            private static readonly int textureSize             = texture.GetLength(0);
-            
-            public static IEnumerable<Berry> Current
-            {
-                get
-                {
-                    return _current.AsEnumerable();
-                }
-            }
-
-            private bool generateNew = true;
-            
-            public override int Size
-            {
-                get { return textureSize; }
-            }
-            public ConsoleColor Color { get; }
-            public int Power { get; }
-
-            public Berry(int power)
-            {
-                ExceptionHelper.ValidateNumberGreaterOrEqual(power, 0, nameof(power));
-
-                Color = ConsoleColor.Red;
-                Power = power;
-
-                _current.Add(this);
-            }
-
-            public void Update()
-            {
-                if (generateNew)
-                {
-                    generateNew = false;
-                    bool regenerate;
-
-                    do
-                    {
-                        regenerate = false;
-
-                        X = random.Next(gameBoardLeft, gameBoardRight - Size);
-                        Y = random.Next(gameBoardTop, gameBoardBottom - Size);
-
-                        AlignToGrid();
-
-                        // Do not generate berry in a snake xD
-                        for (int row = Y; row < Y + Size; row++)
-                        {
-                            for (int column = X; column < X + Size; column++)
-                            {
-                                if (Renderer.Buffer[row, column] != Constants.BACKGROUND_COLOR)
-                                {
-                                    regenerate = true;
-                                    break;
-                                }
-                            }
-
-                            if (regenerate)
-                            {
-                                break;
-                            }
-                        }
-                    } while (regenerate);
-
-                    Renderer.AddToBuffer(texture, X, Y);
-                }
-            }
-            
-            public int Eat()
-            {
-                Renderer.AddToBuffer(ConsoleColor.White, X, Y, Size, Size);
-                generateNew = true;
-
-                return Power;
-            }
-
-            public static void Reset()
-            {
-                _current.Clear();
-            }
-        }
-
-        private sealed class BendInfo
-        {
-            public int X { get; }
-            public int Y { get; }
-            public Direction Direction { get; }
-
-            public BendInfo(int x, int y, Direction direction)
-            {
-                X = x;
-                Y = y;
-                Direction = direction;
-            }
-        }
-
-        private enum Direction
-        {
-            Left,
-            UpLeft,
-            Up,
-            UpRight,
-            Right,
-            DownRight,
-            Down,
-            DownLeft
         }
     }
 }
