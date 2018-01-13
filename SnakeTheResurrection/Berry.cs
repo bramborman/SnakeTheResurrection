@@ -81,7 +81,7 @@ namespace SnakeTheResurrection
             Renderer.AddToBufferAndRender(ConsoleColor.White, x, y, size, size);
             generateNew = true;
 
-            return power;
+            return Cheats.CheatCodeInfo[Cheats.CheatCode.Hungry] ? 2 * power : power;
         }
 
         public static void Reset()

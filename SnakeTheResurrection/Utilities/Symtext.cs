@@ -598,6 +598,8 @@ namespace SnakeTheResurrection.Utilities
         private static HorizontalAlignment _horizontalAlignment;
         private static VerticalAlignment _verticalAlignment;
 
+        public static readonly object syncRoot;
+
         private static int CharacterSpacing
         {
             get
@@ -606,13 +608,12 @@ namespace SnakeTheResurrection.Utilities
             }
         }
 
-        public static object SyncRoot { get; }
         public static int CursorLeft
         {
             get { return _cursorLeft; }
             set
             {
-                lock (SyncRoot)
+                lock (syncRoot)
                 {
                     if (_cursorLeft != value)
                     {
@@ -627,7 +628,7 @@ namespace SnakeTheResurrection.Utilities
             get { return _cursorTop; }
             set
             {
-                lock (SyncRoot)
+                lock (syncRoot)
                 {
                     if (_cursorTop != value)
                     {
@@ -642,7 +643,7 @@ namespace SnakeTheResurrection.Utilities
             get { return _fontSize; }
             set
             {
-                lock (SyncRoot)
+                lock (syncRoot)
                 {
                     if (_fontSize != value)
                     {
@@ -660,7 +661,7 @@ namespace SnakeTheResurrection.Utilities
             get { return _scalingStyle; }
             set
             {
-                lock (SyncRoot)
+                lock (syncRoot)
                 {
                     if (_scalingStyle != value)
                     {
@@ -675,7 +676,7 @@ namespace SnakeTheResurrection.Utilities
             get { return _foregroundColor; }
             set
             {
-                lock (SyncRoot)
+                lock (syncRoot)
                 {
                     if (_foregroundColor != value)
                     {
@@ -690,7 +691,7 @@ namespace SnakeTheResurrection.Utilities
             get { return _backgroundColor; }
             set
             {
-                lock (SyncRoot)
+                lock (syncRoot)
                 {
                     if (_backgroundColor != value)
                     {
@@ -707,7 +708,7 @@ namespace SnakeTheResurrection.Utilities
             get { return _horizontalAlignment; }
             set
             {
-                lock (SyncRoot)
+                lock (syncRoot)
                 {
                     if (_horizontalAlignment != value)
                     {
@@ -722,7 +723,7 @@ namespace SnakeTheResurrection.Utilities
             get { return _verticalAlignment; }
             set
             {
-                lock (SyncRoot)
+                lock (syncRoot)
                 {
                     if (_verticalAlignment != value)
                     {
@@ -742,7 +743,7 @@ namespace SnakeTheResurrection.Utilities
 
         static Symtext()
         {
-            SyncRoot            = new object();
+            syncRoot            = new object();
             Reset();
         }
         
@@ -765,16 +766,16 @@ namespace SnakeTheResurrection.Utilities
 
         public static void Reset()
         {
-            lock (SyncRoot)
+            lock (syncRoot)
             {
                 CursorLeft          = 0;
                 CursorTop           = 0;
                 FontSize            = 1;
-                ScalingStyle        = default(SymtextScalingStyle);
+                ScalingStyle        = default;
                 ForegroundColor     = Constants.FOREGROUND_COLOR;
                 BackgroundColor     = Constants.BACKGROUND_COLOR;
-                HorizontalAlignment = default(HorizontalAlignment);
-                VerticalAlignment   = default(VerticalAlignment);
+                HorizontalAlignment = default;
+                VerticalAlignment   = default;
             }
         }
 
@@ -785,7 +786,7 @@ namespace SnakeTheResurrection.Utilities
         
         public static void Write(object value, int verticalOffset)
         {
-            lock (SyncRoot)
+            lock (syncRoot)
             {
                 string[] lines = value.ToString().Split('\n');
                 

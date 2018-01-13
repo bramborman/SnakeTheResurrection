@@ -62,7 +62,7 @@ namespace SnakeTheResurrection.Utilities
 
             while (true)
             {
-                lock (Symtext.SyncRoot)
+                lock (Symtext.syncRoot)
                 {
                     Symtext.SetCenteredTextProperties();
 

@@ -11,12 +11,12 @@ namespace SnakeTheResurrection.Utilities
     {
         public enum CheatCode
         {
-            Nothing
+            Hungry
         }
 
         private static readonly Dictionary<CheatCode, bool> cheatCodeInfo = new Dictionary<CheatCode, bool>
         {
-            { CheatCode.Nothing, false }
+            { CheatCode.Hungry, false }
         };
 
         private static CancellationTokenSource previousCts;
@@ -60,7 +60,7 @@ namespace SnakeTheResurrection.Utilities
 
                         previousCts?.Cancel();
 
-                        lock (Symtext.SyncRoot)
+                        lock (Symtext.syncRoot)
                         {
                             Symtext.SetCursorPosition(0, 0);
                             Symtext.FontSize            = 1;
@@ -78,7 +78,7 @@ namespace SnakeTheResurrection.Utilities
 
                         if (!currentCts.IsCancellationRequested)
                         {
-                            lock (Symtext.SyncRoot)
+                            lock (Symtext.syncRoot)
                             {
                                 Renderer.RemoveFromBuffer(0, 0, Symtext.CharHeight, Symtext.GetSymtextWidth(CHEAT_DEACTIVATED_MESSAGE));
                                 Renderer.RenderFrame();
