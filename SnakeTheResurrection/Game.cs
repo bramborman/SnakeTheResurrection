@@ -3,7 +3,6 @@ using SnakeTheResurrection.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading;
 
 namespace SnakeTheResurrection
@@ -20,7 +19,7 @@ namespace SnakeTheResurrection
         public static int gameBoardHeight;
 
         public static bool borderlessMode;
-        private static int delay;
+        public static int delay;
         private static int playerCount = 1;
 
         public static bool Play(bool multiplayer)
@@ -96,21 +95,21 @@ namespace SnakeTheResurrection
             Stopwatch stopwatch = new Stopwatch();
             Renderer.RenderFrame();
 
-            while (Snake.Current.Any(s => s.IsAlive))
+            while (Snake.current.Count != 0)
             {
                 stopwatch.Restart();
 
-                foreach (Snake snake in Snake.Current)
+                foreach (Snake snake in Snake.current)
                 {
                     snake.Update();
                 }
 
-                foreach (Snake snake in Snake.Current)
+                foreach (Snake snake in Snake.current)
                 {
                     snake.LateUpdate();
                 }
 
-                foreach (Berry berry in Berry.Current)
+                foreach (Berry berry in Berry.current)
                 {
                     berry.Update();
                 }

@@ -8,28 +8,21 @@ namespace SnakeTheResurrection
 {
     public sealed class Berry : GameObjectBase
     {
-        private const ConsoleColor x = ConsoleColor.Red;
+        private const ConsoleColor o = ConsoleColor.Red;
         private const ConsoleColor _ = Constants.BACKGROUND_COLOR;
 
-        private static readonly HashSet<Berry> _current     = new HashSet<Berry>();
-        private static readonly Random random               = new Random();
-        private static readonly ConsoleColor[,] texture     = new ConsoleColor[,]
+        private static readonly Random random = new Random();
+        private static readonly ConsoleColor[,] texture = new ConsoleColor[,]
         {
-            { _, x, x, x, _ },
-            { x, x, x, x, x },
-            { x, x, x, x, x },
-            { x, x, x, x, x },
-            { _, x, x, x, _ }
+            { _, o, o, o, _ },
+            { o, o, o, o, o },
+            { o, o, o, o, o },
+            { o, o, o, o, o },
+            { _, o, o, o, _ }
         };
-        private static readonly int textureSize             = texture.GetLength(0);
-            
-        public static IEnumerable<Berry> Current
-        {
-            get
-            {
-                return _current.AsEnumerable();
-            }
-        }
+        private static readonly int textureSize = texture.GetLength(0);
+
+        public static readonly HashSet<Berry> current = new HashSet<Berry>();
 
         public readonly ConsoleColor color;
         public readonly int power;
@@ -41,7 +34,7 @@ namespace SnakeTheResurrection
             color = ConsoleColor.Red;
             this.power = power;
 
-            _current.Add(this);
+            current.Add(this);
         }
 
         public void Update()
@@ -55,15 +48,15 @@ namespace SnakeTheResurrection
                 {
                     regenerate = false;
 
-                    X = random.Next(gameBoardLeft, gameBoardRight - size);
-                    Y = random.Next(gameBoardTop, gameBoardBottom - size);
+                    x = random.Next(gameBoardLeft, gameBoardRight - size);
+                    y = random.Next(gameBoardTop, gameBoardBottom - size);
 
                     AlignToGrid();
 
                     // Do not generate berry in a snake xD
-                    for (int row = Y; row < Y + size; row++)
+                    for (int row = y; row < y + size; row++)
                     {
-                        for (int column = X; column < X + size; column++)
+                        for (int column = x; column < x + size; column++)
                         {
                             if (Renderer.Buffer[row, column] != Constants.BACKGROUND_COLOR)
                             {
@@ -79,13 +72,13 @@ namespace SnakeTheResurrection
                     }
                 } while (regenerate);
 
-                Renderer.AddToBufferAndRender(texture, X, Y);
+                Renderer.AddToBufferAndRender(texture, x, y);
             }
         }
             
         public int Eat()
         {
-            Renderer.AddToBufferAndRender(ConsoleColor.White, X, Y, size, size);
+            Renderer.AddToBufferAndRender(ConsoleColor.White, x, y, size, size);
             generateNew = true;
 
             return power;
@@ -93,7 +86,7 @@ namespace SnakeTheResurrection
 
         public static void Reset()
         {
-            _current.Clear();
+            current.Clear();
         }
     }
 }

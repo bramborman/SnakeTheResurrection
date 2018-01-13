@@ -1,6 +1,5 @@
 ﻿using SnakeTheResurrection.Data;
 using SnakeTheResurrection.Utilities;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using static SnakeTheResurrection.Game;
@@ -11,46 +10,39 @@ namespace SnakeTheResurrection
     {
         private const int SIZE = BLOCK_SIZE;
 
-        private static readonly HashSet<Snake> _current = new HashSet<Snake>();
-
-        public static IEnumerable<Snake> Current
-        {
-            get
-            {
-                foreach (Snake snake in _current.ToList())
-                {
-                    if (snake.IsAlive)
-                    {
-                        yield return snake;
-                    }
-                    else
-                    {
-                        _current.Remove(snake);
-                    }
-                }
-            }
-        }
-
+        public static readonly HashSet<Snake> current = new HashSet<Snake>();
+        
         private readonly int snakeIndex;
         private readonly int totalSnakeCount;
         
         private bool rerenderSecondBody;
+        private int length;
         private int desiredLength = 3;
         private SnakeBody head;
         private SnakeBody tail;
         private readonly Profile profile;
 
-        public int Length { get; private set; }
-        public bool IsAlive { get; private set; }
+        private IEnumerable<SnakeBody> Bodies
+        {
+            get
+            {
+                SnakeBody body = head;
+
+                while (body != null)
+                {
+                    yield return body;
+                    body = body.nextBody;
+                }
+            }
+        }
 
         public Snake(Profile profile, int snakeIndex, int totalSnakeCount)
         {
             this.profile = profile;
             this.snakeIndex = snakeIndex;
             this.totalSnakeCount = totalSnakeCount;
-
-            IsAlive = true;
-            _current.Add(this);
+            
+            current.Add(this);
         }
 
         public void Update()
@@ -63,8 +55,8 @@ namespace SnakeTheResurrection
             }
             else
             {
-                int x = head.X;
-                int y = head.Y;
+                int x = head.x;
+                int y = head.y;
                 Direction direction = head.direction;
                     
                 bool up     = InputHelper.WasKeyPressed(profile.SnakeControls.Up);
@@ -101,9 +93,9 @@ namespace SnakeTheResurrection
                 }
                 else
                 {
-                    IsAlive = false;
+                    Die();
 
-                    foreach (SnakeBody body in EnumerateBodies())
+                    foreach (SnakeBody body in Bodies)
                     {
                         body.RemoveFromBuffer();
                     }
@@ -120,7 +112,7 @@ namespace SnakeTheResurrection
 
             head.AddToBuffer();
 
-            if (Length == desiredLength)
+            if (length == desiredLength)
             {
                 tail.RemoveFromBuffer();
                 tail = tail.previousBody;
@@ -128,10 +120,10 @@ namespace SnakeTheResurrection
             }
             else
             {
-                Length++;
+                length++;
             }
             
-            Berry berry = Berry.Current.FirstOrDefault(b => head.HitTest(b));
+            Berry berry = Berry.current.FirstOrDefault(b => head.HitTest(b));
 
             if (berry != null)
             {
@@ -142,17 +134,22 @@ namespace SnakeTheResurrection
 
         public void LateUpdate()
         {
-            foreach (Snake otherSnake in Current)
+            foreach (Snake otherSnake in current)
             {
-                foreach (SnakeBody body in otherSnake.EnumerateBodies())
+                foreach (SnakeBody body in otherSnake.Bodies)
                 {
                     if (!ReferenceEquals(head, body) && head.HitTest(body))
                     {
-                        IsAlive = false;
+                        Die();
                         return;
                     }
                 }
             }
+        }
+
+        private void Die()
+        {
+            current.Remove(this);
         }
 
         private void UpdateCoordinates(Direction direction, ref int x, ref int y)
@@ -199,25 +196,14 @@ namespace SnakeTheResurrection
         
         public static void Reset()
         {
-            _current.Clear();
+            current.Clear();
         }
         
         private int GetX(int snakeIndex, int totalSnakeCount)
         {
             return gameBoardLeft + ((gameBoardWidth / (totalSnakeCount + 1)) * (snakeIndex + 1)) - BLOCK_SIZE;
         }
-
-        private IEnumerable<SnakeBody> EnumerateBodies()
-        {
-            SnakeBody body = head;
-
-            while (body != null)
-            {
-                yield return body;
-                body = body.nextBody;
-            }
-        }
-
+        
         private class SnakeBody : GameObjectBase
         {
             private readonly Snake snake;
@@ -228,20 +214,20 @@ namespace SnakeTheResurrection
 
             public SnakeBody(int x, int y, Direction direction, Snake snake) : base(SIZE)
             {
-                X               = x;
-                Y               = y;
+                base.x          = x;
+                base.y          = y;
                 this.direction  = direction;
                 this.snake      = snake;
             }
 
             public void AddToBuffer()
             {
-                Renderer.AddToBufferAndRender(snake.profile.Color, X, Y, size, size);
+                Renderer.AddToBufferAndRender(snake.profile.Color, x, y, size, size);
             }
 
             public void RemoveFromBuffer()
             {
-                Renderer.RemoveFromBufferAndRender(X, Y, size, size);
+                Renderer.RemoveFromBufferAndRender(x, y, size, size);
             }
         }
     }
