@@ -10,12 +10,10 @@ namespace SnakeTheResurrection.Utilities
 
         private static readonly int bufferHeight;
         private static readonly int bufferWidth;
-        private static readonly short[] lpAttribute;
-
-        private static Dictionary<object, ConsoleColor[,]> bufferBackups;
-
-        public static ConsoleColor[,] Buffer { get; private set; }
-
+        
+        private static short[] lpAttribute;
+        private static Dictionary<object, short[]> bufferBackups;
+        
         static Renderer()
         {
             lock (syncRoot)
@@ -46,53 +44,36 @@ namespace SnakeTheResurrection.Utilities
 
                 Console.CursorVisible = false;
 
-                Buffer          = new ConsoleColor[Console.WindowHeight, Console.WindowWidth];
-                lpAttribute     = new short[Buffer.Length];
+                lpAttribute     = new short[lpBuffer.Length];
 
-                bufferHeight    = Buffer.GetLength(0);
-                bufferWidth     = Buffer.GetLength(1);
+                bufferHeight    = windowHeight;
+                bufferWidth     = windowWidth;
             }
         }
 
         public static void RenderFrame()
         {
-            RenderRectangle(0, 0, bufferWidth, bufferHeight);
-            DisplayFrame();
-        }
-
-        public static void DisplayFrame()
-        {
             ExceptionHelper.ValidateMagic(WriteConsoleOutputAttribute(DllImports.StdOutputHandle, lpAttribute, lpAttribute.Length, new DllImports.COORD(), out int lpNumberOfAttrsWritten));
         }
-
-        private static void RenderRectangle(int x, int y, int width, int height)
+        
+        public static void AddToBuffer(short[,] element, int x, int y)
         {
             lock (syncRoot)
             {
-                for (int row = y; row < y + height; row++)
-                {
-                    for (int column = x; column < x + width; column++)
-                    {
-                        lpAttribute[(row * bufferWidth) + column] = (short)Buffer[row, column];
-                    }
-                }
-            }
-        }
-
-        public static void AddToBuffer(ConsoleColor[,] element, int x, int y)
-        {
-            lock (syncRoot)
-            {
+                int elementHeight = element.GetLength(0);
                 int elementWidth = element.GetLength(1);
 
-                for (int row = 0; row < element.GetLength(0); row++)
+                for (int row = 0; row < elementHeight; row++)
                 {
-                    Array.Copy(element, row * elementWidth, Buffer, ((y + row) * bufferWidth) + x, elementWidth);
+                    for (int column = 0; column < elementWidth; column++)
+                    {
+                        lpAttribute[((y + row) * bufferWidth) + x + column] = element[row, column];
+                    }
                 }
             }
         }
 
-        public static void AddToBuffer(ConsoleColor color, int x, int y, int width, int height)
+        public static void AddToBuffer(short color, int x, int y, int width, int height)
         {
             lock (syncRoot)
             {
@@ -100,22 +81,10 @@ namespace SnakeTheResurrection.Utilities
                 {
                     for (int column = x; column < x + width; column++)
                     {
-                        Buffer[row, column] = color;
+                        lpAttribute[(row * bufferWidth) + column] = color;
                     }
                 }
             }
-        }
-
-        public static void AddToBufferAndRender(ConsoleColor[,] element, int x, int y)
-        {
-            AddToBuffer(element, x, y);
-            RenderRectangle(x, y, element.GetLength(1), element.GetLength(0));
-        }
-
-        public static void AddToBufferAndRender(ConsoleColor color, int x, int y, int width, int height)
-        {
-            AddToBuffer(color, x, y, width, height);
-            RenderRectangle(x, y, width, height);
         }
 
         public static void RemoveFromBuffer(int x, int y, int height, int width)
@@ -123,15 +92,14 @@ namespace SnakeTheResurrection.Utilities
             AddToBuffer(Constants.BACKGROUND_COLOR, x, y, width, height);
         }
 
-        public static void RemoveFromBufferAndRender(int x, int y, int height, int width)
+        public static short GetColorOnCoordinates(int x, int y)
         {
-            RemoveFromBuffer(x, y, height, width);
-            RenderRectangle(x, y, width, height);
+            return lpAttribute[(y * bufferWidth) + x];
         }
 
         public static void ClearBuffer()
         {
-            Array.Clear(Buffer, 0, Buffer.Length);
+            Array.Clear(lpAttribute, 0, lpAttribute.Length);
             // AddToBuffer(Constants.BACKGROUND_COLOR, 0, 0, bufferHeight, bufferWidth);
         }
 
@@ -141,12 +109,12 @@ namespace SnakeTheResurrection.Utilities
             {
                 if (bufferBackups == null)
                 {
-                    bufferBackups = new Dictionary<object, ConsoleColor[,]>();
+                    bufferBackups = new Dictionary<object, short[]>();
                 }
 
                 object key = new object();
-                bufferBackups.Add(key, Buffer);
-                Buffer = new ConsoleColor[bufferHeight, bufferWidth];
+                bufferBackups.Add(key, lpAttribute);
+                lpAttribute = new short[lpAttribute.Length];
 
                 return key;
             }
@@ -159,7 +127,7 @@ namespace SnakeTheResurrection.Utilities
                 ExceptionHelper.ValidateObjectNotNull(key, nameof(key));
                 ExceptionHelper.ValidateObjectNotNull(bufferBackups, null);
 
-                Buffer = bufferBackups[key];
+                lpAttribute = bufferBackups[key];
                 bufferBackups.Remove(key);
 
                 if (bufferBackups.Count == 0)

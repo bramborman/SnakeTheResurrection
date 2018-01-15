@@ -65,6 +65,7 @@
     <Compile Include="ProfileManager.cs" />
     <Compile Include="Snake.cs" />
     <Compile Include="Utilities\Cheats.cs" />
+    <Compile Include="Utilities\Colors.cs" />
     <Compile Include="Utilities\DebugHelper.cs" />
     <Compile Include="Utilities\DllImports.cs" />
     <Compile Include="Utilities\ExceptionHelper.cs" />

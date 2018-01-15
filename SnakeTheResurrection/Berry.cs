@@ -1,18 +1,17 @@
 ﻿using SnakeTheResurrection.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using static SnakeTheResurrection.Game;
 
 namespace SnakeTheResurrection
 {
     public sealed class Berry : GameObjectBase
     {
-        private const ConsoleColor o = ConsoleColor.Red;
-        private const ConsoleColor _ = Constants.BACKGROUND_COLOR;
+        private const short o = Colors.Red;
+        private const short _ = Constants.BACKGROUND_COLOR;
 
         private static readonly Random random = new Random();
-        private static readonly ConsoleColor[,] texture = new ConsoleColor[,]
+        private static readonly short[,] texture = new short[,]
         {
             { _, o, o, o, _ },
             { o, o, o, o, o },
@@ -23,17 +22,14 @@ namespace SnakeTheResurrection
         private static readonly int textureSize = texture.GetLength(0);
 
         public static readonly HashSet<Berry> current = new HashSet<Berry>();
-
-        public readonly ConsoleColor color;
+        
         public readonly int power;
 
         private bool generateNew = true;
 
         public Berry(int power) : base(textureSize)
         {
-            color = ConsoleColor.Red;
             this.power = power;
-
             current.Add(this);
         }
 
@@ -58,7 +54,7 @@ namespace SnakeTheResurrection
                     {
                         for (int column = x; column < x + size; column++)
                         {
-                            if (Renderer.Buffer[row, column] != Constants.BACKGROUND_COLOR)
+                            if (Renderer.GetColorOnCoordinates(column, row) != Constants.BACKGROUND_COLOR)
                             {
                                 regenerate = true;
                                 break;
@@ -72,13 +68,13 @@ namespace SnakeTheResurrection
                     }
                 } while (regenerate);
 
-                Renderer.AddToBufferAndRender(texture, x, y);
+                Renderer.AddToBuffer(texture, x, y);
             }
         }
             
         public int Eat()
         {
-            Renderer.AddToBufferAndRender(ConsoleColor.White, x, y, size, size);
+            Renderer.AddToBuffer(Colors.White, x, y, size, size);
             generateNew = true;
 
             return Cheats.CheatCodeInfo[Cheats.CheatCode.Hungry] ? 2 * power : power;

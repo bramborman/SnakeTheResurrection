@@ -52,7 +52,7 @@ namespace SnakeTheResurrection
                         profile = new Profile
                         {
                             Name = "Frogpanda",
-                            Color = ConsoleColor.Cyan
+                            Color = Colors.Cyan
                         };
                         profile.SnakeControls.Left  = ConsoleKey.A;
                         profile.SnakeControls.Up    = ConsoleKey.W;
@@ -65,7 +65,7 @@ namespace SnakeTheResurrection
                         profile = new Profile
                         {
                             Name = "Strawberryraspberry",
-                            Color = ConsoleColor.Magenta
+                            Color = Colors.Magenta
                         };
                         profile.SnakeControls.Left  = ConsoleKey.NumPad4;
                         profile.SnakeControls.Up    = ConsoleKey.NumPad8;
@@ -78,7 +78,7 @@ namespace SnakeTheResurrection
                         profile = new Profile
                         {
                             Name = "Lifeescape",
-                            Color = ConsoleColor.Yellow
+                            Color = Colors.Yellow
                         };
                         profile.SnakeControls.Left  = ConsoleKey.J;
                         profile.SnakeControls.Up    = ConsoleKey.I;
@@ -99,6 +99,7 @@ namespace SnakeTheResurrection
             {
                 stopwatch.Restart();
 
+                //TODO: don't crash here and don't do it the stupid way
                 foreach (Snake snake in Snake.current)
                 {
                     snake.Update();
@@ -114,7 +115,7 @@ namespace SnakeTheResurrection
                     berry.Update();
                 }
 
-                Renderer.DisplayFrame();
+                Renderer.RenderFrame();
 
                 if (InputHelper.WasKeyPressed(ConsoleKey.Escape))
                 {

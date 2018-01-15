@@ -587,14 +587,14 @@ namespace SnakeTheResurrection.Utilities
         };
         #endregion
 
-        private static ConsoleColor[,] characterSpacingBackgroundFiller;
+        private static short[,] characterSpacingBackgroundFiller;
 
         private static int _cursorLeft;
         private static int _cursorTop;
         private static int _fontSize;
         private static SymtextScalingStyle _scalingStyle;
-        private static ConsoleColor _foregroundColor;
-        private static ConsoleColor _backgroundColor;
+        private static short _foregroundColor;
+        private static short _backgroundColor;
         private static HorizontalAlignment _horizontalAlignment;
         private static VerticalAlignment _verticalAlignment;
 
@@ -650,7 +650,7 @@ namespace SnakeTheResurrection.Utilities
                         ExceptionHelper.ValidateNumberGreaterOrEqual(value, 0, nameof(FontSize));
                         _fontSize = value;
 
-                        characterSpacingBackgroundFiller = new ConsoleColor[CharHeight, value];
+                        characterSpacingBackgroundFiller = new short[CharHeight, value];
                         FillCharacterSpacingBackgroundFiller();
                     }
                 }
@@ -671,7 +671,7 @@ namespace SnakeTheResurrection.Utilities
                 }
             }
         }
-        public static ConsoleColor ForegroundColor
+        public static short ForegroundColor
         {
             get { return _foregroundColor; }
             set
@@ -680,13 +680,13 @@ namespace SnakeTheResurrection.Utilities
                 {
                     if (_foregroundColor != value)
                     {
-                        ExceptionHelper.ValidateEnumValueDefined(value, nameof(ForegroundColor));
+                        ExceptionHelper.ValidateEnumValueDefined((ConsoleColor)value, nameof(ForegroundColor));
                         _foregroundColor = value;
                     }
                 }
             }
         }
-        public static ConsoleColor BackgroundColor
+        public static short BackgroundColor
         {
             get { return _backgroundColor; }
             set
@@ -695,7 +695,7 @@ namespace SnakeTheResurrection.Utilities
                 {
                     if (_backgroundColor != value)
                     {
-                        ExceptionHelper.ValidateEnumValueDefined(value, nameof(BackgroundColor));
+                        ExceptionHelper.ValidateEnumValueDefined((ConsoleColor)value, nameof(BackgroundColor));
                         _backgroundColor = value;
 
                         FillCharacterSpacingBackgroundFiller();
@@ -896,11 +896,11 @@ namespace SnakeTheResurrection.Utilities
 
         private static int AddRenderedCharToBuffer(char ch, int x, int y)
         {
-            bool[,] character               = GetScaledBoolChar(ch);
-                
-            int characterHeight             = character.GetLength(0);
-            int characterWidth              = character.GetLength(1);
-            ConsoleColor[,] renderedChar    = new ConsoleColor[characterHeight, characterWidth];
+            bool[,] character       = GetScaledBoolChar(ch);
+    
+            int characterHeight     = character.GetLength(0);
+            int characterWidth      = character.GetLength(1);
+            short[,] renderedChar   = new short[characterHeight, characterWidth];
 
             for (int row = 0; row < characterHeight; row++)
             {

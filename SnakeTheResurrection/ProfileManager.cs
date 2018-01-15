@@ -1,5 +1,5 @@
 ﻿using SnakeTheResurrection.Data;
-using System;
+using SnakeTheResurrection.Utilities;
 using System.Collections.Generic;
 
 namespace SnakeTheResurrection
@@ -26,7 +26,7 @@ namespace SnakeTheResurrection
             Profile newProfile = new Profile
             {
                 Name = "Pandafrog",
-                Color = ConsoleColor.Green
+                Color = Colors.Green
             };
 
             //TODO: UI for customization

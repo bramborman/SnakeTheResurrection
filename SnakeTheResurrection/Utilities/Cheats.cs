@@ -64,8 +64,8 @@ namespace SnakeTheResurrection.Utilities
                         {
                             Symtext.SetCursorPosition(0, 0);
                             Symtext.FontSize            = 1;
-                            Symtext.BackgroundColor     = ConsoleColor.Gray;
-                            Symtext.ForegroundColor     = ConsoleColor.Black;
+                            Symtext.BackgroundColor     = Colors.Gray;
+                            Symtext.ForegroundColor     = Colors.Black;
                             Symtext.HorizontalAlignment = HorizontalAlignment.None;
                             Symtext.VerticalAlignment   = VerticalAlignment.None;
 

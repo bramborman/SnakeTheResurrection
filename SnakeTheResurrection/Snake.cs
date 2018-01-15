@@ -222,12 +222,12 @@ namespace SnakeTheResurrection
 
             public void AddToBuffer()
             {
-                Renderer.AddToBufferAndRender(snake.profile.Color, x, y, size, size);
+                Renderer.AddToBuffer(snake.profile.Color, x, y, size, size);
             }
 
             public void RemoveFromBuffer()
             {
-                Renderer.RemoveFromBufferAndRender(x, y, size, size);
+                Renderer.RemoveFromBuffer(x, y, size, size);
             }
         }
     }
