@@ -7,57 +7,33 @@ namespace SnakeTheResurrection.Utilities
 {
     public static class InputHelper
     {
-        private static readonly HashSet<ConsoleKey> cache = new HashSet<ConsoleKey>();
+        private static readonly HashSet<ConsoleKey> cache       = new HashSet<ConsoleKey>();
+        private static readonly ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
 
-        private static CancellationTokenSource cts;
-        private static Task inputCachingTask;
-        
-        public static void StartCaching()
+        static InputHelper()
         {
-            if (cts != null)
+            Task.Run(async () =>
             {
-                throw new InvalidOperationException();
-            }
-            
-            cts = new CancellationTokenSource();
-            inputCachingTask = Task.Run(() =>
-            {
-                while (!cts.IsCancellationRequested)
+                while (resetEvent.WaitHandle.WaitOne())
                 {
                     if (Console.KeyAvailable)
                     {
                         cache.Add(Console.ReadKey(true).Key);
                     }
-                
-                    Thread.Sleep(10);
+
+                    await Task.Delay(10);
                 }
-            }, cts.Token);
+            });
+        }
+        
+        public static void StartCaching()
+        {
+            resetEvent.Set();
         }
 
         public static void StopCaching()
         {
-            if (cts == null)
-            {
-                throw new InvalidOperationException();
-            }
-            
-            try
-            {
-                cts.Cancel();
-                inputCachingTask.Wait();
-            }
-            catch
-            {
-
-            }
-            finally
-            {
-                inputCachingTask.Dispose();
-                inputCachingTask = null;
-
-                cts.Dispose();
-                cts = null;
-            }
+            resetEvent.Reset();
         }
 
         public static void ClearCache()
@@ -67,11 +43,6 @@ namespace SnakeTheResurrection.Utilities
         
         public static bool WasKeyPressed(ConsoleKey key)
         {
-            if (cts != null)
-            {
-                throw new InvalidOperationException();
-            }
-
             return DllImports.IsKeyDown(key) || cache.Contains(key);
         }
 
