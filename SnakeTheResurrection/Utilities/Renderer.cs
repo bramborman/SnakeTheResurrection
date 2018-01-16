@@ -58,12 +58,12 @@ namespace SnakeTheResurrection.Utilities
 
         public static unsafe void RenderFrame()
         {
-            if (lowestFrameX < uppermostFrameX && lowestFrameY < uppermostFrameY)
+            if (lowestFrameX <= uppermostFrameX && lowestFrameY <= uppermostFrameY)
             {
                 fixed (short* origin = lpAttribute)
                 {
                     short* ptr = origin + (lowestFrameY * bufferWidth) + lowestFrameX;
-                    int length = ((uppermostFrameY - lowestFrameY) * bufferWidth) - (uppermostFrameX - lowestFrameX);
+                    int length = (bufferWidth - lowestFrameX) + ((uppermostFrameY - lowestFrameY - 1) * bufferWidth) + (bufferWidth - (bufferWidth - uppermostFrameX - 1));
                     DllImports.COORD coord = new DllImports.COORD((short)lowestFrameX, (short)lowestFrameY);
 
                     ExceptionHelper.ValidateMagic(WriteConsoleOutputAttribute(DllImports.StdOutputHandle, ptr, length, coord, out int lpNumberOfAttrsWritten));
@@ -125,8 +125,15 @@ namespace SnakeTheResurrection.Utilities
                 lowestFrameY = y;
             }
 
-            int right = x + width;
-            int bottom = y + height;
+            // DONT REMOVE '-1'
+            // Imagine the following situation
+            // y = 0, height = 1
+            // using just 'y + height' would
+            // return '1' but the uppermost
+            // index used is '0' so that's
+            // why the '-1' is here
+            int right = x + width - 1;
+            int bottom = y + height - 1;
 
             if (right > uppermostFrameX)
             {
@@ -143,8 +150,8 @@ namespace SnakeTheResurrection.Utilities
         {
             lowestFrameX = 0;
             lowestFrameY = 0;
-            uppermostFrameX = bufferWidth;
-            uppermostFrameY = bufferHeight;
+            uppermostFrameX = bufferWidth - 1;
+            uppermostFrameY = bufferHeight - 1;
         }
 
         private static void ResetFrameBounds()

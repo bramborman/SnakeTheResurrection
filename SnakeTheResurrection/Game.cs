@@ -115,6 +115,7 @@ namespace SnakeTheResurrection
                     berry.Update();
                 }
 
+                //TODO: Render each snake?
                 Renderer.RenderFrame();
 
                 if (InputHelper.WasKeyPressed(ConsoleKey.Escape))
@@ -144,12 +145,8 @@ namespace SnakeTheResurrection
 #endif
 
                 InputHelper.ClearCache();
-                //InputHelper.ClearInputBuffer();
+                InputHelper.ClearInputBuffer();
                 stopwatch.Stop();
-
-#if LOGGING
-                //TODO
-#endif
 
                 int currentDelay = Math.Max(0, delay - stopwatch.Elapsed.Milliseconds);
 
