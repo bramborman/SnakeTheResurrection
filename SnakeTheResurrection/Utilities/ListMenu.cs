@@ -153,7 +153,7 @@ namespace SnakeTheResurrection.Utilities
                                 }
                                 else
                                 {
-                                    Renderer.ClearBuffer();
+                                    Renderer.Clear();
                                     return SelectedIndex;
                                 }
                             }

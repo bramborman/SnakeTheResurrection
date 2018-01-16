@@ -77,7 +77,7 @@ namespace SnakeTheResurrection
             
             while (true)
             {
-                Renderer.ClearBuffer();
+                Renderer.Clear();
                 Symtext.WriteTitle(Constants.APP_SHORT_NAME, 7);
                 
                 mainMenu.InvokeResult();
@@ -122,7 +122,7 @@ namespace SnakeTheResurrection
             }
 
             // Cleanup
-            Renderer.ClearBuffer();
+            Renderer.Clear();
             Renderer.RenderFrame();
 
             DllImports.ConsoleFullscreen = false;

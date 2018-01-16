@@ -27,14 +27,14 @@ namespace SnakeTheResurrection
             InputHelper.ClearCache();
             Berry.Reset();
             Snake.Reset();
-            Renderer.ClearBuffer();
+            Renderer.Clear();
 
             if (!GetGameSettings(multiplayer))
             {
                 return false;
             }
 
-            Renderer.ClearBuffer();
+            Renderer.Clear();
             CreateGameBoard();
                 
             for (int i = 0; i < playerCount; i++)
@@ -145,7 +145,6 @@ namespace SnakeTheResurrection
 
                 InputHelper.ClearCache();
                 //InputHelper.ClearInputBuffer();
-                Renderer.ResetFrameBounds();
                 stopwatch.Stop();
 
 #if LOGGING

@@ -68,6 +68,8 @@ namespace SnakeTheResurrection.Utilities
 
                     ExceptionHelper.ValidateMagic(WriteConsoleOutputAttribute(DllImports.StdOutputHandle, ptr, length, coord, out int lpNumberOfAttrsWritten));
                 }
+
+                ResetFrameBounds();
             }
         }
         
@@ -145,7 +147,7 @@ namespace SnakeTheResurrection.Utilities
             uppermostFrameY = bufferHeight;
         }
 
-        public static void ResetFrameBounds()
+        private static void ResetFrameBounds()
         {
             lowestFrameX = bufferWidth;
             lowestFrameY = bufferHeight;
@@ -158,10 +160,10 @@ namespace SnakeTheResurrection.Utilities
             return lpAttribute[(y * bufferWidth) + x];
         }
 
-        public static void ClearBuffer()
+        public static void Clear()
         {
             Array.Clear(lpAttribute, 0, lpAttribute.Length);
-            ResetFrameBounds();
+            SetFullscreenFrameBounds();
         }
 
         public static object BackupBuffer()
@@ -189,9 +191,10 @@ namespace SnakeTheResurrection.Utilities
             {
                 ExceptionHelper.ValidateObjectNotNull(key, nameof(key));
                 ExceptionHelper.ValidateObjectNotNull(bufferBackups, null);
-
+                
                 lpAttribute = bufferBackups[key];
                 SetFullscreenFrameBounds();
+                RenderFrame();
 
                 bufferBackups.Remove(key);
 
