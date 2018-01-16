@@ -10,7 +10,11 @@ namespace SnakeTheResurrection.Utilities
 
         private static readonly int bufferHeight;
         private static readonly int bufferWidth;
-        
+
+        private static int lowestFrameX;
+        private static int lowestFrameY;
+        private static int uppermostFrameX;
+        private static int uppermostFrameY;
         private static short[] lpAttribute;
         private static Dictionary<object, short[]> bufferBackups;
         
@@ -43,17 +47,28 @@ namespace SnakeTheResurrection.Utilities
                 ExceptionHelper.ValidateMagic(WriteConsoleOutput(DllImports.StdOutputHandle, lpBuffer, new DllImports.COORD(windowWidth, windowHeight), new DllImports.COORD(), ref lpWriteRegion));
 
                 Console.CursorVisible = false;
-
-                lpAttribute     = new short[lpBuffer.Length];
-
+                
                 bufferHeight    = windowHeight;
                 bufferWidth     = windowWidth;
+
+                lpAttribute = new short[lpBuffer.Length];
+                ResetFrameBounds();
             }
         }
 
-        public static void RenderFrame()
+        public static unsafe void RenderFrame()
         {
-            ExceptionHelper.ValidateMagic(WriteConsoleOutputAttribute(DllImports.StdOutputHandle, lpAttribute, lpAttribute.Length, new DllImports.COORD(), out int lpNumberOfAttrsWritten));
+            if (lowestFrameX < uppermostFrameX && lowestFrameY < uppermostFrameY)
+            {
+                fixed (short* origin = lpAttribute)
+                {
+                    short* ptr = origin + (lowestFrameY * bufferWidth) + lowestFrameX;
+                    int length = ((uppermostFrameY - lowestFrameY) * bufferWidth) - (uppermostFrameX - lowestFrameX);
+                    DllImports.COORD coord = new DllImports.COORD((short)lowestFrameX, (short)lowestFrameY);
+
+                    ExceptionHelper.ValidateMagic(WriteConsoleOutputAttribute(DllImports.StdOutputHandle, ptr, length, coord, out int lpNumberOfAttrsWritten));
+                }
+            }
         }
         
         public static void AddToBuffer(short[,] element, int x, int y)
@@ -62,6 +77,8 @@ namespace SnakeTheResurrection.Utilities
             {
                 int elementHeight = element.GetLength(0);
                 int elementWidth = element.GetLength(1);
+
+                AssignFrameBounds(x, y, elementWidth, elementHeight);
 
                 for (int row = 0; row < elementHeight; row++)
                 {
@@ -77,6 +94,8 @@ namespace SnakeTheResurrection.Utilities
         {
             lock (syncRoot)
             {
+                AssignFrameBounds(x, y, width, height);
+
                 for (int row = y; row < y + height; row++)
                 {
                     for (int column = x; column < x + width; column++)
@@ -92,6 +111,48 @@ namespace SnakeTheResurrection.Utilities
             AddToBuffer(Constants.BACKGROUND_COLOR, x, y, width, height);
         }
 
+        private static void AssignFrameBounds(int x, int y, int width, int height)
+        {
+            if (x < lowestFrameX)
+            {
+                lowestFrameX = x;
+            }
+
+            if (y < lowestFrameY)
+            {
+                lowestFrameY = y;
+            }
+
+            int right = x + width;
+            int bottom = y + height;
+
+            if (right > uppermostFrameX)
+            {
+                uppermostFrameX = right;
+            }
+
+            if (bottom > uppermostFrameY)
+            {
+                uppermostFrameY = bottom;
+            }
+        }
+
+        private static void SetFullscreenFrameBounds()
+        {
+            lowestFrameX = 0;
+            lowestFrameY = 0;
+            uppermostFrameX = bufferWidth;
+            uppermostFrameY = bufferHeight;
+        }
+
+        public static void ResetFrameBounds()
+        {
+            lowestFrameX = bufferWidth;
+            lowestFrameY = bufferHeight;
+            uppermostFrameX = 0;
+            uppermostFrameY = 0;
+        }
+
         public static short GetColorOnCoordinates(int x, int y)
         {
             return lpAttribute[(y * bufferWidth) + x];
@@ -100,7 +161,7 @@ namespace SnakeTheResurrection.Utilities
         public static void ClearBuffer()
         {
             Array.Clear(lpAttribute, 0, lpAttribute.Length);
-            // AddToBuffer(Constants.BACKGROUND_COLOR, 0, 0, bufferHeight, bufferWidth);
+            ResetFrameBounds();
         }
 
         public static object BackupBuffer()
@@ -114,7 +175,9 @@ namespace SnakeTheResurrection.Utilities
 
                 object key = new object();
                 bufferBackups.Add(key, lpAttribute);
+
                 lpAttribute = new short[lpAttribute.Length];
+                SetFullscreenFrameBounds();
 
                 return key;
             }
@@ -128,6 +191,8 @@ namespace SnakeTheResurrection.Utilities
                 ExceptionHelper.ValidateObjectNotNull(bufferBackups, null);
 
                 lpAttribute = bufferBackups[key];
+                SetFullscreenFrameBounds();
+
                 bufferBackups.Remove(key);
 
                 if (bufferBackups.Count == 0)
@@ -138,7 +203,7 @@ namespace SnakeTheResurrection.Utilities
         }
 
         [DllImport("kernel32.dll")]
-        private static extern bool WriteConsoleOutputAttribute(IntPtr hConsoleOutput, short[] lpAttribute, int nLength, DllImports.COORD dwWriteCoord, out int lpNumberOfAttrsWritten);
+        private static unsafe extern bool WriteConsoleOutputAttribute(IntPtr hConsoleOutput, short* lpAttribute, int nLength, DllImports.COORD dwWriteCoord, out int lpNumberOfAttrsWritten);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern bool WriteConsoleOutput(IntPtr hConsoleOutput, DllImports.CHAR_INFO[] lpBuffer, DllImports.COORD dwBufferSize, DllImports.COORD dwBufferCoord, ref DllImports.SMALL_RECT lpWriteRegion);

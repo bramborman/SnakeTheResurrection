@@ -144,8 +144,14 @@ namespace SnakeTheResurrection
 #endif
 
                 InputHelper.ClearCache();
+                //InputHelper.ClearInputBuffer();
+                Renderer.ResetFrameBounds();
                 stopwatch.Stop();
-                
+
+#if LOGGING
+                //TODO
+#endif
+
                 int currentDelay = Math.Max(0, delay - stopwatch.Elapsed.Milliseconds);
 
                 if (currentDelay != 0)
