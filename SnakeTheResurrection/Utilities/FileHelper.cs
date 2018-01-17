@@ -3,19 +3,17 @@ using System.IO;
 
 namespace SnakeTheResurrection.Utilities
 {
-    // Ported from my StorageFileHelper from UWPHelper - https://github.com/bramborman/UWPHelper/blob/master/UWPHelper/Utilities/StorageFileHelper.cs
     public static class FileHelper
     {
         public static bool SaveObject(object obj, string filePath)
         {
             ExceptionHelper.ValidateStringNotNullOrWhiteSpace(filePath, nameof(filePath));
 
-            bool success    = true;
-            string fileName = Path.GetFileName(filePath);
+            bool success = true;
 
             try
             {
-                string folderPath = filePath.Substring(0, filePath.Length - fileName.Length);
+                string folderPath = Path.GetDirectoryName(filePath);
 
                 if (!Directory.Exists(folderPath))
                 {
@@ -32,19 +30,19 @@ namespace SnakeTheResurrection.Utilities
             return success;
         }
 
-        public static LoadObjectAsyncResult<T> LoadObject<T>(string filePath) where T : class, new()
+        public static (T obj, bool success) LoadObject<T>(string filePath) where T : class, new()
         {
             ExceptionHelper.ValidateStringNotNullOrWhiteSpace(filePath, nameof(filePath));
             
             if (!File.Exists(filePath))
             {
-                return new LoadObjectAsyncResult<T>(new T(), true);
+                return (new T(), true);
             }
 
-            bool success    = true;
-            T obj           = null;
+            bool success = true;
+            T obj = null;
 
-            // Reading from the file could fail while the file is used by another proccess
+            // Reading from the file could fail if the file is used by another proccess
             try
             {
                 string json = File.ReadAllText(filePath, Constants.encoding);
@@ -59,19 +57,7 @@ namespace SnakeTheResurrection.Utilities
                 success = false;
             }
             
-            return new LoadObjectAsyncResult<T>(obj ?? new T(), success);
-        }
-        
-        public sealed class LoadObjectAsyncResult<T> where T : class, new()
-        {
-            public T Object { get; }
-            public bool Success { get; }
-
-            public LoadObjectAsyncResult(T @object, bool success)
-            {
-                Object  = @object;
-                Success = success;
-            }
+            return (obj ?? new T(), success);
         }
     }
 }

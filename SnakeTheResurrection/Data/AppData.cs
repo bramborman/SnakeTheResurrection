@@ -30,9 +30,9 @@ namespace SnakeTheResurrection.Data
             }
 #endif
 
-            FileHelper.LoadObjectAsyncResult<AppData> loadObjectAsyncResult = FileHelper.LoadObject<AppData>(filePath);
-            Current                   = loadObjectAsyncResult.Object;
-            Current.ShowLoadingError  = !loadObjectAsyncResult.Success;
+            (AppData appData, bool success) = FileHelper.LoadObject<AppData>(filePath);
+            Current                   = appData;
+            Current.ShowLoadingError  = !success;
             Current.LastRunAppVersion = Assembly.GetExecutingAssembly().GetName().Version;
 
             Current.Save();
