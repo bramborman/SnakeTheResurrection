@@ -69,7 +69,7 @@ namespace SnakeTheResurrection.Utilities
                             Symtext.HorizontalAlignment = HorizontalAlignment.None;
                             Symtext.VerticalAlignment   = VerticalAlignment.None;
 
-                            Renderer.RemoveFromBuffer(0, 0, Symtext.CharHeight, Symtext.GetSymtextWidth(CHEAT_DEACTIVATED_MESSAGE));
+                            Renderer.RemoveFromBuffer(0, 0, Symtext.GetSymtextWidth(CHEAT_DEACTIVATED_MESSAGE), Symtext.CharHeight);
                             Symtext.Write(cheatCodeInfo[currentCode] ? CHEAT_ACTIVATED_MESSAGE : CHEAT_DEACTIVATED_MESSAGE);
                             Renderer.RenderFrame();
                         }
@@ -80,7 +80,7 @@ namespace SnakeTheResurrection.Utilities
                         {
                             lock (Symtext.syncRoot)
                             {
-                                Renderer.RemoveFromBuffer(0, 0, Symtext.CharHeight, Symtext.GetSymtextWidth(CHEAT_DEACTIVATED_MESSAGE));
+                                Renderer.RemoveFromBuffer(0, 0, Symtext.GetSymtextWidth(CHEAT_DEACTIVATED_MESSAGE), Symtext.CharHeight);
                                 Renderer.RenderFrame();
                             }
                         }

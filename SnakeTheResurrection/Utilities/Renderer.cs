@@ -108,7 +108,7 @@ namespace SnakeTheResurrection.Utilities
             }
         }
 
-        public static void RemoveFromBuffer(int x, int y, int height, int width)
+        public static void RemoveFromBuffer(int x, int y, int width, int height)
         {
             AddToBuffer(Constants.BACKGROUND_COLOR, x, y, width, height);
         }
