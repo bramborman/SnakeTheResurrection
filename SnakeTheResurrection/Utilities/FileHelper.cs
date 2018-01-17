@@ -28,8 +28,7 @@ namespace SnakeTheResurrection.Utilities
             {
                 success = false;
             }
-
-            DebugHelper.OperationInfo(fileName, "saving", success);
+            
             return success;
         }
 
@@ -59,8 +58,7 @@ namespace SnakeTheResurrection.Utilities
             {
                 success = false;
             }
-
-            DebugHelper.OperationInfo(Path.GetFileName(filePath), "loading", success);
+            
             return new LoadObjectAsyncResult<T>(obj ?? new T(), success);
         }
         
