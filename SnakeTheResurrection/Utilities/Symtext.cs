@@ -592,7 +592,6 @@ namespace SnakeTheResurrection.Utilities
         private static int _cursorLeft;
         private static int _cursorTop;
         private static int _fontSize;
-        private static SymtextScalingStyle _scalingStyle;
         private static short _foregroundColor;
         private static short _backgroundColor;
         private static HorizontalAlignment _horizontalAlignment;
@@ -652,21 +651,6 @@ namespace SnakeTheResurrection.Utilities
 
                         characterSpacingBackgroundFiller = new short[CharHeight, value];
                         FillCharacterSpacingBackgroundFiller();
-                    }
-                }
-            }
-        }
-        public static SymtextScalingStyle ScalingStyle
-        {
-            get { return _scalingStyle; }
-            set
-            {
-                lock (syncRoot)
-                {
-                    if (_scalingStyle != value)
-                    {
-                        ExceptionHelper.ValidateEnumValueDefined(value, nameof(ScalingStyle));
-                        _scalingStyle = value;
                     }
                 }
             }
@@ -760,8 +744,8 @@ namespace SnakeTheResurrection.Utilities
 
         public static void SetCursorPosition(int left, int top)
         {
-            CursorLeft   = left;
-            CursorTop   = top;
+            CursorLeft = left;
+            CursorTop  = top;
         }
 
         public static void Reset()
@@ -771,7 +755,6 @@ namespace SnakeTheResurrection.Utilities
                 CursorLeft          = 0;
                 CursorTop           = 0;
                 FontSize            = 1;
-                ScalingStyle        = default;
                 ForegroundColor     = Constants.FOREGROUND_COLOR;
                 BackgroundColor     = Constants.BACKGROUND_COLOR;
                 HorizontalAlignment = default;
@@ -890,7 +873,7 @@ namespace SnakeTheResurrection.Utilities
                 output += GetScaledBoolChar(ch).GetLength(1) + CharacterSpacing;
             }
             
-            // We are not adding the character spacing behind the word
+            // We are not adding the character spacing after the word
             return output - CharacterSpacing;
         }
 
@@ -909,36 +892,18 @@ namespace SnakeTheResurrection.Utilities
             int originalHeight  = original.GetLength(0);
             int originalWidth   = original.GetLength(1);
             bool[,] output      = new bool[originalHeight * FontSize, originalWidth * FontSize];
-
-            if (ScalingStyle == SymtextScalingStyle.Normal)
+            
+            for (int row = 0; row < originalHeight; row++)
             {
-                for (int row = 0; row < originalHeight; row++)
+                for (int column = 0; column < originalWidth; column++)
                 {
-                    for (int column = 0; column < originalWidth; column++)
-                    {
-                        bool currentValue = original[row, column];
+                    bool currentValue = original[row, column];
 
-                        for (int row2 = 0; row2 < FontSize; row2++)
-                        {
-                            for (int column2 = 0; column2 < FontSize; column2++)
-                            {
-                                output[(row * FontSize) + row2, (column * FontSize) + column2] = currentValue;
-                            }
-                        }
-                    }
-                }
-            }
-            else
-            {
-                for (int row = 0; row < originalHeight; row++)
-                {
-                    for (int column = 0; column < originalWidth; column++)
+                    for (int row2 = 0; row2 < FontSize; row2++)
                     {
-                        bool currentValue = original[row, column];
-
-                        for (int difference = 0; difference < FontSize; difference++)
+                        for (int column2 = 0; column2 < FontSize; column2++)
                         {
-                            output[(row * FontSize) + difference, (column * FontSize) + difference] = currentValue;
+                            output[(row * FontSize) + row2, (column * FontSize) + column2] = currentValue;
                         }
                     }
                 }
@@ -1031,13 +996,7 @@ namespace SnakeTheResurrection.Utilities
             }
         }
     }
-
-    public enum SymtextScalingStyle
-    {
-        Normal,
-        Stripped
-    }
-
+    
     public enum HorizontalAlignment
     {
         None,
