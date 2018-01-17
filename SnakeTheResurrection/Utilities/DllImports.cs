@@ -22,7 +22,7 @@ namespace SnakeTheResurrection.Utilities
 
         private static readonly IntPtr mainWindowHandle;
 
-        public static IntPtr StdOutputHandle { get; }
+        public static readonly IntPtr stdOutputHandle;
 
         public static bool ConsoleFullscreen
         {
@@ -33,7 +33,7 @@ namespace SnakeTheResurrection.Utilities
             }
             set
             {
-                if (!SetConsoleDisplayMode(StdOutputHandle, (uint)(value ? CONSOLE_FULLSCREEN_MODE : CONSOLE_WINDOWED_MODE), out COORD lpNewScreenBufferDimensions))
+                if (!SetConsoleDisplayMode(stdOutputHandle, (uint)(value ? CONSOLE_FULLSCREEN_MODE : CONSOLE_WINDOWED_MODE), out COORD lpNewScreenBufferDimensions))
                 {
                     // Compatibility with Windows Vista, 7, 8.x
                     ShowWindow(mainWindowHandle, SW_MAXIMIZE);
@@ -43,8 +43,8 @@ namespace SnakeTheResurrection.Utilities
 
         static DllImports()
         {
-            StdOutputHandle = GetStdHandle(STD_OUTPUT_HANDLE);
-            ExceptionHelper.ValidateMagic(StdOutputHandle != new IntPtr(INVALID_HANDLE_VALUE) && StdOutputHandle != new IntPtr(NULL));
+            stdOutputHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+            ExceptionHelper.ValidateMagic(stdOutputHandle != new IntPtr(INVALID_HANDLE_VALUE) && stdOutputHandle != new IntPtr(NULL));
 
             mainWindowHandle = Process.GetCurrentProcess().MainWindowHandle;
         }
@@ -71,7 +71,7 @@ namespace SnakeTheResurrection.Utilities
             info.cbSize = (uint)Marshal.SizeOf(info);
 
             Marshal.Copy(fontName.ToCharArray(), 0, new IntPtr(info.FaceName), fontName.Length);
-            ExceptionHelper.ValidateMagic(SetCurrentConsoleFontEx(StdOutputHandle, false, ref info));
+            ExceptionHelper.ValidateMagic(SetCurrentConsoleFontEx(stdOutputHandle, false, ref info));
         }
 
         public static int MessageBox(string message, string title, uint type = 0 | 0x10, bool exitProgram = true)

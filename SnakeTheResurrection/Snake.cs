@@ -14,13 +14,14 @@ namespace SnakeTheResurrection
         
         private readonly int snakeIndex;
         private readonly int totalSnakeCount;
-        
+        private readonly Profile profile;
+
         private bool rerenderSecondBody;
         private int length;
         private int desiredLength = 3;
         private SnakeBody head;
         private SnakeBody tail;
-        private readonly Profile profile;
+        private Direction direction = Direction.Up;
 
         private IEnumerable<SnakeBody> Bodies
         {
@@ -49,16 +50,12 @@ namespace SnakeTheResurrection
         {
             if (head == null)
             {
-                head = new SnakeBody(GetX(snakeIndex, totalSnakeCount), gameBoardTop + (gameBoardHeight / 2) - SIZE, Direction.Up, this);
+                head = new SnakeBody(GetX(snakeIndex, totalSnakeCount), gameBoardTop + (gameBoardHeight / 2) - SIZE, this);
                 head.AlignToGrid();
                 tail = head;
             }
             else
             {
-                int x = head.x;
-                int y = head.y;
-                Direction direction = head.direction;
-                    
                 bool up     = InputHelper.WasKeyPressed(profile.SnakeControls.Up);
                 bool down   = InputHelper.WasKeyPressed(profile.SnakeControls.Down);
                 bool left   = InputHelper.WasKeyPressed(profile.SnakeControls.Left);
@@ -81,11 +78,13 @@ namespace SnakeTheResurrection
                     direction = Direction.Right;
                 }
 
+                int x = head.x;
+                int y = head.y;
                 UpdateCoordinates(direction, ref x, ref y);
 
                 if (GameObjectBase.IsInGameBoard(x, y, SIZE))
                 {
-                    head.previousBody = new SnakeBody(x, y, direction, this)
+                    head.previousBody = new SnakeBody(x, y, this)
                     {
                         nextBody = head
                     };
@@ -207,16 +206,14 @@ namespace SnakeTheResurrection
         private class SnakeBody : GameObjectBase
         {
             private readonly Snake snake;
-
-            public Direction direction;
+            
             public SnakeBody previousBody;
             public SnakeBody nextBody;
 
-            public SnakeBody(int x, int y, Direction direction, Snake snake) : base(SIZE)
+            public SnakeBody(int x, int y, Snake snake) : base(SIZE)
             {
                 base.x          = x;
                 base.y          = y;
-                this.direction  = direction;
                 this.snake      = snake;
             }
 

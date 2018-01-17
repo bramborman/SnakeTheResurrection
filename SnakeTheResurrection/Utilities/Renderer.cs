@@ -44,7 +44,7 @@ namespace SnakeTheResurrection.Utilities
                 }
 
                 DllImports.SMALL_RECT lpWriteRegion = new DllImports.SMALL_RECT(0, 0, windowWidth, windowHeight);
-                ExceptionHelper.ValidateMagic(WriteConsoleOutput(DllImports.StdOutputHandle, lpBuffer, new DllImports.COORD(windowWidth, windowHeight), new DllImports.COORD(), ref lpWriteRegion));
+                ExceptionHelper.ValidateMagic(WriteConsoleOutput(DllImports.stdOutputHandle, lpBuffer, new DllImports.COORD(windowWidth, windowHeight), new DllImports.COORD(), ref lpWriteRegion));
 
                 Console.CursorVisible = false;
                 
@@ -66,7 +66,7 @@ namespace SnakeTheResurrection.Utilities
                     int length = (bufferWidth - lowestFrameX) + ((uppermostFrameY - lowestFrameY - 1) * bufferWidth) + (bufferWidth - (bufferWidth - uppermostFrameX - 1));
                     DllImports.COORD coord = new DllImports.COORD((short)lowestFrameX, (short)lowestFrameY);
 
-                    ExceptionHelper.ValidateMagic(WriteConsoleOutputAttribute(DllImports.StdOutputHandle, ptr, length, coord, out int lpNumberOfAttrsWritten));
+                    ExceptionHelper.ValidateMagic(WriteConsoleOutputAttribute(DllImports.stdOutputHandle, ptr, length, coord, out int lpNumberOfAttrsWritten));
                 }
 
                 ResetFrameBounds();
