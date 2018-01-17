@@ -1,14 +1,11 @@
 ﻿using Newtonsoft.Json;
-using NotifyPropertyChangedBase;
 using SnakeTheResurrection.Utilities;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace SnakeTheResurrection.Data
 {
-    public sealed class AppData : NotifyPropertyChanged
+    public sealed class AppData
     {
         private static readonly string filePath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + $@"\{Constants.APP_NAME}\AppData.json";
 
@@ -16,22 +13,8 @@ namespace SnakeTheResurrection.Data
 
         [JsonIgnore]
         public bool ShowLoadingError { get; set; }
-        public Version LastRunAppVersion
-        {
-            get { return (Version)GetValue(); }
-            set { SetValue(value); }
-        }
-        public bool ForceGameBoardBorders
-        {
-            get { return (bool)GetValue(); }
-            set { SetValue(value); }
-        }
-        
-        public AppData()
-        {
-            RegisterProperty(nameof(LastRunAppVersion), typeof(Version), null);
-            RegisterProperty(nameof(ForceGameBoardBorders), typeof(bool), false);
-        }
+        public Version LastRunAppVersion { get; set; }
+        public bool ForceGameBoardBorders { get; set; }
         
         public void Save()
         {
@@ -52,10 +35,7 @@ namespace SnakeTheResurrection.Data
             Current.ShowLoadingError  = !loadObjectAsyncResult.Success;
             Current.LastRunAppVersion = Assembly.GetExecutingAssembly().GetName().Version;
 
-            Current.PropertyChanged += (sender, e) =>
-            {
-                Current.Save();
-            };
+            Current.Save();
         }
     }
 }
