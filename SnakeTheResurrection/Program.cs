@@ -28,22 +28,6 @@ namespace SnakeTheResurrection
             // Console.OutputEncoding  = Constants.encoding;
 
             AppData.Load();
-
-            List<string> appDataParseStatus = AppData.Current.TryParse(args);
-            appDataParseStatus.ForEach(Console.WriteLine);
-
-            if (appDataParseStatus.Count != 0)
-            {
-                Console.Write("Press any key to continue or press escape to exit . . .");
-
-                if (Console.ReadKey(true).Key == ConsoleKey.Escape)
-                {
-                    return;
-                }
-
-                Console.Clear();
-            }
-
             ProfileManager.LoadProfiles();
 
             // Run the static constructor of Renderer
