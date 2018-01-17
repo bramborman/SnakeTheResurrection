@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyProduct("Snake The Resurrection")]
 [assembly: AssemblyDescription("Snake The Resurrection")]
 [assembly: AssemblyCompany("Marian Dolinský")]
-[assembly: AssemblyCopyright("© 2017 Marian Dolinský")]
+[assembly: AssemblyCopyright("© 2018 Marian Dolinský")]
 [assembly: AssemblyVersion("2.0.6.0")]
 [assembly: AssemblyFileVersion("2.0.6.0")]
 [assembly: ComVisible(false)]
