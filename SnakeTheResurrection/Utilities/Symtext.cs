@@ -9,6 +9,7 @@ namespace SnakeTheResurrection.Utilities
         private const bool _ = false;
 
         // All chars should be 7 rows tall
+        // If changed, change CharHeight value
         #region Alphabet
         private static readonly bool[,] a = new bool[,]
         {
@@ -895,22 +896,10 @@ namespace SnakeTheResurrection.Utilities
 
         private static int AddRenderedCharToBuffer(char ch, int x, int y)
         {
-            bool[,] character       = GetScaledBoolChar(ch);
-    
-            int characterHeight     = character.GetLength(0);
-            int characterWidth      = character.GetLength(1);
-            short[,] renderedChar   = new short[characterHeight, characterWidth];
+            bool[,] texture = GetScaledBoolChar(ch);
+            Renderer.AddToBuffer(texture, ForegroundColor, BackgroundColor, x, y);
 
-            for (int row = 0; row < characterHeight; row++)
-            {
-                for (int column = 0; column < characterWidth; column++)
-                {
-                    renderedChar[row, column] = character[row, column] ? ForegroundColor : BackgroundColor;
-                }
-            }
-
-            Renderer.AddToBuffer(renderedChar, x, y);
-            return characterWidth;
+            return texture.GetLength(1);
         }
 
         private static bool[,] GetScaledBoolChar(char ch)

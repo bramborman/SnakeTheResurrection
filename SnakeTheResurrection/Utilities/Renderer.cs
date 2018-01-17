@@ -72,7 +72,48 @@ namespace SnakeTheResurrection.Utilities
                 ResetFrameBounds();
             }
         }
-        
+
+        public static void AddToBuffer(bool[,] element, short color, int x, int y)
+        {
+            lock (syncRoot)
+            {
+                int elementHeight = element.GetLength(0);
+                int elementWidth = element.GetLength(1);
+
+                AssignFrameBounds(x, y, elementWidth, elementHeight);
+
+                for (int row = 0; row < elementHeight; row++)
+                {
+                    for (int column = 0; column < elementWidth; column++)
+                    {
+                        if (element[row, column])
+                        {
+                            lpAttribute[((y + row) * bufferWidth) + x + column] = color;
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void AddToBuffer(bool[,] element, short foregroundColor, short backgroundColor, int x, int y)
+        {
+            lock (syncRoot)
+            {
+                int elementHeight = element.GetLength(0);
+                int elementWidth = element.GetLength(1);
+
+                AssignFrameBounds(x, y, elementWidth, elementHeight);
+
+                for (int row = 0; row < elementHeight; row++)
+                {
+                    for (int column = 0; column < elementWidth; column++)
+                    {
+                        lpAttribute[((y + row) * bufferWidth) + x + column] = element[row, column] ? foregroundColor : backgroundColor;
+                    }
+                }
+            }
+        }
+
         public static void AddToBuffer(short[,] element, int x, int y)
         {
             lock (syncRoot)

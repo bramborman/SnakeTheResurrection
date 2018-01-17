@@ -7,11 +7,11 @@ namespace SnakeTheResurrection
 {
     public sealed class Berry : GameObjectBase
     {
-        private const short o = Colors.Red;
-        private const short _ = Constants.BACKGROUND_COLOR;
+        private const bool o = true;
+        private const bool _ = false;
 
         private static readonly Random random = new Random();
-        private static readonly short[,] texture = new short[,]
+        private static readonly bool[,] texture = new bool[,]
         {
             { _, o, o, o, _ },
             { o, o, o, o, o },
@@ -68,7 +68,7 @@ namespace SnakeTheResurrection
                     }
                 } while (regenerate);
 
-                Renderer.AddToBuffer(texture, x, y);
+                Renderer.AddToBuffer(texture, Colors.Red, x, y);
             }
         }
             
