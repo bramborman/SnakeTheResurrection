@@ -129,6 +129,54 @@ namespace SnakeTheResurrection
                 desiredLength += berry.Eat();
                 rerenderSecondBody = true;
             }
+
+
+            int GetX(int snakeIndex, int totalSnakeCount)
+            {
+                return gameBoardLeft + ((gameBoardWidth / (totalSnakeCount + 1)) * (snakeIndex + 1)) - BLOCK_SIZE;
+            }
+
+            void UpdateCoordinates(Direction direction, ref int x, ref int y)
+            {
+                if (direction == Direction.Up)
+                {
+                    y -= SIZE;
+                }
+                else if (direction == Direction.Down)
+                {
+                    y += SIZE;
+                }
+
+                if (direction == Direction.Left)
+                {
+                    x -= SIZE;
+                }
+                else if (direction == Direction.Right)
+                {
+                    x += SIZE;
+                }
+
+                if (borderlessMode)
+                {
+                    if (y < gameBoardTop)
+                    {
+                        y = gameBoardBottom - SIZE;
+                    }
+                    else if (y > gameBoardBottom - SIZE)
+                    {
+                        y = gameBoardTop;
+                    }
+
+                    if (x < gameBoardLeft)
+                    {
+                        x = gameBoardRight - SIZE;
+                    }
+                    else if (x > gameBoardRight - SIZE)
+                    {
+                        x = gameBoardLeft;
+                    }
+                }
+            }
         }
 
         public void LateUpdate()
@@ -150,57 +198,10 @@ namespace SnakeTheResurrection
         {
             current.Remove(this);
         }
-
-        private void UpdateCoordinates(Direction direction, ref int x, ref int y)
-        {
-            if (direction == Direction.UpLeft || direction == Direction.Up || direction == Direction.UpRight)
-            {
-                y -= SIZE;
-            }
-            else if (direction == Direction.DownLeft || direction == Direction.Down || direction == Direction.DownRight)
-            {
-                y += SIZE;
-            }
-
-            if (direction == Direction.UpLeft || direction == Direction.Left || direction == Direction.DownLeft)
-            {
-                x -= SIZE;
-            }
-            else if (direction == Direction.UpRight || direction == Direction.Right || direction == Direction.DownRight)
-            {
-                x += SIZE;
-            }
-
-            if (borderlessMode)
-            {
-                if (y < gameBoardTop)
-                {
-                    y = gameBoardBottom - SIZE;
-                }
-                else if (y > gameBoardBottom - SIZE)
-                {
-                    y = gameBoardTop;
-                }
-
-                if (x < gameBoardLeft)
-                {
-                    x = gameBoardRight - SIZE;
-                }
-                else if (x > gameBoardRight - SIZE)
-                {
-                    x = gameBoardLeft;
-                }
-            }
-        }
         
         public static void Reset()
         {
             current.Clear();
-        }
-        
-        private int GetX(int snakeIndex, int totalSnakeCount)
-        {
-            return gameBoardLeft + ((gameBoardWidth / (totalSnakeCount + 1)) * (snakeIndex + 1)) - BLOCK_SIZE;
         }
         
         private class SnakeBody : GameObjectBase
