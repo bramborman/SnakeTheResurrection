@@ -91,7 +91,7 @@ namespace SnakeTheResurrection
 
                 Version gameVersion = AppData.Current.LastRunAppVersion;
                 Symtext.WriteLine($"{Constants.APP_SHORT_NAME} v{gameVersion.Major}.{gameVersion.Minor}.{gameVersion.Build} '{Constants.APP_NAME_ADDITION}'");
-                Symtext.WriteLine("© 2018 Marian Dolinský\n");
+                Symtext.WriteLine("© 2018 Marian Dolinsk§\n");
 
                 aboutMenu.InvokeResult();
             } while (!goBack);

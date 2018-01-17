@@ -260,17 +260,6 @@ namespace SnakeTheResurrection.Utilities
             { X, X, X, X },
             { _, _, _, _ }
         };
-        private static readonly bool[,] z = new bool[,]
-        {
-            { _, _, _, _ },
-            { X, X, X, X },
-            { _, _, _, X },
-            { _, X, X, _ },
-            { X, _, _, _ },
-            { X, X, X, X },
-            { _, _, _, _ }
-        };
-
         private static readonly bool[,] ý = new bool[,]
         {
             { _, _, X, _ },
@@ -278,6 +267,16 @@ namespace SnakeTheResurrection.Utilities
             { X, _, _, X },
             { X, X, X, X },
             { _, _, _, X },
+            { X, X, X, X },
+            { _, _, _, _ }
+        };
+        private static readonly bool[,] z = new bool[,]
+        {
+            { _, _, _, _ },
+            { X, X, X, X },
+            { _, _, _, X },
+            { _, X, X, _ },
+            { X, _, _, _ },
             { X, X, X, X },
             { _, _, _, _ }
         };
@@ -963,35 +962,49 @@ namespace SnakeTheResurrection.Utilities
         {
             switch (char.ToLowerInvariant(ch))
             {
-                case 'a': return a;
+                case 'a':
+                case 'á': return a;
                 case 'b': return b;
-                case 'c': return c;
-                case 'd': return d;
-                case 'e': return e;
+                case 'c':
+                case 'č': return c;
+                case 'd':
+                case 'ď': return d;
+                case 'e':
+                case 'é':
+                case 'ě': return e;
                 case 'f': return f;
                 case 'g': return g;
                 case 'h': return h;
-                case 'i': return i;
+                case 'i':
+                case 'í': return i;
                 case 'j': return j;
                 case 'k': return k;
                 case 'l': return l;
                 case 'm': return m;
-                case 'n': return n;
-                case 'o': return o;
+                case 'n':
+                case 'ň': return n;
+                case 'o':
+                case 'ó': return o;
                 case 'p': return p;
                 case 'q': return q;
-                case 'r': return r;
-                case 's': return s;
-                case 't': return t;
-                case 'u': return u;
+                case 'r':
+                case 'ř': return r;
+                case 's':
+                case 'š': return s;
+                case 't':
+                case 'ť': return t;
+                case 'u':
+                case 'ú':
+                case 'ů': return u;
                 case 'v': return v;
                 case 'w': return w;
                 case 'x': return x;
-                case 'y': return y;
-                case 'z': return z;
-
-                case 'ý': return ý;
-
+                case 'y':
+                case 'ý': return y;
+                case '§': return ý;
+                case 'z':
+                case 'ž': return z;
+                
                 case ' ': return space;
 
                 case '0': return _0;
