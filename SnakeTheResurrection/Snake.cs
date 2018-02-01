@@ -19,8 +19,6 @@ namespace SnakeTheResurrection
         private readonly int gameBoardTop;
         private readonly int gameBoardRight;
         private readonly int gameBoardBottom;
-        private readonly int gameBoardWidth;
-        private readonly int gameBoardHeight;
 
         private bool rerenderSecondBody;
         private int length;
@@ -43,7 +41,7 @@ namespace SnakeTheResurrection
             }
         }
 
-        public Snake(int originX, int originY, int size, int blockSize, bool borderlessMode, Profile profile, int gameBoardLeft, int gameBoardTop, int gameBoardRight, int gameBoardBottom, int gameBoardWidth, int gameBoardHeight)
+        public Snake(int originX, int originY, int size, int blockSize, bool borderlessMode, Profile profile, int gameBoardLeft, int gameBoardTop, int gameBoardRight, int gameBoardBottom)
         {
             this.originX            = originX;
             this.originY            = originY;
@@ -55,8 +53,6 @@ namespace SnakeTheResurrection
             this.gameBoardTop       = gameBoardTop;
             this.gameBoardRight     = gameBoardRight;
             this.gameBoardBottom    = gameBoardBottom;
-            this.gameBoardWidth     = gameBoardWidth;
-            this.gameBoardHeight    = gameBoardHeight;
             
             current.Add(this);
         }

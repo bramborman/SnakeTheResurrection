@@ -91,7 +91,7 @@ namespace SnakeTheResurrection
 
                 int x = gameBoardLeft + ((gameBoardWidth / (playerCount + 1)) * (i + 1)) - SNAKE_SIZE;
                 int y = gameBoardTop + (gameBoardHeight / 2) - SNAKE_SIZE;
-                new Snake(x, y, SNAKE_SIZE, BLOCK_SIZE, borderlessMode, profile, gameBoardLeft, gameBoardTop, gameBoardRight, gameBoardBottom, gameBoardWidth, gameBoardHeight);
+                new Snake(x, y, SNAKE_SIZE, BLOCK_SIZE, borderlessMode, profile, gameBoardLeft, gameBoardTop, gameBoardRight, gameBoardBottom);
                 new Berry(10, BLOCK_SIZE, gameBoardLeft, gameBoardTop, gameBoardRight, gameBoardBottom);
             }
 
