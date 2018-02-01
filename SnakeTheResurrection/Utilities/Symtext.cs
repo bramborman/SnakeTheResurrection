@@ -897,28 +897,27 @@ namespace SnakeTheResurrection.Utilities
 
         private static bool[,] GetScaledBoolChar(char ch)
         {
-            bool[,] original    = GetBoolChar(ch);
-
-            int originalHeight  = original.GetLength(0);
-            int originalWidth   = original.GetLength(1);
-            bool[,] output      = new bool[originalHeight * FontSize, originalWidth * FontSize];
+            bool[,] original = GetBoolChar(ch);
             
-            for (int row = 0; row < originalHeight; row++)
+            int height       = original.GetLength(0) * FontSize;
+            int width        = original.GetLength(1) * FontSize;
+            bool[,] output   = new bool[height, width];
+            
+            bool currentValue = false;
+            
+            for (int row = 0; row < height; row++)
             {
-                for (int column = 0; column < originalWidth; column++)
+                for (int column = 0; column < width; column++)
                 {
-                    bool currentValue = original[row, column];
-
-                    for (int row2 = 0; row2 < FontSize; row2++)
+                    if (row % FontSize == 0 || column % FontSize == 0)
                     {
-                        for (int column2 = 0; column2 < FontSize; column2++)
-                        {
-                            output[(row * FontSize) + row2, (column * FontSize) + column2] = currentValue;
-                        }
+                        currentValue = original[row / FontSize, column / FontSize];
                     }
+
+                    output[row, column] = currentValue;
                 }
             }
-
+            
             return output;
         }
 
