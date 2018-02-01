@@ -8,9 +8,7 @@ namespace SnakeTheResurrection
     public sealed class Snake
     {
         public static readonly HashSet<Snake> current = new HashSet<Snake>();
-
-        private readonly int originX;
-        private readonly int originY;
+        
         private readonly int size;
         private readonly int blockSize;
         private readonly bool borderlessMode;
@@ -43,8 +41,6 @@ namespace SnakeTheResurrection
 
         public Snake(int originX, int originY, int size, int blockSize, bool borderlessMode, Profile profile, int gameBoardLeft, int gameBoardTop, int gameBoardRight, int gameBoardBottom)
         {
-            this.originX            = originX;
-            this.originY            = originY;
             this.size               = size;
             this.blockSize          = blockSize;
             this.borderlessMode     = borderlessMode;
@@ -54,15 +50,16 @@ namespace SnakeTheResurrection
             this.gameBoardRight     = gameBoardRight;
             this.gameBoardBottom    = gameBoardBottom;
             
+            head = new SnakeBody(originX, originY, this);
+            head.AlignToGrid();
+
             current.Add(this);
         }
 
         public void Update()
         {
-            if (head == null)
+            if (tail == null)
             {
-                head = new SnakeBody(originX, originY, this);
-                head.AlignToGrid();
                 tail = head;
             }
             else
@@ -219,9 +216,9 @@ namespace SnakeTheResurrection
 
             public SnakeBody(int x, int y, Snake snake) : base(snake.size, snake.blockSize, snake.gameBoardLeft, snake.gameBoardTop, snake.gameBoardRight, snake.gameBoardBottom)
             {
-                base.x          = x;
-                base.y          = y;
-                this.snake      = snake;
+                base.x      = x;
+                base.y      = y;
+                this.snake  = snake;
             }
 
             public void AddToBuffer()
