@@ -825,6 +825,15 @@ namespace SnakeTheResurrection.Utilities
                         CursorTop += CharHeight;
                     }
                 }
+
+
+                int AddRenderedCharToBuffer(char ch, int x, int y)
+                {
+                    bool[,] texture = GetScaledBoolChar(ch);
+                    Renderer.AddToBuffer(texture, ForegroundColor, BackgroundColor, x, y);
+
+                    return texture.GetLength(1);
+                }
             }
         }
 
@@ -886,123 +895,95 @@ namespace SnakeTheResurrection.Utilities
             // We are not adding the character spacing after the word
             return output - CharacterSpacing;
         }
-
-        private static int AddRenderedCharToBuffer(char ch, int x, int y)
-        {
-            bool[,] texture = GetScaledBoolChar(ch);
-            Renderer.AddToBuffer(texture, ForegroundColor, BackgroundColor, x, y);
-
-            return texture.GetLength(1);
-        }
-
+        
         private static bool[,] GetScaledBoolChar(char ch)
         {
-            bool[,] original = GetBoolChar(ch);
-            
-            int height       = original.GetLength(0) * FontSize;
-            int width        = original.GetLength(1) * FontSize;
-            bool[,] output   = new bool[height, width];
-            
-            bool currentValue = false;
-            
-            for (int row = 0; row < height; row++)
+            return Renderer.Scale(GetBoolChar(), FontSize);
+
+
+            bool[,] GetBoolChar()
             {
-                for (int column = 0; column < width; column++)
+                switch (char.ToLowerInvariant(ch))
                 {
-                    if (row % FontSize == 0 || column % FontSize == 0)
-                    {
-                        currentValue = original[row / FontSize, column / FontSize];
-                    }
+                    case 'a':
+                    case 'á': return a;
+                    case 'b': return b;
+                    case 'c':
+                    case 'č': return c;
+                    case 'd':
+                    case 'ď': return d;
+                    case 'e':
+                    case 'é':
+                    case 'ě': return e;
+                    case 'f': return f;
+                    case 'g': return g;
+                    case 'h': return h;
+                    case 'i':
+                    case 'í': return i;
+                    case 'j': return j;
+                    case 'k': return k;
+                    case 'l': return l;
+                    case 'm': return m;
+                    case 'n':
+                    case 'ň': return n;
+                    case 'o':
+                    case 'ó': return o;
+                    case 'p': return p;
+                    case 'q': return q;
+                    case 'r':
+                    case 'ř': return r;
+                    case 's':
+                    case 'š': return s;
+                    case 't':
+                    case 'ť': return t;
+                    case 'u':
+                    case 'ú':
+                    case 'ů': return u;
+                    case 'v': return v;
+                    case 'w': return w;
+                    case 'x': return x;
+                    case 'y':
+                    case 'ý': return y;
+                    case '§': return ý;
+                    case 'z':
+                    case 'ž': return z;
 
-                    output[row, column] = currentValue;
+                    case ' ': return space;
+
+                    case '0': return _0;
+                    case '1': return _1;
+                    case '2': return _2;
+                    case '3': return _3;
+                    case '4': return _4;
+                    case '5': return _5;
+                    case '6': return _6;
+                    case '7': return _7;
+                    case '8': return _8;
+                    case '9': return _9;
+
+                    case '+': return plus;
+                    case '-': return minus;
+                    case '*': return cross;
+                    case '/': return slash;
+                    case '=': return equals;
+                    case '%': return percents;
+                    case '"': return quotationMark;
+                    case '\'': return apostrophe;
+                    case '#': return hash;
+                    case ',': return comma;
+                    case '.': return dot;
+                    case ':': return colon;
+                    case '?': return questionMark;
+                    case '!': return exclamationMark;
+                    case '_': return underline;
+                    case '<': return arrowLeft;
+                    case '>': return arrowRight;
+                    case '[': return squareBracketLeft;
+                    case ']': return squareBracketRight;
+                    case '©': return copyrightMark;
+
+                    default: ExceptionHelper.ThrowMagicException(); return null;
                 }
-            }
-            
-            return output;
-        }
-
-        private static bool[,] GetBoolChar(char ch)
-        {
-            switch (char.ToLowerInvariant(ch))
-            {
-                case 'a':
-                case 'á': return a;
-                case 'b': return b;
-                case 'c':
-                case 'č': return c;
-                case 'd':
-                case 'ď': return d;
-                case 'e':
-                case 'é':
-                case 'ě': return e;
-                case 'f': return f;
-                case 'g': return g;
-                case 'h': return h;
-                case 'i':
-                case 'í': return i;
-                case 'j': return j;
-                case 'k': return k;
-                case 'l': return l;
-                case 'm': return m;
-                case 'n':
-                case 'ň': return n;
-                case 'o':
-                case 'ó': return o;
-                case 'p': return p;
-                case 'q': return q;
-                case 'r':
-                case 'ř': return r;
-                case 's':
-                case 'š': return s;
-                case 't':
-                case 'ť': return t;
-                case 'u':
-                case 'ú':
-                case 'ů': return u;
-                case 'v': return v;
-                case 'w': return w;
-                case 'x': return x;
-                case 'y':
-                case 'ý': return y;
-                case '§': return ý;
-                case 'z':
-                case 'ž': return z;
-                
-                case ' ': return space;
-
-                case '0': return _0;
-                case '1': return _1;
-                case '2': return _2;
-                case '3': return _3;
-                case '4': return _4;
-                case '5': return _5;
-                case '6': return _6;
-                case '7': return _7;
-                case '8': return _8;
-                case '9': return _9;
-
-                case '+': return plus;
-                case '-': return minus;
-                case '*': return cross;
-                case '/': return slash;
-                case '=': return equals;
-                case '%': return percents;
-                case '"': return quotationMark;
-                case '\'': return apostrophe;
-                case '#': return hash;
-                case ',': return comma;
-                case '.': return dot;
-                case ':': return colon;
-                case '?': return questionMark;
-                case '!': return exclamationMark;
-                case '_': return underline;
-                case '<': return arrowLeft;
-                case '>': return arrowRight;
-                case '[': return squareBracketLeft;
-                case ']': return squareBracketRight;
-                case '©': return copyrightMark;
-                
-                default: ExceptionHelper.ThrowMagicException(); return null;
             }
         }
     }

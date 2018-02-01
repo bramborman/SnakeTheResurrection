@@ -154,6 +154,30 @@ namespace SnakeTheResurrection.Utilities
             AddToBuffer(Constants.BACKGROUND_COLOR, x, y, width, height);
         }
 
+        public static bool[,] Scale(bool[,] element, int multiplier)
+        {
+            int height       = element.GetLength(0) * multiplier;
+            int width        = element.GetLength(1) * multiplier;
+            bool[,] output   = new bool[height, width];
+            
+            bool currentValue = false;
+            
+            for (int row = 0; row < height; row++)
+            {
+                for (int column = 0; column < width; column++)
+                {
+                    if (row % multiplier == 0 || column % multiplier == 0)
+                    {
+                        currentValue = element[row / multiplier, column / multiplier];
+                    }
+
+                    output[row, column] = currentValue;
+                }
+            }
+            
+            return output;
+        }
+
         private static void AssignFrameBounds(int x, int y, int width, int height)
         {
             if (x < lowestFrameX)
