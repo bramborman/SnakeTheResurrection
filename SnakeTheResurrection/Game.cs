@@ -89,7 +89,7 @@ namespace SnakeTheResurrection
                 }
 
                 new Snake(BLOCK_SIZE, borderlessMode, profile, i, playerCount, gameBoardLeft, gameBoardTop, gameBoardRight, gameBoardBottom, gameBoardWidth, gameBoardHeight);
-                new Berry(10);
+                new Berry(10, gameBoardLeft, gameBoardTop, gameBoardRight, gameBoardBottom);
             }
 
             Stopwatch stopwatch = new Stopwatch();

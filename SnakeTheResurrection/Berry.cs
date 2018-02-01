@@ -1,7 +1,6 @@
 ﻿using SnakeTheResurrection.Utilities;
 using System;
 using System.Collections.Generic;
-using static SnakeTheResurrection.Game;
 
 namespace SnakeTheResurrection
 {
@@ -22,14 +21,24 @@ namespace SnakeTheResurrection
         private static readonly int textureSize = texture.GetLength(0);
 
         public static readonly HashSet<Berry> current = new HashSet<Berry>();
-        
+
+        private readonly int gameBoardLeft;
+        private readonly int gameBoardTop;
+        private readonly int gameBoardRight;
+        private readonly int gameBoardBottom;
+
         public readonly int power;
 
         private bool generateNew = true;
 
-        public Berry(int power) : base(textureSize)
+        public Berry(int power, int gameBoardLeft, int gameBoardTop, int gameBoardRight, int gameBoardBottom) : base(textureSize)
         {
-            this.power = power;
+            this.power              = power;
+            this.gameBoardLeft      = gameBoardLeft;
+            this.gameBoardTop       = gameBoardTop;
+            this.gameBoardRight     = gameBoardRight;
+            this.gameBoardBottom    = gameBoardBottom;
+
             current.Add(this);
         }
 
