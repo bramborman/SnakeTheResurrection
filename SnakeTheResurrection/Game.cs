@@ -10,6 +10,7 @@ namespace SnakeTheResurrection
     public static class Game
     {
         private const int BLOCK_SIZE = 5;
+        private const int SNAKE_SIZE = BLOCK_SIZE;
 
         private static int gameBoardLeft;
         private static int gameBoardTop;
@@ -88,7 +89,9 @@ namespace SnakeTheResurrection
                         break;
                 }
 
-                new Snake(BLOCK_SIZE, BLOCK_SIZE, borderlessMode, profile, i, playerCount, gameBoardLeft, gameBoardTop, gameBoardRight, gameBoardBottom, gameBoardWidth, gameBoardHeight);
+                int x = gameBoardLeft + ((gameBoardWidth / (playerCount + 1)) * (i + 1)) - SNAKE_SIZE;
+                int y = gameBoardTop + (gameBoardHeight / 2) - SNAKE_SIZE;
+                new Snake(x, y, SNAKE_SIZE, BLOCK_SIZE, borderlessMode, profile, gameBoardLeft, gameBoardTop, gameBoardRight, gameBoardBottom, gameBoardWidth, gameBoardHeight);
                 new Berry(10, BLOCK_SIZE, gameBoardLeft, gameBoardTop, gameBoardRight, gameBoardBottom);
             }
 

@@ -9,12 +9,12 @@ namespace SnakeTheResurrection
     {
         public static readonly HashSet<Snake> current = new HashSet<Snake>();
 
+        private readonly int originX;
+        private readonly int originY;
         private readonly int size;
         private readonly int blockSize;
         private readonly bool borderlessMode;
         private readonly Profile profile;
-        private readonly int snakeIndex;
-        private readonly int totalSnakeCount;
         private readonly int gameBoardLeft;
         private readonly int gameBoardTop;
         private readonly int gameBoardRight;
@@ -43,14 +43,14 @@ namespace SnakeTheResurrection
             }
         }
 
-        public Snake(int size, int blockSize, bool borderlessMode, Profile profile, int snakeIndex, int totalSnakeCount, int gameBoardLeft, int gameBoardTop, int gameBoardRight, int gameBoardBottom, int gameBoardWidth, int gameBoardHeight)
+        public Snake(int originX, int originY, int size, int blockSize, bool borderlessMode, Profile profile, int gameBoardLeft, int gameBoardTop, int gameBoardRight, int gameBoardBottom, int gameBoardWidth, int gameBoardHeight)
         {
+            this.originX            = originX;
+            this.originY            = originY;
             this.size               = size;
             this.blockSize          = blockSize;
             this.borderlessMode     = borderlessMode;
             this.profile            = profile;
-            this.snakeIndex         = snakeIndex;
-            this.totalSnakeCount    = totalSnakeCount;
             this.gameBoardLeft      = gameBoardLeft;
             this.gameBoardTop       = gameBoardTop;
             this.gameBoardRight     = gameBoardRight;
@@ -65,8 +65,7 @@ namespace SnakeTheResurrection
         {
             if (head == null)
             {
-                int x = gameBoardLeft + ((gameBoardWidth / (totalSnakeCount + 1)) * (snakeIndex + 1)) - size;
-                head = new SnakeBody(x, gameBoardTop + (gameBoardHeight / 2) - size, this);
+                head = new SnakeBody(originX, originY, this);
                 head.AlignToGrid();
                 tail = head;
             }
