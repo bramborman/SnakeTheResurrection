@@ -18,8 +18,8 @@ namespace SnakeTheResurrection
         public static int gameBoardWidth;
         public static int gameBoardHeight;
 
-        public static bool borderlessMode;
-        public static int delay;
+        private static bool borderlessMode;
+        private static int delay;
         private static int playerCount = 1;
 
         public static bool Play(bool multiplayer)
@@ -88,7 +88,7 @@ namespace SnakeTheResurrection
                         break;
                 }
 
-                new Snake(profile, i, playerCount);
+                new Snake(BLOCK_SIZE, borderlessMode, profile, i, playerCount, gameBoardLeft, gameBoardTop, gameBoardRight, gameBoardBottom, gameBoardWidth, gameBoardHeight);
                 new Berry(10);
             }
 

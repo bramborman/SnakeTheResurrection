@@ -2,19 +2,24 @@
 using SnakeTheResurrection.Utilities;
 using System.Collections.Generic;
 using System.Linq;
-using static SnakeTheResurrection.Game;
 
 namespace SnakeTheResurrection
 {
     public sealed class Snake
     {
-        private const int SIZE = BLOCK_SIZE;
-
         public static readonly HashSet<Snake> current = new HashSet<Snake>();
-        
+
+        private readonly int size;
+        private readonly bool borderlessMode;
+        private readonly Profile profile;
         private readonly int snakeIndex;
         private readonly int totalSnakeCount;
-        private readonly Profile profile;
+        private readonly int gameBoardLeft;
+        private readonly int gameBoardTop;
+        private readonly int gameBoardRight;
+        private readonly int gameBoardBottom;
+        private readonly int gameBoardWidth;
+        private readonly int gameBoardHeight;
 
         private bool rerenderSecondBody;
         private int length;
@@ -37,11 +42,19 @@ namespace SnakeTheResurrection
             }
         }
 
-        public Snake(Profile profile, int snakeIndex, int totalSnakeCount)
+        public Snake(int size, bool borderlessMode, Profile profile, int snakeIndex, int totalSnakeCount, int gameBoardLeft, int gameBoardTop, int gameBoardRight, int gameBoardBottom, int gameBoardWidth, int gameBoardHeight)
         {
-            this.profile = profile;
-            this.snakeIndex = snakeIndex;
-            this.totalSnakeCount = totalSnakeCount;
+            this.size               = size;
+            this.borderlessMode     = borderlessMode;
+            this.profile            = profile;
+            this.snakeIndex         = snakeIndex;
+            this.totalSnakeCount    = totalSnakeCount;
+            this.gameBoardLeft      = gameBoardLeft;
+            this.gameBoardTop       = gameBoardTop;
+            this.gameBoardRight     = gameBoardRight;
+            this.gameBoardBottom    = gameBoardBottom;
+            this.gameBoardWidth     = gameBoardWidth;
+            this.gameBoardHeight    = gameBoardHeight;
             
             current.Add(this);
         }
@@ -50,7 +63,8 @@ namespace SnakeTheResurrection
         {
             if (head == null)
             {
-                head = new SnakeBody(GetX(snakeIndex, totalSnakeCount), gameBoardTop + (gameBoardHeight / 2) - SIZE, this);
+                int x = gameBoardLeft + ((gameBoardWidth / (totalSnakeCount + 1)) * (snakeIndex + 1)) - size;
+                head = new SnakeBody(x, gameBoardTop + (gameBoardHeight / 2) - size, this);
                 head.AlignToGrid();
                 tail = head;
             }
@@ -82,7 +96,7 @@ namespace SnakeTheResurrection
                 int y = head.y;
                 UpdateCoordinates(direction, ref x, ref y);
 
-                if (GameObjectBase.IsInGameBoard(x, y, SIZE))
+                if (GameObjectBase.IsInGameBoard(x, y, size))
                 {
                     head.previousBody = new SnakeBody(x, y, this)
                     {
@@ -131,47 +145,42 @@ namespace SnakeTheResurrection
             }
 
 
-            int GetX(int snakeIndex, int totalSnakeCount)
-            {
-                return gameBoardLeft + ((gameBoardWidth / (totalSnakeCount + 1)) * (snakeIndex + 1)) - BLOCK_SIZE;
-            }
-
             void UpdateCoordinates(Direction direction, ref int x, ref int y)
             {
                 if (direction == Direction.Up)
                 {
-                    y -= SIZE;
+                    y -= size;
                 }
                 else if (direction == Direction.Down)
                 {
-                    y += SIZE;
+                    y += size;
                 }
 
                 if (direction == Direction.Left)
                 {
-                    x -= SIZE;
+                    x -= size;
                 }
                 else if (direction == Direction.Right)
                 {
-                    x += SIZE;
+                    x += size;
                 }
 
                 if (borderlessMode)
                 {
                     if (y < gameBoardTop)
                     {
-                        y = gameBoardBottom - SIZE;
+                        y = gameBoardBottom - size;
                     }
-                    else if (y > gameBoardBottom - SIZE)
+                    else if (y > gameBoardBottom - size)
                     {
                         y = gameBoardTop;
                     }
 
                     if (x < gameBoardLeft)
                     {
-                        x = gameBoardRight - SIZE;
+                        x = gameBoardRight - size;
                     }
-                    else if (x > gameBoardRight - SIZE)
+                    else if (x > gameBoardRight - size)
                     {
                         x = gameBoardLeft;
                     }
@@ -211,7 +220,7 @@ namespace SnakeTheResurrection
             public SnakeBody previousBody;
             public SnakeBody nextBody;
 
-            public SnakeBody(int x, int y, Snake snake) : base(SIZE)
+            public SnakeBody(int x, int y, Snake snake) : base(snake.size)
             {
                 base.x          = x;
                 base.y          = y;
