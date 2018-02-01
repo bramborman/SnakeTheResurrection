@@ -987,20 +987,4 @@ namespace SnakeTheResurrection.Utilities
             }
         }
     }
-    
-    public enum HorizontalAlignment
-    {
-        None,
-        Left,
-        Center,
-        Right
-    }
-
-    public enum VerticalAlignment
-    {
-        None,
-        Top,
-        Center,
-        Bottom
-    }
 }
