@@ -535,6 +535,16 @@ namespace SnakeTheResurrection.Utilities
             { X },
             { _ }
         };
+        private static readonly bool[,] underline = new bool[,]
+        {
+            { _, _, _, _ },
+            { _, _, _, _ },
+            { _, _, _, _ },
+            { _, _, _, _ },
+            { _, _, _, _ },
+            { X, X, X, X },
+            { _, _, _, _ }
+        };
         private static readonly bool[,] arrowLeft = new bool[,]
         {
             { _, _, _ },
@@ -986,6 +996,7 @@ namespace SnakeTheResurrection.Utilities
                 case ':': return colon;
                 case '?': return questionMark;
                 case '!': return exclamationMark;
+                case '_': return underline;
                 case '<': return arrowLeft;
                 case '>': return arrowRight;
                 case '[': return squareBracketLeft;
