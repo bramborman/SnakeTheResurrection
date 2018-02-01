@@ -73,6 +73,7 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <Compile Include="Utilities\Symtext.Characters.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\Square71x71Logo.png">
