@@ -10,6 +10,7 @@ namespace SnakeTheResurrection
         public static readonly HashSet<Snake> current = new HashSet<Snake>();
 
         private readonly int size;
+        private readonly int blockSize;
         private readonly bool borderlessMode;
         private readonly Profile profile;
         private readonly int snakeIndex;
@@ -42,9 +43,10 @@ namespace SnakeTheResurrection
             }
         }
 
-        public Snake(int size, bool borderlessMode, Profile profile, int snakeIndex, int totalSnakeCount, int gameBoardLeft, int gameBoardTop, int gameBoardRight, int gameBoardBottom, int gameBoardWidth, int gameBoardHeight)
+        public Snake(int size, int blockSize, bool borderlessMode, Profile profile, int snakeIndex, int totalSnakeCount, int gameBoardLeft, int gameBoardTop, int gameBoardRight, int gameBoardBottom, int gameBoardWidth, int gameBoardHeight)
         {
             this.size               = size;
+            this.blockSize          = blockSize;
             this.borderlessMode     = borderlessMode;
             this.profile            = profile;
             this.snakeIndex         = snakeIndex;
@@ -96,7 +98,7 @@ namespace SnakeTheResurrection
                 int y = head.y;
                 UpdateCoordinates(direction, ref x, ref y);
 
-                if (GameObjectBase.IsInGameBoard(x, y, size))
+                if (GameObjectBase.IsInGameBoard(x, y, size, gameBoardLeft, gameBoardTop, gameBoardRight, gameBoardBottom))
                 {
                     head.previousBody = new SnakeBody(x, y, this)
                     {
@@ -220,7 +222,7 @@ namespace SnakeTheResurrection
             public SnakeBody previousBody;
             public SnakeBody nextBody;
 
-            public SnakeBody(int x, int y, Snake snake) : base(snake.size)
+            public SnakeBody(int x, int y, Snake snake) : base(snake.size, snake.blockSize, snake.gameBoardLeft, snake.gameBoardTop, snake.gameBoardRight, snake.gameBoardBottom)
             {
                 base.x          = x;
                 base.y          = y;

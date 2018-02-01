@@ -22,23 +22,13 @@ namespace SnakeTheResurrection
 
         public static readonly HashSet<Berry> current = new HashSet<Berry>();
 
-        private readonly int gameBoardLeft;
-        private readonly int gameBoardTop;
-        private readonly int gameBoardRight;
-        private readonly int gameBoardBottom;
-
         public readonly int power;
 
         private bool generateNew = true;
 
-        public Berry(int power, int gameBoardLeft, int gameBoardTop, int gameBoardRight, int gameBoardBottom) : base(textureSize)
+        public Berry(int power, int blockSize, int gameBoardLeft, int gameBoardTop, int gameBoardRight, int gameBoardBottom) : base(textureSize, blockSize, gameBoardLeft, gameBoardTop, gameBoardRight, gameBoardBottom)
         {
-            this.power              = power;
-            this.gameBoardLeft      = gameBoardLeft;
-            this.gameBoardTop       = gameBoardTop;
-            this.gameBoardRight     = gameBoardRight;
-            this.gameBoardBottom    = gameBoardBottom;
-
+            this.power = power;
             current.Add(this);
         }
 

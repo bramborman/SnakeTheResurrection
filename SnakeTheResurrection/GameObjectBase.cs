@@ -1,17 +1,26 @@
-﻿using static SnakeTheResurrection.Game;
-
-namespace SnakeTheResurrection
+﻿namespace SnakeTheResurrection
 {
     public abstract class GameObjectBase
     {
+        protected readonly int blockSize;
+        protected readonly int gameBoardLeft;
+        protected readonly int gameBoardTop;
+        protected readonly int gameBoardRight;
+        protected readonly int gameBoardBottom;
+
         public readonly int size;
 
         public int x;
         public int y;
 
-        protected GameObjectBase(int size)
+        protected GameObjectBase(int size, int blockSize, int gameBoardLeft, int gameBoardTop, int gameBoardRight, int gameBoardBottom)
         {
             this.size = size;
+            this.blockSize = blockSize;
+            this.gameBoardLeft      = gameBoardLeft;
+            this.gameBoardTop       = gameBoardTop;
+            this.gameBoardRight     = gameBoardRight;
+            this.gameBoardBottom    = gameBoardBottom;
         }
 
         public bool HitTest(GameObjectBase g)
@@ -21,12 +30,12 @@ namespace SnakeTheResurrection
 
         public void AlignToGrid()
         {
-            int padding = (BLOCK_SIZE % size) / 2;
-            x = x - (x % BLOCK_SIZE) + (gameBoardLeft % BLOCK_SIZE) + padding;
-            y = y - (y % BLOCK_SIZE) + (gameBoardTop % BLOCK_SIZE) + padding;
+            int padding = (blockSize % size) / 2;
+            x = x - (x % blockSize) + (gameBoardLeft % blockSize) + padding;
+            y = y - (y % blockSize) + (gameBoardTop % blockSize) + padding;
         }
 
-        public static bool IsInGameBoard(int x, int y, int size)
+        public static bool IsInGameBoard(int x, int y, int size, int gameBoardLeft, int gameBoardTop, int gameBoardRight, int gameBoardBottom)
         {
             return x >= gameBoardLeft && y >= gameBoardTop && x + size <= gameBoardRight && y + size <= gameBoardBottom;
         }

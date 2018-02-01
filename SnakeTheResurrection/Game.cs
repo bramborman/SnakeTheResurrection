@@ -9,14 +9,14 @@ namespace SnakeTheResurrection
 {
     public static class Game
     {
-        public const int BLOCK_SIZE = 5;
+        private const int BLOCK_SIZE = 5;
 
-        public static int gameBoardLeft;
-        public static int gameBoardTop;
-        public static int gameBoardRight;
-        public static int gameBoardBottom;
-        public static int gameBoardWidth;
-        public static int gameBoardHeight;
+        private static int gameBoardLeft;
+        private static int gameBoardTop;
+        private static int gameBoardRight;
+        private static int gameBoardBottom;
+        private static int gameBoardWidth;
+        private static int gameBoardHeight;
 
         private static bool borderlessMode;
         private static int delay;
@@ -88,8 +88,8 @@ namespace SnakeTheResurrection
                         break;
                 }
 
-                new Snake(BLOCK_SIZE, borderlessMode, profile, i, playerCount, gameBoardLeft, gameBoardTop, gameBoardRight, gameBoardBottom, gameBoardWidth, gameBoardHeight);
-                new Berry(10, gameBoardLeft, gameBoardTop, gameBoardRight, gameBoardBottom);
+                new Snake(BLOCK_SIZE, BLOCK_SIZE, borderlessMode, profile, i, playerCount, gameBoardLeft, gameBoardTop, gameBoardRight, gameBoardBottom, gameBoardWidth, gameBoardHeight);
+                new Berry(10, BLOCK_SIZE, gameBoardLeft, gameBoardTop, gameBoardRight, gameBoardBottom);
             }
 
             Stopwatch stopwatch = new Stopwatch();
