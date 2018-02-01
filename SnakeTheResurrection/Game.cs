@@ -23,11 +23,12 @@ namespace SnakeTheResurrection
         private static int delay;
         private static int playerCount = 1;
 
+        public static List<Snake> snakes;
+        public static List<Berry> berries;
+
         public static bool Play(bool multiplayer)
         {
             InputHelper.ClearCache();
-            Berry.Reset();
-            Snake.Reset();
             Renderer.Clear();
 
             if (!GetGameSettings(multiplayer))
@@ -37,7 +38,10 @@ namespace SnakeTheResurrection
 
             Renderer.Clear();
             CreateGameBoard();
-                
+
+            snakes = new List<Snake>(playerCount);
+            berries = new List<Berry>(playerCount);
+
             for (int i = 0; i < playerCount; i++)
             {
                 Profile profile = null;
@@ -91,29 +95,30 @@ namespace SnakeTheResurrection
 
                 int x = gameBoardLeft + ((gameBoardWidth / (playerCount + 1)) * (i + 1)) - SNAKE_SIZE;
                 int y = gameBoardTop + (gameBoardHeight / 2) - SNAKE_SIZE;
-                new Snake(x, y, SNAKE_SIZE, BLOCK_SIZE, borderlessMode, profile, gameBoardLeft, gameBoardTop, gameBoardRight, gameBoardBottom);
-                new Berry(10, BLOCK_SIZE, gameBoardLeft, gameBoardTop, gameBoardRight, gameBoardBottom);
+
+                snakes.Add(new Snake(x, y, SNAKE_SIZE, BLOCK_SIZE, borderlessMode, profile, gameBoardLeft, gameBoardTop, gameBoardRight, gameBoardBottom));
+                berries.Add(new Berry(10, BLOCK_SIZE, gameBoardLeft, gameBoardTop, gameBoardRight, gameBoardBottom));
             }
 
             Stopwatch stopwatch = new Stopwatch();
             Renderer.RenderFrame();
 
-            while (Snake.current.Count != 0)
+            while (snakes.Count != 0)
             {
                 stopwatch.Restart();
 
                 //TODO: don't crash here and don't do it the stupid way
-                foreach (Snake snake in Snake.current)
+                foreach (Snake snake in snakes)
                 {
                     snake.Update();
                 }
 
-                foreach (Snake snake in Snake.current)
+                foreach (Snake snake in snakes)
                 {
                     snake.LateUpdate();
                 }
 
-                foreach (Berry berry in Berry.current)
+                foreach (Berry berry in berries)
                 {
                     berry.Update();
                 }

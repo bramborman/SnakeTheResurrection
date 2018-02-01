@@ -7,8 +7,6 @@ namespace SnakeTheResurrection
 {
     public sealed class Snake
     {
-        public static readonly HashSet<Snake> current = new HashSet<Snake>();
-        
         private readonly int size;
         private readonly int blockSize;
         private readonly bool borderlessMode;
@@ -52,8 +50,6 @@ namespace SnakeTheResurrection
             
             head = new SnakeBody(originX, originY, this);
             head.AlignToGrid();
-
-            current.Add(this);
         }
 
         public void Update()
@@ -130,7 +126,7 @@ namespace SnakeTheResurrection
                 length++;
             }
             
-            Berry berry = Berry.current.FirstOrDefault(b => head.HitTest(b));
+            Berry berry = Game.berries.FirstOrDefault(head.HitTest);
 
             if (berry != null)
             {
@@ -184,7 +180,7 @@ namespace SnakeTheResurrection
 
         public void LateUpdate()
         {
-            foreach (Snake otherSnake in current)
+            foreach (Snake otherSnake in Game.snakes)
             {
                 foreach (SnakeBody body in otherSnake.Bodies)
                 {
@@ -199,12 +195,7 @@ namespace SnakeTheResurrection
 
         private void Die()
         {
-            current.Remove(this);
-        }
-        
-        public static void Reset()
-        {
-            current.Clear();
+            Game.snakes.Remove(this);
         }
         
         private class SnakeBody : GameObjectBase

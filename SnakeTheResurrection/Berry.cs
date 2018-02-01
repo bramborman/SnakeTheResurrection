@@ -1,6 +1,5 @@
 ﻿using SnakeTheResurrection.Utilities;
 using System;
-using System.Collections.Generic;
 
 namespace SnakeTheResurrection
 {
@@ -19,9 +18,7 @@ namespace SnakeTheResurrection
             { _, o, o, o, _ }
         };
         private static readonly int textureSize = texture.GetLength(0);
-
-        public static readonly HashSet<Berry> current = new HashSet<Berry>();
-
+        
         public readonly int power;
 
         private bool generateNew = true;
@@ -29,7 +26,6 @@ namespace SnakeTheResurrection
         public Berry(int power, int blockSize, int gameBoardLeft, int gameBoardTop, int gameBoardRight, int gameBoardBottom) : base(textureSize, blockSize, gameBoardLeft, gameBoardTop, gameBoardRight, gameBoardBottom)
         {
             this.power = power;
-            current.Add(this);
         }
 
         public void Update()
@@ -77,11 +73,6 @@ namespace SnakeTheResurrection
             generateNew = true;
 
             return Cheats.CheatCodeInfo[Cheats.CheatCode.Hungry] ? 2 * power : power;
-        }
-
-        public static void Reset()
-        {
-            current.Clear();
         }
     }
 }
