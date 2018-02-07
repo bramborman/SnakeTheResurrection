@@ -23,6 +23,8 @@ namespace SnakeTheResurrection
         private SnakeBody tail;
         private Direction direction = Direction.Up;
 
+        public bool IsAlive { get; private set; } = true;
+
         private IEnumerable<SnakeBody> Bodies
         {
             get
@@ -195,7 +197,7 @@ namespace SnakeTheResurrection
 
         private void Die()
         {
-            Game.snakes.Remove(this);
+            IsAlive = false;
         }
         
         private class SnakeBody : GameObjectBase

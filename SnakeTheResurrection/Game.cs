@@ -3,6 +3,7 @@ using SnakeTheResurrection.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 
 namespace SnakeTheResurrection
@@ -103,11 +104,10 @@ namespace SnakeTheResurrection
             Stopwatch stopwatch = new Stopwatch();
             Renderer.RenderFrame();
 
-            while (snakes.Count != 0)
+            while (snakes.Count(s => s.IsAlive) != 0)
             {
                 stopwatch.Restart();
-
-                //TODO: don't crash here and don't do it the stupid way
+                
                 foreach (Snake snake in snakes)
                 {
                     snake.Update();
@@ -122,8 +122,7 @@ namespace SnakeTheResurrection
                 {
                     berry.Update();
                 }
-
-                //TODO: Render each snake?
+                
                 Renderer.RenderFrame();
 
                 if (InputHelper.WasKeyPressed(ConsoleKey.Escape))
