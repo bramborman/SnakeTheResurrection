@@ -132,7 +132,7 @@ namespace SnakeTheResurrection.Utilities
         {
             get
             {
-                return 7 * FontSize;
+                return GetCharHeight(FontSize);
             }
         }
 
@@ -261,17 +261,10 @@ namespace SnakeTheResurrection.Utilities
             FontSize = 3;
             WriteLine();
         }
-
-        public static bool[][,] Render(string str, int fontSize)
+        
+        public static int GetCharHeight(int fontSize)
         {
-            bool[][,] output = new bool[str.Length][,];
-
-            for (int i = 0; i < str.Length; i++)
-            {
-                output[i] = GetScaledBoolChar(str[i], fontSize);
-            }
-
-            return output;
+            return 7 * fontSize;
         }
         
         public static void SetDefaultProperties()
@@ -325,7 +318,7 @@ namespace SnakeTheResurrection.Utilities
             }
         }
         
-        private static bool[,] GetScaledBoolChar(char ch, int fontSize)
+        public static bool[,] GetScaledBoolChar(char ch, int fontSize)
         {
             return Renderer.Scale(GetBoolChar(), fontSize);
 

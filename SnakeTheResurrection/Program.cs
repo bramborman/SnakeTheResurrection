@@ -37,8 +37,7 @@ namespace SnakeTheResurrection
             // {
             //     Text = "Hello World!",
             //     ForegroundColor = Utilities.UI.Colors.Black,
-            //     FontSize = 3,
-            //     Width = 35
+            //     FontSize = 3
             // };
             // 
             // int framesCounter = 0;

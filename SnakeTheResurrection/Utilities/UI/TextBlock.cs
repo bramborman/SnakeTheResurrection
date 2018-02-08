@@ -70,45 +70,56 @@
             int y = bounds.Y;
             int characterSpacing = GetCharacterSpacing();
             int lineSpacing = GetLineSpacing();
-            bool[][,] renderedChars = Symtext.Render(Text, FontSize);
-            int charHeight = renderedChars[0].GetLength(0);
-            bool breakNextIteration = false;
-
+            int charHeight = Symtext.GetCharHeight(FontSize);
+            
             for (int i = 0; i < Text.Length; i++)
             {
-                bool[,] renderedChar = renderedChars[i];
+                if (Text[i] == '\n')
+                {
+                    GoToNewLine();
+                    continue;
+                }
+
+                bool[,] renderedChar = Symtext.GetScaledBoolChar(Text[i], FontSize);
                 int charWidth = renderedChar.GetLength(1);
 
                 if (x + charWidth > bounds.Right)
                 {
                     if (TextWrapping == TextWrapping.Wrap)
                     {
-                        if (i == 0)
+                        if (i != 0)
                         {
-                            break;
-                        }
+                            GoToNewLine();
 
-                        x = bounds.X;
-                        y += charHeight + lineSpacing;
-
-                        if (Text[i] == ' ')
-                        {
-                            continue;
+                            if (y > bounds.Bottom)
+                            {
+                                break;
+                            }
                         }
                     }
                     else if (TextWrapping == TextWrapping.NoWrap)
                     {
-                        if (breakNextIteration)
+                        if (x > bounds.Right)
                         {
                             break;
                         }
-
-                        breakNextIteration = true;
                     }
+                }
+
+                if (x == bounds.X && Text[i] == ' ')
+                {
+                    continue;
                 }
 
                 Renderer.AddToBuffer(renderedChar, (short)ForegroundColor, x, y, bounds.Right, bounds.Bottom);
                 x += charWidth + characterSpacing;
+
+
+                void GoToNewLine()
+                {
+                    x = bounds.X;
+                    y += charHeight + lineSpacing;
+                }
             }
 
             return true;
