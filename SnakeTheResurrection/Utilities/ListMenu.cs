@@ -48,7 +48,7 @@ namespace SnakeTheResurrection.Utilities
         public void InvokeResult()
         {
             GetResult();
-            SelectedItem.Action();
+            SelectedItem.Action?.Invoke();
         }
         
         public int GetResult()
@@ -90,7 +90,10 @@ namespace SnakeTheResurrection.Utilities
 
                 while (!handled)
                 {
-                    switch (InputHelper.ReadKey().Key)
+                    ConsoleKey key = InputHelper.ReadKey().Key;
+                    InputHelper.ClearInputBuffer();
+
+                    switch (key)
                     {
                         case ConsoleKey.UpArrow:
                             if (SelectedIndex != 0)
@@ -98,7 +101,7 @@ namespace SnakeTheResurrection.Utilities
                                 handled = true;
                                 SelectedIndex--;
 
-                                if (string.IsNullOrWhiteSpace(SelectedItem.Text))
+                                while (string.IsNullOrWhiteSpace(SelectedItem.Text))
                                 {
                                     SelectedIndex--;
                                 }
@@ -112,7 +115,7 @@ namespace SnakeTheResurrection.Utilities
                                 handled = true;
                                 SelectedIndex++;
 
-                                if (string.IsNullOrWhiteSpace(SelectedItem.Text))
+                                while (string.IsNullOrWhiteSpace(SelectedItem.Text))
                                 {
                                     SelectedIndex++;
                                 }

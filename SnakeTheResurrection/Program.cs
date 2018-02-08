@@ -27,11 +27,12 @@ namespace SnakeTheResurrection
             // Console.InputEncoding   = Constants.encoding;
             // Console.OutputEncoding  = Constants.encoding;
 
+            // Run the static constructor of Renderer
+            RuntimeHelpers.RunClassConstructor(typeof(Renderer).TypeHandle);
+
             AppData.Load();
             ProfileManager.LoadProfiles();
 
-            // Run the static constructor of Renderer
-            RuntimeHelpers.RunClassConstructor(typeof(Renderer).TypeHandle);
             MainMenu();
 
 #if DEBUG
@@ -78,9 +79,10 @@ namespace SnakeTheResurrection
                 Items = new List<MenuItem>
                 {
                     new MenuItem("GitHub repo", () => Process.Start("https://github.com/bramborman/SnakeTheResurrection")   ),
+                    new MenuItem("Game font",   () => Process.Start("https://www.dafont.com/symtext.font")                  ),
                     new MenuItem("Back",        () => goBack = true                                                         )
                 },
-                SelectedIndex = 1
+                SelectedIndex = 2
             };
 
             // Whole screen has to be rendered every time, because opening the link causes everything on screen to disappear
@@ -104,7 +106,7 @@ namespace SnakeTheResurrection
                 AppData.Current.Save();
                 ProfileManager.SaveProfiles();
             }
-
+            
             // Cleanup
             Renderer.Clear();
             Renderer.RenderFrame();
