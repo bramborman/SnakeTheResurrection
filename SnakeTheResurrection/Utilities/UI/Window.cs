@@ -7,9 +7,6 @@ namespace SnakeTheResurrection.Utilities.UI
 {
     public static class Window
     {
-        private static readonly ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
-        private static readonly Thread renderingThread = new Thread(Rendering);
-
         public static int Width
         {
             get { return Console.WindowWidth; }
@@ -20,46 +17,58 @@ namespace SnakeTheResurrection.Utilities.UI
             get { return Console.WindowHeight; }
             set { Console.WindowHeight = value; }
         }
-        public static int TargetFramerate { get; set; } = 60;
         public static List<UIElement> Children { get; } = new List<UIElement>();
 
-        public static void StartRendering()
+
+        public static class Compositor
         {
-            if (!renderingThread.IsAlive)
+            private static readonly ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
+            private static readonly Thread renderingThread = new Thread(Rendering);
+
+            public static int TargetFramerate { get; set; } = 60;
+
+            public static event Action BeforeRendering;
+
+            public static void Run()
             {
-                renderingThread.Start();
-            }
-
-            resetEvent.Set();
-        }
-
-        public static void StopRendering()
-        {
-            resetEvent.Reset();
-        }
-
-        private static void Rendering()
-        {
-            Stopwatch stopwatch = new Stopwatch();
-
-            while (resetEvent.Wait(-1))
-            {
-                stopwatch.Restart();
-                Renderer.Clear();
-
-                foreach (UIElement child in Children)
+                if (!renderingThread.IsAlive)
                 {
-                    child.Render();
+                    renderingThread.Start();
                 }
 
-                Renderer.RenderFrame();
-                stopwatch.Stop();
-                
-                int currentDelay = (1000 / TargetFramerate) - (int)stopwatch.ElapsedMilliseconds;
+                resetEvent.Set();
+            }
 
-                if (currentDelay > 0)
+            public static void Stop()
+            {
+                resetEvent.Reset();
+            }
+
+            private static void Rendering()
+            {
+                Stopwatch stopwatch = new Stopwatch();
+
+                while (resetEvent.Wait(-1))
                 {
-                    Thread.Sleep(currentDelay);
+                    stopwatch.Restart();
+                    Renderer.Clear();
+
+                    BeforeRendering?.Invoke();
+
+                    foreach (UIElement child in Children)
+                    {
+                        child.Render();
+                    }
+
+                    Renderer.RenderFrame();
+                    stopwatch.Stop();
+
+                    int currentDelay = (1000 / TargetFramerate) - (int)stopwatch.ElapsedMilliseconds;
+
+                    if (currentDelay > 0)
+                    {
+                        Thread.Sleep(currentDelay);
+                    }
                 }
             }
         }

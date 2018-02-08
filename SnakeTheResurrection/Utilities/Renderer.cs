@@ -75,20 +75,25 @@ namespace SnakeTheResurrection.Utilities
 
         public static void AddToBuffer(bool[,] element, short color, int x, int y)
         {
+            AddToBuffer(element, color, x, y, Console.WindowWidth - 1, Console.WindowHeight - 1);
+        }
+
+        public static void AddToBuffer(bool[,] element, short color, int x, int y, int boundsRight, int boundsBottom)
+        {
             lock (syncRoot)
             {
-                int elementHeight = element.GetLength(0);
-                int elementWidth = element.GetLength(1);
+                int right = Math.Min(Math.Min(x + element.GetLength(1), boundsRight), Console.WindowWidth);
+                int bottom = Math.Min(Math.Min(y + element.GetLength(0), boundsBottom), Console.WindowHeight);
 
-                AssignFrameBounds(x, y, elementWidth, elementHeight);
-
-                for (int row = 0; row < elementHeight; row++)
+                AssignFrameBounds(x, y, right - x, bottom - y);
+                
+                for (int row = y; row < bottom; row++)
                 {
-                    for (int column = 0; column < elementWidth; column++)
+                    for (int column = x; column < right; column++)
                     {
-                        if (element[row, column])
+                        if (element[row - y, column - x])
                         {
-                            lpAttribute[((y + row) * bufferWidth) + x + column] = color;
+                            lpAttribute[(row * bufferWidth) + column] = color;
                         }
                     }
                 }
@@ -104,11 +109,14 @@ namespace SnakeTheResurrection.Utilities
 
                 AssignFrameBounds(x, y, elementWidth, elementHeight);
 
-                for (int row = 0; row < elementHeight; row++)
+                int right = Math.Min(x + elementWidth, Console.WindowWidth);
+                int bottom = Math.Min(y + elementHeight, Console.WindowHeight);
+                
+                for (int row = y; row < bottom; row++)
                 {
-                    for (int column = 0; column < elementWidth; column++)
+                    for (int column = x; column < right; column++)
                     {
-                        lpAttribute[((y + row) * bufferWidth) + x + column] = element[row, column] ? foregroundColor : backgroundColor;
+                        lpAttribute[(row * bufferWidth) + column] = element[row - y, column - x] ? foregroundColor : backgroundColor;
                     }
                 }
             }
@@ -123,11 +131,14 @@ namespace SnakeTheResurrection.Utilities
 
                 AssignFrameBounds(x, y, elementWidth, elementHeight);
 
-                for (int row = 0; row < elementHeight; row++)
+                int right = Math.Min(x + elementWidth, Console.WindowWidth);
+                int bottom = Math.Min(y + elementHeight, Console.WindowHeight);
+
+                for (int row = y; row < bottom; row++)
                 {
-                    for (int column = 0; column < elementWidth; column++)
+                    for (int column = x; column < right; column++)
                     {
-                        lpAttribute[((y + row) * bufferWidth) + x + column] = element[row, column];
+                        lpAttribute[(row * bufferWidth) + column] = element[row - y, column - x];
                     }
                 }
             }
@@ -139,9 +150,12 @@ namespace SnakeTheResurrection.Utilities
             {
                 AssignFrameBounds(x, y, width, height);
 
-                for (int row = y; row < y + height; row++)
+                int right = Math.Min(x + width, Console.WindowWidth);
+                int bottom = Math.Min(y + height, Console.WindowHeight);
+
+                for (int row = y; row < bottom; row++)
                 {
-                    for (int column = x; column < x + width; column++)
+                    for (int column = x; column < right; column++)
                     {
                         lpAttribute[(row * bufferWidth) + column] = color;
                     }

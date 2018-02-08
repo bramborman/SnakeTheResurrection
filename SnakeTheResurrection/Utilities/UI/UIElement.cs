@@ -2,7 +2,7 @@
 
 namespace SnakeTheResurrection.Utilities.UI
 {
-    public class UIElement : NotifyPropertyChanged
+    public abstract class UIElement : NotifyPropertyChanged
     {
         public int Width
         {

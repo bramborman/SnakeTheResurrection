@@ -33,27 +33,43 @@ namespace SnakeTheResurrection
             RuntimeHelpers.RunClassConstructor(typeof(Renderer).TypeHandle);
             
             // Random r = new Random();
-            // UIElement e = new UIElement();
+            // UIElement e = new TextBlock()
+            // {
+            //     Text = "Hello World!",
+            //     ForegroundColor = Utilities.UI.Colors.Black,
+            //     FontSize = 3,
+            //     Width = 35
+            // };
+            // 
+            // int framesCounter = 0;
             // 
             // Window.Children.Add(e);
-            // Window.StartRendering();
-            // 
-            // while (true)
+            // Window.Compositor.BeforeRendering += () =>
             // {
-            //     e.Width = r.Next(1, Console.WindowWidth / 2);
-            //     e.Height = r.Next(1, Console.WindowHeight / 2);
-            //     e.HorizontalAlignment = (Utilities.UI.HorizontalAlignment)r.Next(0, 3);
-            //     e.VerticalAlignment = (Utilities.UI.VerticalAlignment)r.Next(0, 3);
-            //     e.BorderThickness = new Thickness(r.Next(0, Math.Min(Console.WindowWidth, Console.WindowHeight) / 4));
-            //     e.BorderColor = (Color)r.Next(1, 16);
-            // 
-            //     do
+            //     if (framesCounter++ % 30 == 0)
             //     {
-            //         e.BackgroundColor = (Color)r.Next(1, 16);
-            //     } while (e.BackgroundColor == e.BorderColor);
+            //         try
+            //         {
+            //             e.Width = r.Next(1, Console.WindowWidth / 2);
+            //             e.Height = r.Next(1, Console.WindowHeight / 2);
+            //             e.HorizontalAlignment = (Utilities.UI.HorizontalAlignment)r.Next(0, 3);
+            //             e.VerticalAlignment = (Utilities.UI.VerticalAlignment)r.Next(0, 3);
+            //             e.BorderThickness = new Thickness(r.Next(0, Math.Min(Console.WindowWidth, Console.WindowHeight) / 4));
+            //             e.BorderColor = (Color)r.Next(1, 16);
             // 
-            //     Thread.Sleep(500);
-            // }
+            //             do
+            //             {
+            //                 e.BackgroundColor = (Color)r.Next(1, 16);
+            //             } while (e.BackgroundColor == e.BorderColor);
+            //         }
+            //         catch
+            //         {
+            // 
+            //         }
+            //     }
+            // };
+            // Window.Compositor.Run();
+            // Console.ReadLine();
 
             AppData.Load();
             ProfileManager.LoadProfiles();

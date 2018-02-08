@@ -1,6 +1,6 @@
 ﻿namespace SnakeTheResurrection.Utilities.UI
 {
-    public class TextBlock : UIElement
+    public class TextBlock : ContentElement
     {
         public string Text
         {
@@ -55,43 +55,60 @@
 
         public override bool Render()
         {
-            if (!base.Render() || Text == null || Text == "")
+            if (!base.Render() || string.IsNullOrEmpty(Text))
             {
                 return false;
             }
 
-            bool[][,] renderedChars = Symtext.Render(Text, FontSize);
             Rectangle bounds = Measure();
+            bounds = new Rectangle(
+                bounds.X + Margin.Left + BorderThickness.Left + Padding.Left,
+                bounds.Y + Margin.Top + BorderThickness.Top + Padding.Top,
+                new Size(Width - Padding.Right, Height - Padding.Bottom));
+
             int x = bounds.X;
             int y = bounds.Y;
-            int charHeight = renderedChars[0].GetLength(0);
             int characterSpacing = GetCharacterSpacing();
             int lineSpacing = GetLineSpacing();
-            int lastSpaceCharIndex = -1;
+            bool[][,] renderedChars = Symtext.Render(Text, FontSize);
+            int charHeight = renderedChars[0].GetLength(0);
+            bool breakNextIteration = false;
 
             for (int i = 0; i < Text.Length; i++)
             {
-                if (Text[i] == ' ')
-                {
-                    lastSpaceCharIndex = i;
-                }
-
                 bool[,] renderedChar = renderedChars[i];
                 int charWidth = renderedChar.GetLength(1);
 
                 if (x + charWidth > bounds.Right)
                 {
-                    if (i == 0)
+                    if (TextWrapping == TextWrapping.Wrap)
                     {
-                        break;
-                    }
+                        if (i == 0)
+                        {
+                            break;
+                        }
 
-                    x = bounds.X;
-                    y += charHeight + lineSpacing;
+                        x = bounds.X;
+                        y += charHeight + lineSpacing;
+
+                        if (Text[i] == ' ')
+                        {
+                            continue;
+                        }
+                    }
+                    else if (TextWrapping == TextWrapping.NoWrap)
+                    {
+                        if (breakNextIteration)
+                        {
+                            break;
+                        }
+
+                        breakNextIteration = true;
+                    }
                 }
 
-                Renderer.AddToBuffer(renderedChar, (short)ForegroundColor, x, y);
-                x += charWidth;
+                Renderer.AddToBuffer(renderedChar, (short)ForegroundColor, x, y, bounds.Right, bounds.Bottom);
+                x += charWidth + characterSpacing;
             }
 
             return true;
