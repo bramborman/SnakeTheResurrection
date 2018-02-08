@@ -562,6 +562,26 @@
             { X, _, _ },
             { _, _, _ }
         };
+        private static readonly bool[,] bracketLeft = new bool[,]
+        {
+            { _, _ },
+            { _, X },
+            { X, _ },
+            { X, _ },
+            { X, _ },
+            { _, X },
+            { _, _ }
+        };
+        private static readonly bool[,] bracketRight = new bool[,]
+        {
+            { _, _ },
+            { X, _ },
+            { _, X },
+            { _, X },
+            { _, X },
+            { X, _ },
+            { _, _ }
+        };
         private static readonly bool[,] squareBracketLeft = new bool[,]
         {
             { _, _ },

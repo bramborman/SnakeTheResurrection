@@ -5,7 +5,7 @@ namespace SnakeTheResurrection.Utilities
     // Font inspired by Symtext (4/26/2017): http://www.dafont.com/symtext.font
     public static partial class Symtext
     {
-        private static short[,] characterSpacingBackgroundFiller;
+        public static readonly object syncRoot = new object();
 
         private static int _cursorLeft;
         private static int _cursorTop;
@@ -14,8 +14,6 @@ namespace SnakeTheResurrection.Utilities
         private static short _backgroundColor;
         private static HorizontalAlignment _horizontalAlignment;
         private static VerticalAlignment _verticalAlignment;
-
-        public static readonly object syncRoot;
 
         private static int CharacterSpacing
         {
@@ -66,9 +64,6 @@ namespace SnakeTheResurrection.Utilities
                     {
                         ExceptionHelper.ValidateNumberGreaterOrEqual(value, 0, nameof(FontSize));
                         _fontSize = value;
-
-                        characterSpacingBackgroundFiller = new short[CharHeight, value];
-                        FillCharacterSpacingBackgroundFiller();
                     }
                 }
             }
@@ -99,8 +94,6 @@ namespace SnakeTheResurrection.Utilities
                     {
                         ExceptionHelper.ValidateEnumValueDefined((ConsoleColor)value, nameof(BackgroundColor));
                         _backgroundColor = value;
-
-                        FillCharacterSpacingBackgroundFiller();
                     }
                 }
             }
@@ -145,39 +138,13 @@ namespace SnakeTheResurrection.Utilities
 
         static Symtext()
         {
-            syncRoot            = new object();
-            Reset();
-        }
-        
-        private static void FillCharacterSpacingBackgroundFiller()
-        {
-            for (int row = 0; row < characterSpacingBackgroundFiller.GetLength(0); row++)
-            {
-                for (int column = 0; column < characterSpacingBackgroundFiller.GetLength(1); column++)
-                {
-                    characterSpacingBackgroundFiller[row, column] = BackgroundColor;
-                }
-            }
+            SetDefaultProperties();
         }
 
         public static void SetCursorPosition(int left, int top)
         {
             CursorLeft = left;
             CursorTop  = top;
-        }
-
-        public static void Reset()
-        {
-            lock (syncRoot)
-            {
-                CursorLeft          = 0;
-                CursorTop           = 0;
-                FontSize            = 1;
-                ForegroundColor     = Constants.FOREGROUND_COLOR;
-                BackgroundColor     = Constants.BACKGROUND_COLOR;
-                HorizontalAlignment = default;
-                VerticalAlignment   = default;
-            }
         }
 
         public static void Write(object value)
@@ -187,6 +154,11 @@ namespace SnakeTheResurrection.Utilities
         
         public static void Write(object value, int verticalOffset)
         {
+            if (value == null || value == string.Empty)
+            {
+                return;
+            }
+
             lock (syncRoot)
             {
                 string[] lines = value.ToString().Split('\n');
@@ -219,12 +191,34 @@ namespace SnakeTheResurrection.Utilities
                             continue;
                         }
 
-                        CursorLeft += AddRenderedCharToBuffer(line[j], CursorLeft, CursorTop);
+                        bool[,] texture = GetScaledBoolChar(line[j]);
+                        int textureWidth = texture.GetLength(1);
+
+                        if (IsOverWindowX(CursorLeft + textureWidth))
+                        {
+                            CursorLeft = 0;
+                        }
+
+                        Renderer.AddToBuffer(texture, ForegroundColor, BackgroundColor, CursorLeft, CursorTop);
+                        CursorLeft += textureWidth;
 
                         if (j != line.Length - 1)
                         {
-                            Renderer.AddToBuffer(characterSpacingBackgroundFiller, CursorLeft, CursorTop);
+                            int width = CharacterSpacing;
+
+                            if (IsOverWindowX(CursorLeft + CharacterSpacing))
+                            {
+                                width = Console.WindowWidth - CursorLeft;
+                            }
+
+                            Renderer.AddToBuffer(BackgroundColor, CursorLeft, CursorTop, width, CharHeight);
                             CursorLeft += CharacterSpacing;
+                        }
+
+
+                        bool IsOverWindowX(int x)
+                        {
+                            return x > Console.WindowWidth;
                         }
                     }
 
@@ -233,31 +227,23 @@ namespace SnakeTheResurrection.Utilities
                         CursorTop += CharHeight;
                     }
                 }
-
-
-                int AddRenderedCharToBuffer(char ch, int x, int y)
-                {
-                    bool[,] texture = GetScaledBoolChar(ch);
-                    Renderer.AddToBuffer(texture, ForegroundColor, BackgroundColor, x, y);
-
-                    return texture.GetLength(1);
-                }
             }
         }
 
         public static void WriteLine()
         {
-            Write('\n');
+            WriteLine(null);
         }
 
         public static void WriteLine(object value)
         {
-            Write(value.ToString() + '\n');
+            WriteLine(value, 0);
         }
 
         public static void WriteLine(object value, int verticalOffset)
         {
-            Write(value.ToString() + '\n', verticalOffset);
+            Write(value?.ToString() + '\n', verticalOffset);
+            CursorLeft = 0;
         }
 
         public static void WriteTitle(object value, int verticalOffset)
@@ -275,33 +261,56 @@ namespace SnakeTheResurrection.Utilities
             FontSize = 3;
             WriteLine();
         }
+        
+        public static void SetDefaultProperties()
+        {
+            lock (syncRoot)
+            {
+                CursorLeft          = 0;
+                CursorTop           = 0;
+                FontSize            = 1;
+                ForegroundColor     = Constants.FOREGROUND_COLOR;
+                BackgroundColor     = Constants.BACKGROUND_COLOR;
+                HorizontalAlignment = default;
+                VerticalAlignment   = default;
+            }
+        }
 
         public static void SetTextProperties()
         {
-            ForegroundColor     = Constants.FOREGROUND_COLOR;
-            BackgroundColor     = Constants.BACKGROUND_COLOR;
-            FontSize            = 2;
-            HorizontalAlignment = HorizontalAlignment.None;
-            VerticalAlignment   = VerticalAlignment.None;
+            lock (syncRoot)
+            {
+                ForegroundColor     = Constants.FOREGROUND_COLOR;
+                BackgroundColor     = Constants.BACKGROUND_COLOR;
+                FontSize            = 2;
+                HorizontalAlignment = HorizontalAlignment.None;
+                VerticalAlignment   = VerticalAlignment.None;
+            }
         }
 
         public static void SetCenteredTextProperties()
         {
-            SetTextProperties();
-            HorizontalAlignment = HorizontalAlignment.Center;
+            lock (syncRoot)
+            {
+                SetTextProperties();
+                HorizontalAlignment = HorizontalAlignment.Center;
+            }
         }
 
         public static int GetSymtextWidth(string str)
         {
-            int output = 0;
-
-            foreach (char ch in str)
+            lock (syncRoot)
             {
-                output += GetScaledBoolChar(ch).GetLength(1) + CharacterSpacing;
+                int output = 0;
+
+                foreach (char ch in str)
+                {
+                    output += GetScaledBoolChar(ch).GetLength(1) + CharacterSpacing;
+                }
+
+                // We are not adding the character spacing after the word
+                return output - CharacterSpacing;
             }
-            
-            // We are not adding the character spacing after the word
-            return output - CharacterSpacing;
         }
         
         private static bool[,] GetScaledBoolChar(char ch)
@@ -386,6 +395,8 @@ namespace SnakeTheResurrection.Utilities
                     case '_': return underline;
                     case '<': return arrowLeft;
                     case '>': return arrowRight;
+                    case '(': return bracketLeft;
+                    case ')': return bracketRight;
                     case '[': return squareBracketLeft;
                     case ']': return squareBracketRight;
                     case '©': return copyrightMark;
