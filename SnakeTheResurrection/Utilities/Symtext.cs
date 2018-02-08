@@ -191,7 +191,7 @@ namespace SnakeTheResurrection.Utilities
                             continue;
                         }
 
-                        bool[,] texture = GetScaledBoolChar(line[j]);
+                        bool[,] texture = GetScaledBoolChar(line[j], FontSize);
                         int textureWidth = texture.GetLength(1);
 
                         if (IsOverWindowX(CursorLeft + textureWidth))
@@ -261,6 +261,18 @@ namespace SnakeTheResurrection.Utilities
             FontSize = 3;
             WriteLine();
         }
+
+        public static bool[][,] Render(string str, int fontSize)
+        {
+            bool[][,] output = new bool[str.Length][,];
+
+            for (int i = 0; i < str.Length; i++)
+            {
+                output[i] = GetScaledBoolChar(str[i], fontSize);
+            }
+
+            return output;
+        }
         
         public static void SetDefaultProperties()
         {
@@ -305,7 +317,7 @@ namespace SnakeTheResurrection.Utilities
 
                 foreach (char ch in str)
                 {
-                    output += GetScaledBoolChar(ch).GetLength(1) + CharacterSpacing;
+                    output += GetScaledBoolChar(ch, FontSize).GetLength(1) + CharacterSpacing;
                 }
 
                 // We are not adding the character spacing after the word
@@ -313,9 +325,9 @@ namespace SnakeTheResurrection.Utilities
             }
         }
         
-        private static bool[,] GetScaledBoolChar(char ch)
+        private static bool[,] GetScaledBoolChar(char ch, int fontSize)
         {
-            return Renderer.Scale(GetBoolChar(), FontSize);
+            return Renderer.Scale(GetBoolChar(), fontSize);
 
 
             bool[,] GetBoolChar()

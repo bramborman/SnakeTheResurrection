@@ -155,9 +155,9 @@ namespace SnakeTheResurrection
                 InputHelper.ClearInputBuffer();
                 stopwatch.Stop();
 
-                int currentDelay = Math.Max(0, delay - stopwatch.Elapsed.Milliseconds);
+                int currentDelay = delay - (int)stopwatch.ElapsedMilliseconds;
 
-                if (currentDelay != 0)
+                if (currentDelay > 0)
                 {
                     InputHelper.StartCaching();
                     Thread.Sleep(currentDelay);

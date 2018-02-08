@@ -14,7 +14,7 @@ namespace SnakeTheResurrection.Utilities
         {
             Task.Run(async () =>
             {
-                while (resetEvent.WaitHandle.WaitOne())
+                while (resetEvent.Wait(-1))
                 {
                     if (Console.KeyAvailable)
                     {

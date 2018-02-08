@@ -1,9 +1,11 @@
 ﻿using SnakeTheResurrection.Data;
 using SnakeTheResurrection.Utilities;
+using SnakeTheResurrection.Utilities.UI;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace SnakeTheResurrection
 {
@@ -29,6 +31,29 @@ namespace SnakeTheResurrection
 
             // Run the static constructor of Renderer
             RuntimeHelpers.RunClassConstructor(typeof(Renderer).TypeHandle);
+            
+            // Random r = new Random();
+            // UIElement e = new UIElement();
+            // 
+            // Window.Children.Add(e);
+            // Window.StartRendering();
+            // 
+            // while (true)
+            // {
+            //     e.Width = r.Next(1, Console.WindowWidth / 2);
+            //     e.Height = r.Next(1, Console.WindowHeight / 2);
+            //     e.HorizontalAlignment = (Utilities.UI.HorizontalAlignment)r.Next(0, 3);
+            //     e.VerticalAlignment = (Utilities.UI.VerticalAlignment)r.Next(0, 3);
+            //     e.BorderThickness = new Thickness(r.Next(0, Math.Min(Console.WindowWidth, Console.WindowHeight) / 4));
+            //     e.BorderColor = (Color)r.Next(1, 16);
+            // 
+            //     do
+            //     {
+            //         e.BackgroundColor = (Color)r.Next(1, 16);
+            //     } while (e.BackgroundColor == e.BorderColor);
+            // 
+            //     Thread.Sleep(500);
+            // }
 
             AppData.Load();
             ProfileManager.LoadProfiles();
