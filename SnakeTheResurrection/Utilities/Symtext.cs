@@ -154,7 +154,7 @@ namespace SnakeTheResurrection.Utilities
         
         public static void Write(object value, int verticalOffset)
         {
-            if (value == null || value == string.Empty)
+            if (value == null || (string)value == string.Empty)
             {
                 return;
             }
