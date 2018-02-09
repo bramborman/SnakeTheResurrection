@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using System.Threading;
 
 namespace SnakeTheResurrection
 {
@@ -33,12 +32,26 @@ namespace SnakeTheResurrection
             RuntimeHelpers.RunClassConstructor(typeof(Renderer).TypeHandle);
             
             // Random r = new Random();
-            // UIElement e = new TextBlock()
+            // TextBlock e = new TextBlock()
             // {
-            //     Text = "Hello World!",
+            //     Text = "Hello World! ",
             //     ForegroundColor = Utilities.UI.Colors.Black,
+            //     Width = 30,
+            //     Height = 100,
+            //     VerticalAlignment = Utilities.UI.VerticalAlignment.Stretch,
+            //     HorizontalAlignment = Utilities.UI.HorizontalAlignment.Stretch,
+            //     BackgroundColor = Utilities.UI.Colors.Cyan,
+            //     BorderThickness = new Thickness(17),
+            //     BorderColor = Utilities.UI.Colors.Red,
+            //     Padding = new Thickness(5),
+            //     Margin = new Thickness(7),
             //     FontSize = 3
             // };
+            // 
+            // for (int i = 0; i < 1000; i++)
+            // {
+            //     e.Text += "Hello World! ";
+            // }
             // 
             // int framesCounter = 0;
             // 
@@ -51,10 +64,11 @@ namespace SnakeTheResurrection
             //         {
             //             e.Width = r.Next(1, Console.WindowWidth / 2);
             //             e.Height = r.Next(1, Console.WindowHeight / 2);
-            //             e.HorizontalAlignment = (Utilities.UI.HorizontalAlignment)r.Next(0, 3);
-            //             e.VerticalAlignment = (Utilities.UI.VerticalAlignment)r.Next(0, 3);
+            //             e.HorizontalAlignment = (Utilities.UI.HorizontalAlignment)r.Next(0, 4);
+            //             e.VerticalAlignment = (Utilities.UI.VerticalAlignment)r.Next(0, 4);
             //             e.BorderThickness = new Thickness(r.Next(0, Math.Min(Console.WindowWidth, Console.WindowHeight) / 4));
             //             e.BorderColor = (Color)r.Next(1, 16);
+            //             e.FontSize = r.Next(1, e.Height / 7 / 2);
             // 
             //             do
             //             {
@@ -69,6 +83,7 @@ namespace SnakeTheResurrection
             // };
             // Window.Compositor.Run();
             // Console.ReadLine();
+            // Window.Compositor.Stop();
 
             AppData.Load();
             ProfileManager.LoadProfiles();

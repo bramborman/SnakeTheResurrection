@@ -1,6 +1,6 @@
 ﻿namespace SnakeTheResurrection.Utilities.UI
 {
-    public class TextBlock : ContentElement
+    public class TextBlock : UIElement
     {
         public string Text
         {
@@ -60,12 +60,7 @@
                 return false;
             }
 
-            Rectangle bounds = Measure();
-            bounds = new Rectangle(
-                bounds.X + Margin.Left + BorderThickness.Left + Padding.Left,
-                bounds.Y + Margin.Top + BorderThickness.Top + Padding.Top,
-                new Size(Width - Padding.Right, Height - Padding.Bottom));
-
+            Rectangle bounds = MeasureContent();
             int x = bounds.X;
             int y = bounds.Y;
             int characterSpacing = GetCharacterSpacing();

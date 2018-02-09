@@ -42,6 +42,8 @@ namespace SnakeTheResurrection.Utilities.UI
             public static void Stop()
             {
                 resetEvent.Reset();
+                Renderer.Clear();
+                Renderer.RenderFrame();
             }
 
             private static void Rendering()

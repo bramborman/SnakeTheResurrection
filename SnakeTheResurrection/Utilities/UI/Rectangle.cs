@@ -2,6 +2,8 @@
 {
     public struct Rectangle
     {
+        public static Rectangle Empty { get; } = new Rectangle();
+
         public int Left { get; }
         public int Top { get; }
         public int Right { get; }
@@ -50,17 +52,17 @@
             return Left.GetHashCode() ^ Top.GetHashCode() + (Right.GetHashCode() * Bottom.GetHashCode());
         }
 
-        public static bool operator ==(Rectangle t1, Rectangle t2)
+        public static bool operator ==(Rectangle r1, Rectangle r2)
         {
-            return t1.Left == t2.Left
-                && t1.Top == t2.Top
-                && t1.Right == t2.Right
-                && t1.Bottom == t2.Bottom;
+            return r1.Left == r2.Left
+                && r1.Top == r2.Top
+                && r1.Right == r2.Right
+                && r1.Bottom == r2.Bottom;
         }
 
-        public static bool operator !=(Rectangle t1, Rectangle t2)
+        public static bool operator !=(Rectangle r1, Rectangle r2)
         {
-            return !(t1 == t2);
+            return !(r1 == r2);
         }
     }
 }

@@ -2,6 +2,8 @@
 {
     public struct Size
     {
+        public const int InvalidSize = -1;
+
         public int Width { get; }
         public int Height { get; }
 
