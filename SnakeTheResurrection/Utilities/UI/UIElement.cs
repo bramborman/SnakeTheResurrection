@@ -19,11 +19,6 @@ namespace SnakeTheResurrection.Utilities.UI
             get { return (Thickness)GetValue(); }
             set { SetValue(value); }
         }
-        public Thickness Padding
-        {
-            get { return (Thickness)GetValue(); }
-            set { SetValue(value); }
-        }
         public HorizontalAlignment HorizontalAlignment
         {
             get { return (HorizontalAlignment)GetValue(); }
@@ -64,20 +59,18 @@ namespace SnakeTheResurrection.Utilities.UI
             get { return (UIElement)GetValue(); }
             set { SetValue(value); }
         }
-        public int ActualWidth
+        public virtual int ActualWidth
         {
             get
             {
-                return HorizontalAlignment == HorizontalAlignment.Stretch ?
-                    Size.StretchSize : BorderThickness.Left + Padding.Left + Width + Padding.Right + BorderThickness.Right;
+                return HorizontalAlignment == HorizontalAlignment.Stretch ? Size.StretchSize : BorderThickness.Left + Width + BorderThickness.Right;
             }
         }
-        public int ActualHeight
+        public virtual int ActualHeight
         {
             get
             {
-                return VerticalAlignment == VerticalAlignment.Stretch ?
-                    Size.StretchSize : BorderThickness.Top + Padding.Top + Height + Padding.Bottom + BorderThickness.Bottom;
+                return VerticalAlignment == VerticalAlignment.Stretch ? Size.StretchSize : BorderThickness.Top + Height + BorderThickness.Bottom;
             }
         }
         
@@ -86,7 +79,6 @@ namespace SnakeTheResurrection.Utilities.UI
             RegisterProperty(nameof(Width), typeof(int), 0);
             RegisterProperty(nameof(Height), typeof(int), 0);
             RegisterProperty(nameof(Margin), typeof(Thickness), new Thickness());
-            RegisterProperty(nameof(Padding), typeof(Thickness), new Thickness());
             RegisterProperty(nameof(HorizontalAlignment), typeof(HorizontalAlignment), HorizontalAlignment.Left);
             RegisterProperty(nameof(VerticalAlignment), typeof(VerticalAlignment), VerticalAlignment.Top);
             RegisterProperty(nameof(IsEnabled), typeof(bool), true);

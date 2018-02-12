@@ -1,6 +1,6 @@
 ﻿namespace SnakeTheResurrection.Utilities.UI
 {
-    public class TextBlock : UIElement
+    public class TextBlock : ContentElement
     {
         public string Text
         {
@@ -27,12 +27,26 @@
             get { return (int)GetValue(); }
             set { SetValue(value); }
         }
+        public int CharacterSpacing
+        {
+            get
+            {
+                return CharacterSpacingRatio * FontSize;
+            }
+        }
         public int LineSpacingRatio
         {
             get { return (int)GetValue(); }
             set { SetValue(value); }
         }
-        
+        public int LineSpacing
+        {
+            get
+            {
+                return LineSpacingRatio * FontSize;
+            }
+        }
+
         public TextBlock()
         {
             RegisterProperty(nameof(Text), typeof(string), null);
@@ -42,17 +56,7 @@
             RegisterProperty(nameof(CharacterSpacingRatio), typeof(int), 1);
             RegisterProperty(nameof(LineSpacingRatio), typeof(int), 0);
         }
-
-        private int GetCharacterSpacing()
-        {
-            return CharacterSpacingRatio * FontSize;
-        }
-
-        private int GetLineSpacing()
-        {
-            return LineSpacingRatio * FontSize;
-        }
-
+        
         public override Rectangle Render(in Rectangle bounds)
         {
             Rectangle area = base.Render(in bounds);
@@ -62,16 +66,11 @@
                 return area;
             }
 
-            Rectangle textBounds = new Rectangle(
-                area.Left + BorderThickness.Left + Padding.Left,
-                area.Top + BorderThickness.Top + Padding.Top,
-                area.Right - BorderThickness.Right - Padding.Right,
-                area.Bottom - BorderThickness.Bottom - Padding.Bottom
-                );
+            Rectangle textBounds = GetContentArea(area);
             int x = textBounds.X;
             int y = textBounds.Y;
-            int characterSpacing = GetCharacterSpacing();
-            int lineSpacing = GetLineSpacing();
+            int characterSpacing = CharacterSpacing;
+            int lineSpacing = LineSpacing;
             int charHeight = Symtext.GetCharHeight(FontSize);
 
             for (int i = 0; i < Text.Length; i++)
