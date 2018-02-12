@@ -53,20 +53,27 @@
             return LineSpacingRatio * FontSize;
         }
 
-        public override bool Render()
+        public override Rectangle Render(in Rectangle bounds)
         {
-            if (!base.Render() || string.IsNullOrEmpty(Text))
+            Rectangle area = base.Render(in bounds);
+
+            if (area == Rectangle.Empty || string.IsNullOrEmpty(Text))
             {
-                return false;
+                return area;
             }
 
-            Rectangle bounds = MeasureContent();
-            int x = bounds.X;
-            int y = bounds.Y;
+            Rectangle textBounds = new Rectangle(
+                area.Left + BorderThickness.Left + Padding.Left,
+                area.Top + BorderThickness.Top + Padding.Top,
+                area.Right - BorderThickness.Right - Padding.Right,
+                area.Bottom - BorderThickness.Bottom - Padding.Bottom
+                );
+            int x = textBounds.X;
+            int y = textBounds.Y;
             int characterSpacing = GetCharacterSpacing();
             int lineSpacing = GetLineSpacing();
             int charHeight = Symtext.GetCharHeight(FontSize);
-            
+
             for (int i = 0; i < Text.Length; i++)
             {
                 if (Text[i] == '\n')
@@ -78,7 +85,7 @@
                 bool[,] renderedChar = Symtext.GetScaledBoolChar(Text[i], FontSize);
                 int charWidth = renderedChar.GetLength(1);
 
-                if (x + charWidth > bounds.Right)
+                if (x + charWidth > textBounds.Right)
                 {
                     if (TextWrapping == TextWrapping.Wrap)
                     {
@@ -86,7 +93,7 @@
                         {
                             GoToNewLine();
 
-                            if (y > bounds.Bottom)
+                            if (y > textBounds.Bottom)
                             {
                                 break;
                             }
@@ -94,30 +101,30 @@
                     }
                     else if (TextWrapping == TextWrapping.NoWrap)
                     {
-                        if (x > bounds.Right)
+                        if (x > textBounds.Right)
                         {
                             break;
                         }
                     }
                 }
 
-                if (x == bounds.X && Text[i] == ' ')
+                if (x == textBounds.X && Text[i] == ' ')
                 {
                     continue;
                 }
 
-                Renderer.AddToBuffer(renderedChar, (short)ForegroundColor, x, y, bounds.Right, bounds.Bottom);
+                Renderer.Safe.AddToBuffer(in renderedChar, ForegroundColor, in x, in y, in textBounds, in bounds);
                 x += charWidth + characterSpacing;
 
 
                 void GoToNewLine()
                 {
-                    x = bounds.X;
+                    x = textBounds.X;
                     y += charHeight + lineSpacing;
                 }
             }
 
-            return true;
+            return area;
         }
     }
 }

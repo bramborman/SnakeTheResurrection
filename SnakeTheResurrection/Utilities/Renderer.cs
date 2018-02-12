@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SnakeTheResurrection.Utilities.UI;
+using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
@@ -73,17 +74,62 @@ namespace SnakeTheResurrection.Utilities
             }
         }
 
-        public static void AddToBuffer(bool[,] element, short color, int x, int y)
+        public static class Safe
         {
-            AddToBuffer(element, color, x, y, Console.WindowWidth - 1, Console.WindowHeight - 1);
+            public static void AddToBuffer(in Color color, in int x, in int y, in int width, in int height, in Rectangle bounds)
+            {
+                short shortColor = (short)color;
+                int left    = Math.Max(x, bounds.Left);
+                int top     = Math.Max(y, bounds.Top);
+                int right   = Math.Min(x + width, bounds.Right);
+                int bottom  = Math.Min(y + height, bounds.Bottom);
+
+                for (; top < bottom; top++)
+                {
+                    for (int column = left; column < right; column++)
+                    {
+                        lpAttribute[(top * bufferWidth) + column] = shortColor;
+                    }
+                }
+            }
+
+            public static void AddToBuffer(in bool[,] element, in Color color, in int x, in int y, in Rectangle elementBounds, in Rectangle bounds)
+            {
+                short shortColor = (short)color;
+                int left    = Math.Max(Math.Max(x, elementBounds.Left), bounds.Left);
+                int top     = Math.Max(Math.Max(y, elementBounds.Top), bounds.Top);
+                int right   = Math.Min(Math.Min(x + element.GetLength(1), elementBounds.Right), bounds.Right);
+                int bottom  = Math.Min(Math.Min(y + element.GetLength(0), elementBounds.Bottom), bounds.Bottom);
+
+                for (; top < bottom; top++)
+                {
+                    for (int column = left; column < right; column++)
+                    {
+                        if (element[top - y, column - x])
+                        {
+                            lpAttribute[(top * bufferWidth) + column] = shortColor;
+                        }
+                    }
+                }
+            }
+
+            public static void RenderFrame()
+            {
+                ExceptionHelper.ValidateMagic(WriteConsoleOutputAttribute(DllImports.stdOutputHandle, lpAttribute, lpAttribute.Length, new DllImports.COORD(), out int lpNumberOfAttrsWritten));
+            }
         }
 
-        public static void AddToBuffer(bool[,] element, short color, int x, int y, int boundsRight, int boundsBottom)
+        public static class Fast
+        {
+            // Once everything UI-related is ported to UI, rewrite old Renderer methods here
+        }
+        
+        public static void AddToBuffer(bool[,] element, short color, int x, int y)
         {
             lock (syncRoot)
             {
-                int right = Math.Min(Math.Min(x + element.GetLength(1), boundsRight), Console.WindowWidth);
-                int bottom = Math.Min(Math.Min(y + element.GetLength(0), boundsBottom), Console.WindowHeight);
+                int right = x + element.GetLength(1);
+                int bottom = y + element.GetLength(0);
 
                 AssignFrameBounds(x, y, right - x, bottom - y);
                 
@@ -170,25 +216,32 @@ namespace SnakeTheResurrection.Utilities
 
         public static bool[,] Scale(bool[,] element, int multiplier)
         {
-            int height       = element.GetLength(0) * multiplier;
-            int width        = element.GetLength(1) * multiplier;
-            bool[,] output   = new bool[height, width];
-            
+            if (multiplier == 1)
+            {
+                return element;
+            }
+
+            int height = element.GetLength(0);
+            int width = element.GetLength(1);
+            bool[,] output = new bool[height * multiplier, width * multiplier];
             bool currentValue = false;
-            
+
             for (int row = 0; row < height; row++)
             {
                 for (int column = 0; column < width; column++)
                 {
-                    if (row % multiplier == 0 || column % multiplier == 0)
-                    {
-                        currentValue = element[row / multiplier, column / multiplier];
-                    }
+                    currentValue = element[row, column];
 
-                    output[row, column] = currentValue;
+                    for (int row2 = 0; row2 < multiplier; row2++)
+                    {
+                        for (int column2 = 0; column2 < multiplier; column2++)
+                        {
+                            output[(row * multiplier) + row2, (column * multiplier) + column2] = currentValue;
+                        }
+                    }
                 }
             }
-            
+
             return output;
         }
 
@@ -293,6 +346,9 @@ namespace SnakeTheResurrection.Utilities
 
         [DllImport("kernel32.dll")]
         private static unsafe extern bool WriteConsoleOutputAttribute(IntPtr hConsoleOutput, short* lpAttribute, int nLength, DllImports.COORD dwWriteCoord, out int lpNumberOfAttrsWritten);
+
+        [DllImport("kernel32.dll")]
+        private static unsafe extern bool WriteConsoleOutputAttribute(IntPtr hConsoleOutput, short[] lpAttribute, int nLength, DllImports.COORD dwWriteCoord, out int lpNumberOfAttrsWritten);
 
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern bool WriteConsoleOutput(IntPtr hConsoleOutput, DllImports.CHAR_INFO[] lpBuffer, DllImports.COORD dwBufferSize, DllImports.COORD dwBufferCoord, ref DllImports.SMALL_RECT lpWriteRegion);

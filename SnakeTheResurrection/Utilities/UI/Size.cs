@@ -2,7 +2,10 @@
 {
     public struct Size
     {
+        public const int StretchSize = int.MaxValue;
         public const int InvalidSize = -1;
+
+        public static Size Empty { get; } = new Size();
 
         public int Width { get; }
         public int Height { get; }

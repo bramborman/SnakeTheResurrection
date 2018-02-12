@@ -26,7 +26,7 @@ namespace SnakeTheResurrection.Utilities.UI
             private static readonly Thread renderingThread = new Thread(Rendering);
 
             public static int TargetFramerate { get; set; } = 60;
-
+            
             public static event Action BeforeRendering;
 
             public static void Run()
@@ -57,12 +57,14 @@ namespace SnakeTheResurrection.Utilities.UI
 
                     BeforeRendering?.Invoke();
 
+                    Rectangle bounds = new Rectangle(0, 0, new Size(Width, Height));
+
                     foreach (UIElement child in Children)
                     {
-                        child.Render();
+                        child.Render(in bounds);
                     }
 
-                    Renderer.RenderFrame();
+                    Renderer.Safe.RenderFrame();
                     stopwatch.Stop();
 
                     int currentDelay = (1000 / TargetFramerate) - (int)stopwatch.ElapsedMilliseconds;

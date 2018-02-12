@@ -4,7 +4,7 @@ namespace SnakeTheResurrection.Utilities.UI
 {
     public struct Color
     {
-        private int color;
+        private readonly int color;
         
         private Color(int color)
         {

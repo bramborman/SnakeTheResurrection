@@ -68,14 +68,16 @@ namespace SnakeTheResurrection.Utilities.UI
         {
             get
             {
-                return BorderThickness.Left + Padding.Left + Width + Padding.Right + BorderThickness.Right;
+                return HorizontalAlignment == HorizontalAlignment.Stretch ?
+                    Size.StretchSize : BorderThickness.Left + Padding.Left + Width + Padding.Right + BorderThickness.Right;
             }
         }
         public int ActualHeight
         {
             get
             {
-                return BorderThickness.Top + Padding.Top + Height + Padding.Bottom + BorderThickness.Bottom;
+                return VerticalAlignment == VerticalAlignment.Stretch ?
+                    Size.StretchSize : BorderThickness.Top + Padding.Top + Height + Padding.Bottom + BorderThickness.Bottom;
             }
         }
         
@@ -95,109 +97,104 @@ namespace SnakeTheResurrection.Utilities.UI
             RegisterProperty(nameof(Parent), typeof(UIElement), null);
         }
         
-        public virtual bool Render()
+        public virtual Rectangle Render(in Rectangle bounds)
         {
-            if (!IsVisible)
-            {
-                return false;
-            }
+            Rectangle area = GetArea(in bounds);
 
-            Rectangle measure = Measure();
-
-            if (measure.Width <= 0 || measure.Height <= 0)
+            if (area.Width <= 0 || area.Height <= 0)
             {
-                return false;
+                return Rectangle.Empty;
             }
 
             if (BorderColor != Colors.Transparent)
             {
-                Renderer.AddToBuffer((short)BorderColor, measure.X, measure.Y, measure.Width, measure.Height);
+                if (BorderThickness.Left > 0)
+                {
+                    Renderer.Safe.AddToBuffer(BorderColor, area.X, area.Y, BorderThickness.Left, area.Height, in bounds);
+                }
+
+                if (BorderThickness.Top > 0)
+                {
+                    Renderer.Safe.AddToBuffer(BorderColor, area.X, area.Y, area.Width, BorderThickness.Top, in bounds);
+                }
+
+                if (BorderThickness.Right > 0)
+                {
+                    Renderer.Safe.AddToBuffer(BorderColor, area.Right - BorderThickness.Right, area.Y, BorderThickness.Right, area.Height, in bounds);
+                }
+
+                if (BorderThickness.Bottom > 0)
+                {
+                    Renderer.Safe.AddToBuffer(BorderColor, area.X, area.Bottom - BorderThickness.Bottom, area.Width, BorderThickness.Bottom, in bounds);
+                }
             }
 
             if (BackgroundColor != Colors.Transparent)
             {
-                Renderer.AddToBuffer(
-                    (short)BackgroundColor,
-                    measure.X + BorderThickness.Left,
-                    measure.Y + BorderThickness.Top,
-                    measure.Width - BorderThickness.Left - BorderThickness.Right,
-                    measure.Height - BorderThickness.Top - BorderThickness.Bottom
-                    );
+                if ((HorizontalAlignment == HorizontalAlignment.Stretch || Width > 0)
+                    && (VerticalAlignment == VerticalAlignment.Stretch || Height > 0))
+                {
+                    Renderer.Safe.AddToBuffer(
+                        BackgroundColor,
+                        area.X + BorderThickness.Left,
+                        area.Y + BorderThickness.Top,
+                        area.Width - BorderThickness.Left - BorderThickness.Right,
+                        area.Height - BorderThickness.Top - BorderThickness.Bottom,
+                        in bounds);
+                }
             }
 
-            return true;
+            return area;
         }
 
-        protected virtual Rectangle Measure()
+        protected Rectangle GetArea(in Rectangle bounds)
         {
-            if (!IsVisible)
-            {
-                return Rectangle.Empty;
-            }
-
-            Rectangle parentMeasure = Parent?.MeasureContent() ?? new Rectangle(0, 0, new Size(Window.Width, Window.Height));
-
-            if (parentMeasure.Width <= 0 || parentMeasure.Height <= 0)
-            {
-                return Rectangle.Empty;
-            }
-
-            int fullWidth = Margin.Left + ActualWidth + Margin.Right;
-            int fullHeight = Margin.Top + ActualHeight + Margin.Bottom;
-            int x = Size.InvalidSize;
-            int y = Size.InvalidSize;
+            int left = Size.InvalidSize;
+            int top = Size.InvalidSize;
+            int right = Size.InvalidSize;
+            int bottom = Size.InvalidSize;
 
             switch (HorizontalAlignment)
             {
                 case HorizontalAlignment.Left:
-                    x = parentMeasure.Left;
+                    left = bounds.Left + Margin.Left;
+                    right = left + ActualWidth;
                     break;
                 case HorizontalAlignment.Center:
-                    x = (parentMeasure.Width - fullWidth) / 2;
+                    left = ((bounds.Width - ActualWidth) / 2) + Margin.Left;
+                    right = left + ActualWidth;
                     break;
                 case HorizontalAlignment.Right:
-                    x = parentMeasure.Right - fullWidth;
+                    right = bounds.Right - Margin.Right;
+                    left = right - ActualWidth;
                     break;
                 case HorizontalAlignment.Stretch:
-                    x = parentMeasure.Left + Margin.Left;
-                    fullWidth = parentMeasure.Right - parentMeasure.Left - Margin.Left - Margin.Right;
+                    left = bounds.Left + Margin.Left;
+                    right = bounds.Right - Margin.Right;
                     break;
             }
 
             switch (VerticalAlignment)
             {
                 case VerticalAlignment.Top:
-                    y = parentMeasure.Top;
+                    top = bounds.Top + Margin.Top;
+                    bottom = top + ActualHeight;
                     break;
                 case VerticalAlignment.Center:
-                    y = (parentMeasure.Height - fullHeight) / 2;
+                    top = ((bounds.Height - ActualHeight) / 2) + Margin.Top;
+                    bottom = top + ActualHeight;
                     break;
                 case VerticalAlignment.Bottom:
-                    y = parentMeasure.Bottom - fullHeight;
+                    bottom = bounds.Bottom - Margin.Bottom;
+                    top = bottom - ActualHeight;
                     break;
                 case VerticalAlignment.Stretch:
-                    y = parentMeasure.Top + Margin.Top;
-                    fullHeight = parentMeasure.Bottom - parentMeasure.Top - Margin.Top - Margin.Bottom;
+                    top = bounds.Top + Margin.Top;
+                    bottom = bounds.Bottom - Margin.Bottom;
                     break;
             }
 
-            return new Rectangle(x, y, new Size(fullWidth, fullHeight));
-        }
-
-        protected virtual Rectangle MeasureContent()
-        {
-            Rectangle measure = Measure();
-
-            if (measure == Rectangle.Empty)
-            {
-                return Rectangle.Empty;
-            }
-
-            return new Rectangle(
-                measure.Left + BorderThickness.Left + Padding.Left,
-                measure.Top + BorderThickness.Top + Padding.Top,
-                measure.Right - BorderThickness.Right - Padding.Bottom,
-                measure.Bottom - BorderThickness.Bottom - Padding.Bottom);
+            return new Rectangle(left, top, right, bottom);
         }
     }
 }

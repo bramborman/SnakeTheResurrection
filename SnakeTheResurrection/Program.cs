@@ -30,7 +30,7 @@ namespace SnakeTheResurrection
 
             // Run the static constructor of Renderer
             RuntimeHelpers.RunClassConstructor(typeof(Renderer).TypeHandle);
-            
+
             // Random r = new Random();
             // TextBlock e = new TextBlock()
             // {
@@ -80,6 +80,22 @@ namespace SnakeTheResurrection
             // 
             //         }
             //     }
+            // };
+            // TextBlock splashBlock = new TextBlock()
+            // {
+            //     Text = "Snake",
+            //     TextWrapping = TextWrapping.NoWrap,
+            //     FontSize = 15,
+            //     ForegroundColor = (Color)Constants.ACCENT_COLOR,
+            //     HorizontalAlignment = Utilities.UI.HorizontalAlignment.Stretch,
+            //     VerticalAlignment = Utilities.UI.VerticalAlignment.Center,
+            //     Height = 15 * 7,
+            //     Margin = new Thickness(-Symtext.GetSymtextWidth("Snakee", 15), 0, 0, 0)
+            // };
+            // Window.Children.Add(splashBlock);
+            // Window.Compositor.BeforeRendering += () =>
+            // {
+            //     splashBlock.Margin = new Thickness(splashBlock.Margin.Left + 1, splashBlock.Margin.Top, splashBlock.Margin.Right, splashBlock.Margin.Bottom);
             // };
             // Window.Compositor.Run();
             // Console.ReadLine();

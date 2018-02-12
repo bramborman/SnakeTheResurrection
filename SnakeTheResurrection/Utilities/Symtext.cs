@@ -304,13 +304,18 @@ namespace SnakeTheResurrection.Utilities
 
         public static int GetSymtextWidth(string str)
         {
+            return GetSymtextWidth(str, FontSize);
+        }
+
+        public static int GetSymtextWidth(string str, int fontSize)
+        {
             lock (syncRoot)
             {
                 int output = 0;
 
                 foreach (char ch in str)
                 {
-                    output += GetScaledBoolChar(ch, FontSize).GetLength(1) + CharacterSpacing;
+                    output += GetScaledBoolChar(ch, fontSize).GetLength(1) + CharacterSpacing;
                 }
 
                 // We are not adding the character spacing after the word
