@@ -12,8 +12,8 @@ namespace SnakeTheResurrection.Utilities
         private static int _fontSize;
         private static short _foregroundColor;
         private static short _backgroundColor;
-        private static HorizontalAlignment _horizontalAlignment;
-        private static VerticalAlignment _verticalAlignment;
+        private static SymtextHorizontalAlignment _horizontalAlignment;
+        private static SymtextVerticalAlignment _verticalAlignment;
 
         private static int CharacterSpacing
         {
@@ -98,7 +98,7 @@ namespace SnakeTheResurrection.Utilities
                 }
             }
         }
-        public static HorizontalAlignment HorizontalAlignment
+        public static SymtextHorizontalAlignment HorizontalAlignment
         {
             get { return _horizontalAlignment; }
             set
@@ -113,7 +113,7 @@ namespace SnakeTheResurrection.Utilities
                 }
             }
         }
-        public static VerticalAlignment VerticalAlignment
+        public static SymtextVerticalAlignment VerticalAlignment
         {
             get { return _verticalAlignment; }
             set
@@ -165,9 +165,9 @@ namespace SnakeTheResurrection.Utilities
                 
                 switch (VerticalAlignment)
                 {
-                    case VerticalAlignment.Top:     CursorTop = 0;                                                            break;
-                    case VerticalAlignment.Center:  CursorTop = (Console.WindowHeight - (lines.Length * CharHeight)) / 2;     break;
-                    case VerticalAlignment.Bottom:  CursorTop = Console.WindowHeight - (lines.Length * CharHeight);           break;
+                    case SymtextVerticalAlignment.Top:     CursorTop = 0;                                                            break;
+                    case SymtextVerticalAlignment.Center:  CursorTop = (Console.WindowHeight - (lines.Length * CharHeight)) / 2;     break;
+                    case SymtextVerticalAlignment.Bottom:  CursorTop = Console.WindowHeight - (lines.Length * CharHeight);           break;
                 }
 
                 CursorTop += verticalOffset;
@@ -178,9 +178,9 @@ namespace SnakeTheResurrection.Utilities
 
                     switch (HorizontalAlignment)
                     {
-                        case HorizontalAlignment.Left:      CursorLeft = 0;                                                    break;
-                        case HorizontalAlignment.Center:    CursorLeft = (Console.WindowWidth - GetSymtextWidth(line)) / 2;    break;
-                        case HorizontalAlignment.Right:     CursorLeft = Console.WindowWidth - GetSymtextWidth(line);          break;
+                        case SymtextHorizontalAlignment.Left:      CursorLeft = 0;                                                    break;
+                        case SymtextHorizontalAlignment.Center:    CursorLeft = (Console.WindowWidth - GetSymtextWidth(line)) / 2;    break;
+                        case SymtextHorizontalAlignment.Right:     CursorLeft = Console.WindowWidth - GetSymtextWidth(line);          break;
                     }
 
                     for (int j = 0; j < line.Length; j++)
@@ -251,12 +251,12 @@ namespace SnakeTheResurrection.Utilities
             ForegroundColor     = Constants.ACCENT_COLOR;
             BackgroundColor     = Constants.BACKGROUND_COLOR;
             FontSize            = 15;
-            HorizontalAlignment = HorizontalAlignment.Center;
-            VerticalAlignment   = VerticalAlignment.Center;
+            HorizontalAlignment = SymtextHorizontalAlignment.Center;
+            VerticalAlignment   = SymtextVerticalAlignment.Center;
             WriteLine(value, verticalOffset);
 
-            HorizontalAlignment = HorizontalAlignment.None;
-            VerticalAlignment   = VerticalAlignment.None;
+            HorizontalAlignment = SymtextHorizontalAlignment.None;
+            VerticalAlignment   = SymtextVerticalAlignment.None;
 
             FontSize = 3;
             WriteLine();
@@ -288,8 +288,8 @@ namespace SnakeTheResurrection.Utilities
                 ForegroundColor     = Constants.FOREGROUND_COLOR;
                 BackgroundColor     = Constants.BACKGROUND_COLOR;
                 FontSize            = 2;
-                HorizontalAlignment = HorizontalAlignment.None;
-                VerticalAlignment   = VerticalAlignment.None;
+                HorizontalAlignment = SymtextHorizontalAlignment.None;
+                VerticalAlignment   = SymtextVerticalAlignment.None;
             }
         }
 
@@ -298,7 +298,7 @@ namespace SnakeTheResurrection.Utilities
             lock (syncRoot)
             {
                 SetTextProperties();
-                HorizontalAlignment = HorizontalAlignment.Center;
+                HorizontalAlignment = SymtextHorizontalAlignment.Center;
             }
         }
 

@@ -38,8 +38,8 @@ namespace SnakeTheResurrection
                 Text = Constants.APP_SHORT_NAME,
                 ForegroundColor = (Color)Constants.ACCENT_COLOR,
                 FontSize = 25,
-                HorizontalAlignment = Utilities.UI.HorizontalAlignment.Center,
-                VerticalAlignment = Utilities.UI.VerticalAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
                 Width = Symtext.GetSymtextWidth("Snakee", 25),
                 Height = Symtext.GetCharHeight(25)
             });
@@ -48,8 +48,8 @@ namespace SnakeTheResurrection
                 Text = "Loading . . .",
                 FontSize = 2,
                 Margin = new Thickness(20),
-                HorizontalAlignment = Utilities.UI.HorizontalAlignment.Right,
-                VerticalAlignment = Utilities.UI.VerticalAlignment.Bottom,
+                HorizontalAlignment = HorizontalAlignment.Right,
+                VerticalAlignment = VerticalAlignment.Bottom,
                 Width = Symtext.GetSymtextWidth("Loading . . .", 3),
                 Height = Symtext.GetCharHeight(2)
             };
@@ -73,8 +73,8 @@ namespace SnakeTheResurrection
             Window.Compositor.AddToDispatchQueue(() =>
             {
                 prompt.Text = "Press any key to continue . . .";
-                prompt.HorizontalAlignment = Utilities.UI.HorizontalAlignment.Center;
-                prompt.VerticalAlignment = Utilities.UI.VerticalAlignment.Center;
+                prompt.HorizontalAlignment = HorizontalAlignment.Center;
+                prompt.VerticalAlignment = VerticalAlignment.Center;
                 prompt.Width = Symtext.GetSymtextWidth(prompt.Text + " . . .", prompt.FontSize);
                 prompt.Margin = new Thickness(0, 150);
             });
@@ -99,14 +99,14 @@ namespace SnakeTheResurrection
             //TextBlock e = new TextBlock()
             //{
             //    Text = "Hello World! ",
-            //    ForegroundColor = Utilities.UI.Colors.Black,
+            //    ForegroundColor = Colors.Black,
             //    Width = 30,
             //    Height = 100,
-            //    VerticalAlignment = Utilities.UI.VerticalAlignment.Stretch,
-            //    HorizontalAlignment = Utilities.UI.HorizontalAlignment.Stretch,
-            //    BackgroundColor = Utilities.UI.Colors.Cyan,
+            //    VerticalAlignment = VerticalAlignment.Stretch,
+            //    HorizontalAlignment = HorizontalAlignment.Stretch,
+            //    BackgroundColor = Colors.Cyan,
             //    BorderThickness = new Thickness(17),
-            //    BorderColor = Utilities.UI.Colors.Red,
+            //    BorderColor = Colors.Red,
             //    Padding = new Thickness(5),
             //    Margin = new Thickness(7),
             //    FontSize = 3
@@ -163,9 +163,9 @@ namespace SnakeTheResurrection
             //};
             StackPanel stackPanel = new StackPanel()
             {
-                BackgroundColor = Utilities.UI.Colors.Yellow,
-                HorizontalAlignment = Utilities.UI.HorizontalAlignment.Stretch,
-                VerticalAlignment = Utilities.UI.VerticalAlignment.Stretch
+                BackgroundColor = Colors.Yellow,
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                VerticalAlignment = VerticalAlignment.Stretch
             };
 
             for (int i = 0; i < 10; i++)
@@ -173,7 +173,7 @@ namespace SnakeTheResurrection
                 StackPanel sp = new StackPanel()
                 {
                     BackgroundColor = (Color)r.Next(1, 16),
-                    HorizontalAlignment = Utilities.UI.HorizontalAlignment.Stretch,
+                    HorizontalAlignment = HorizontalAlignment.Stretch,
                     Orientation = Orientation.Horizontal,
                     Height = 100
                 };
@@ -190,8 +190,8 @@ namespace SnakeTheResurrection
                         BorderThickness = new Thickness(r.Next(0, 20), r.Next(0, 20), r.Next(0, 20), r.Next(0, 20)),
                         FontSize = r.Next(1, 10),
                         TextWrapping = (TextWrapping)r.Next(0, 1),
-                        VerticalAlignment = (Utilities.UI.VerticalAlignment)r.Next(0, 4),
-                        HorizontalAlignment = (Utilities.UI.HorizontalAlignment)r.Next(0, 4),
+                        VerticalAlignment = (VerticalAlignment)r.Next(0, 4),
+                        HorizontalAlignment = (HorizontalAlignment)r.Next(0, 4),
                         Width = r.Next(20, 150),
                         Height = r.Next(20, 150),
                         CharacterSpacingRatio = r.Next(1, 3),

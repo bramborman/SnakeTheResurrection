@@ -1,6 +1,6 @@
 ﻿namespace SnakeTheResurrection.Utilities
 {
-    public enum HorizontalAlignment
+    public enum SymtextHorizontalAlignment
     {
         None,
         Left,

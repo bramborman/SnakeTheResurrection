@@ -26,7 +26,7 @@ namespace SnakeTheResurrection
             Profile newProfile = new Profile
             {
                 Name = "Pandafrog",
-                Color = Colors.Green
+                Color = FastColors.Green
             };
 
             //TODO: UI for customization

@@ -193,5 +193,10 @@ namespace SnakeTheResurrection.Utilities.UI
 
             return new Rectangle(left, top, right, bottom);
         }
+
+        protected static void SetParent(UIElement element, UIElement newParent)
+        {
+            element.Parent = newParent;
+        }
     }
 }

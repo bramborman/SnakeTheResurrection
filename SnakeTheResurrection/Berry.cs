@@ -63,13 +63,13 @@ namespace SnakeTheResurrection
                     }
                 } while (regenerate);
 
-                Renderer.AddToBuffer(texture, Colors.Red, x, y);
+                Renderer.AddToBuffer(texture, FastColors.Red, x, y);
             }
         }
             
         public int Eat()
         {
-            Renderer.AddToBuffer(Colors.White, x, y, size, size);
+            Renderer.AddToBuffer(FastColors.White, x, y, size, size);
             generateNew = true;
 
             return Cheats.CheatCodeInfo[Cheats.CheatCode.Hungry] ? 2 * power : power;

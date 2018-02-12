@@ -2,7 +2,7 @@
 
 namespace SnakeTheResurrection.Utilities
 {
-    public static class Colors
+    public static class FastColors
     {
         public const short Black        = (short)ConsoleColor.Black;
         public const short DarkBlue     = (short)ConsoleColor.DarkBlue;

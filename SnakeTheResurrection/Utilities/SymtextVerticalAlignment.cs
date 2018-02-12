@@ -1,6 +1,6 @@
 ﻿namespace SnakeTheResurrection.Utilities
 {
-    public enum VerticalAlignment
+    public enum SymtextVerticalAlignment
     {
         None,
         Top,

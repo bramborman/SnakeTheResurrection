@@ -58,7 +58,7 @@ namespace SnakeTheResurrection
                         profile = new Profile
                         {
                             Name = "Frogpanda",
-                            Color = Colors.Cyan
+                            Color = FastColors.Cyan
                         };
                         profile.SnakeControls.Left  = ConsoleKey.A;
                         profile.SnakeControls.Up    = ConsoleKey.W;
@@ -71,7 +71,7 @@ namespace SnakeTheResurrection
                         profile = new Profile
                         {
                             Name = "Strawberryraspberry",
-                            Color = Colors.Magenta
+                            Color = FastColors.Magenta
                         };
                         profile.SnakeControls.Left  = ConsoleKey.NumPad4;
                         profile.SnakeControls.Up    = ConsoleKey.NumPad8;
@@ -84,7 +84,7 @@ namespace SnakeTheResurrection
                         profile = new Profile
                         {
                             Name = "Lifeescape",
-                            Color = Colors.Yellow
+                            Color = FastColors.Yellow
                         };
                         profile.SnakeControls.Left  = ConsoleKey.J;
                         profile.SnakeControls.Up    = ConsoleKey.I;
