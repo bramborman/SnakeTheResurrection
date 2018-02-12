@@ -57,7 +57,7 @@ namespace SnakeTheResurrection.Utilities.UI
         public UIElement Parent
         {
             get { return (UIElement)GetValue(); }
-            set { SetValue(value); }
+            protected set { SetValue(value); }
         }
         public virtual int ActualWidth
         {

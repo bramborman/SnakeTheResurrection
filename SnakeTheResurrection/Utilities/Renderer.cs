@@ -79,10 +79,10 @@ namespace SnakeTheResurrection.Utilities
             public static void AddToBuffer(in Color color, in int x, in int y, in int width, in int height, in Rectangle bounds)
             {
                 short shortColor = (short)color;
-                int left    = Math.Max(x, bounds.Left);
-                int top     = Math.Max(y, bounds.Top);
-                int right   = Math.Min(x + width, bounds.Right);
-                int bottom  = Math.Min(y + height, bounds.Bottom);
+                int left    = Math.Max(0, Math.Max(x, bounds.Left));
+                int top     = Math.Max(0, Math.Max(y, bounds.Top));
+                int right   = Math.Min(Window.Width, Math.Min(x + width, bounds.Right));
+                int bottom  = Math.Min(Window.Height, Math.Min(y + height, bounds.Bottom));
 
                 for (; top < bottom; top++)
                 {
@@ -96,10 +96,10 @@ namespace SnakeTheResurrection.Utilities
             public static void AddToBuffer(in bool[,] element, in Color color, in int x, in int y, in Rectangle elementBounds, in Rectangle bounds)
             {
                 short shortColor = (short)color;
-                int left    = Math.Max(Math.Max(x, elementBounds.Left), bounds.Left);
-                int top     = Math.Max(Math.Max(y, elementBounds.Top), bounds.Top);
-                int right   = Math.Min(Math.Min(x + element.GetLength(1), elementBounds.Right), bounds.Right);
-                int bottom  = Math.Min(Math.Min(y + element.GetLength(0), elementBounds.Bottom), bounds.Bottom);
+                int left    = Math.Max(0, Math.Max(Math.Max(x, elementBounds.Left), bounds.Left));
+                int top     = Math.Max(0, Math.Max(Math.Max(y, elementBounds.Top), bounds.Top));
+                int right   = Math.Min(Window.Width, Math.Min(Math.Min(x + element.GetLength(1), elementBounds.Right), bounds.Right));
+                int bottom  = Math.Min(Window.Height, Math.Min(Math.Min(y + element.GetLength(0), elementBounds.Bottom), bounds.Bottom));
 
                 for (; top < bottom; top++)
                 {

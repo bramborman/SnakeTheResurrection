@@ -167,67 +167,61 @@ namespace SnakeTheResurrection
                 HorizontalAlignment = Utilities.UI.HorizontalAlignment.Stretch,
                 VerticalAlignment = Utilities.UI.VerticalAlignment.Stretch
             };
+
             for (int i = 0; i < 10; i++)
             {
                 StackPanel sp = new StackPanel()
                 {
-                    BackgroundColor = (Color)r.Next(1, 15),
+                    BackgroundColor = (Color)r.Next(1, 16),
                     HorizontalAlignment = Utilities.UI.HorizontalAlignment.Stretch,
                     Orientation = Orientation.Horizontal,
                     Height = 100
                 };
 
+                stackPanel.Items.Add(sp);
+
                 for (int j = 0; j < 5; j++)
                 {
-                    sp.Items.Add(new TextBlock()
+                    TextBlock t = new TextBlock()
                     {
                         Text = "Hello World! ",
-                        ForegroundColor = Utilities.UI.Colors.Black,
-                        Width = 200,
-                        Height = 50,
-                        BackgroundColor = Utilities.UI.Colors.Cyan,
-                        BorderThickness = new Thickness(17),
-                        BorderColor = Utilities.UI.Colors.Red,
-                        Padding = new Thickness(10),
-                        Margin = new Thickness(20),
-                        FontSize = 3
-                    });
-                }
+                        Margin = new Thickness(r.Next(0, 20), r.Next(0, 20), r.Next(0, 20), r.Next(0, 20)),
+                        Padding = new Thickness(r.Next(0, 20), r.Next(0, 20), r.Next(0, 20), r.Next(0, 20)),
+                        BorderThickness = new Thickness(r.Next(0, 20), r.Next(0, 20), r.Next(0, 20), r.Next(0, 20)),
+                        FontSize = r.Next(1, 10),
+                        TextWrapping = (TextWrapping)r.Next(0, 1),
+                        VerticalAlignment = (Utilities.UI.VerticalAlignment)r.Next(0, 4),
+                        HorizontalAlignment = (Utilities.UI.HorizontalAlignment)r.Next(0, 4),
+                        Width = r.Next(20, 150),
+                        Height = r.Next(20, 150),
+                        CharacterSpacingRatio = r.Next(1, 3),
+                        LineSpacingRatio = r.Next(1, 3)
+                    };
 
-                stackPanel.Items.Add(sp);
+                    do
+                    {
+                        t.BackgroundColor = (Color)r.Next(0, 16);
+                    } while (t.BackgroundColor == sp.BackgroundColor);
+
+                    do
+                    {
+                        t.BorderColor = (Color)r.Next(0, 16);
+                    } while (t.BackgroundColor == t.BorderColor);
+
+                    do
+                    {
+                        t.ForegroundColor = (Color)r.Next(0, 16);
+                    } while (t.BackgroundColor == t.ForegroundColor);
+
+                    sp.Items.Add(t);
+                }
             }
-            //stackPanel.Items.Add(new TextBlock()
-            //{
-            //    Text = "Hello World 2! ",
-            //    ForegroundColor = Utilities.UI.Colors.Black,
-            //    Width = 30,
-            //    Height = 100,
-            //    HorizontalAlignment = Utilities.UI.HorizontalAlignment.Center,
-            //    BackgroundColor = Utilities.UI.Colors.Blue,
-            //    BorderThickness = new Thickness(17),
-            //    BorderColor = Utilities.UI.Colors.Magenta,
-            //    Padding = new Thickness(5),
-            //    Margin = new Thickness(7),
-            //    FontSize = 3
-            //});
-            //stackPanel.Items.Add(new TextBlock()
-            //{
-            //    Text = "Hello World 3! ",
-            //    ForegroundColor = Utilities.UI.Colors.Black,
-            //    Width = 300,
-            //    Height = 100,
-            //    HorizontalAlignment = Utilities.UI.HorizontalAlignment.Stretch,
-            //    BackgroundColor = Utilities.UI.Colors.Green,
-            //    BorderThickness = new Thickness(17),
-            //    BorderColor = Utilities.UI.Colors.DarkBlue,
-            //    Padding = new Thickness(5),
-            //    Margin = new Thickness(7),
-            //    FontSize = 5
-            //});
+
             Window.Children.Add(stackPanel);
             Window.Compositor.Run();
             Console.ReadLine();
             Window.Compositor.Stop();
+            Window.Children.Clear();
         }
         
         private static void MainMenu()

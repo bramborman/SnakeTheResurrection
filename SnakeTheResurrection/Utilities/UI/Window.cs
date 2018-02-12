@@ -43,6 +43,7 @@ namespace SnakeTheResurrection.Utilities.UI
 
             public static void Stop()
             {
+                stoppingResetEvent.Reset();
                 resetEvent.Reset();
                 stoppingResetEvent.Wait();
                 Renderer.Clear();
