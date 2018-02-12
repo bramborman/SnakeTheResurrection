@@ -91,6 +91,11 @@ namespace SnakeTheResurrection.Utilities.UI
         
         public virtual Rectangle Render(in Rectangle bounds)
         {
+            if (!IsVisible)
+            {
+                return Rectangle.Empty;
+            }
+
             Rectangle area = GetArea(in bounds);
 
             if (area.Width <= 0 || area.Height <= 0)

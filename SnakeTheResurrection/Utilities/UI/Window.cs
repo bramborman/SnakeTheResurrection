@@ -23,7 +23,9 @@ namespace SnakeTheResurrection.Utilities.UI
         public static class Compositor
         {
             private static readonly ManualResetEventSlim resetEvent = new ManualResetEventSlim(false);
+            private static readonly ManualResetEventSlim stoppingResetEvent = new ManualResetEventSlim(false);
             private static readonly Thread renderingThread = new Thread(Rendering);
+            private static readonly Queue<Action> dispatchQueue = new Queue<Action>();
 
             public static int TargetFramerate { get; set; } = 60;
             
@@ -42,6 +44,7 @@ namespace SnakeTheResurrection.Utilities.UI
             public static void Stop()
             {
                 resetEvent.Reset();
+                stoppingResetEvent.Wait();
                 Renderer.Clear();
                 Renderer.RenderFrame();
             }
@@ -54,6 +57,11 @@ namespace SnakeTheResurrection.Utilities.UI
                 {
                     stopwatch.Restart();
                     Renderer.Clear();
+
+                    if (dispatchQueue.Count > 0)
+                    {
+                        dispatchQueue.Dequeue()();
+                    }
 
                     BeforeRendering?.Invoke();
 
@@ -73,7 +81,14 @@ namespace SnakeTheResurrection.Utilities.UI
                     {
                         Thread.Sleep(currentDelay);
                     }
+
+                    stoppingResetEvent.Set();
                 }
+            }
+
+            public static void AddToDispatchQueue(Action action)
+            {
+                dispatchQueue.Enqueue(action);
             }
         }
     }

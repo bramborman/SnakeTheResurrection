@@ -66,9 +66,9 @@
                 return area;
             }
 
-            Rectangle textBounds = GetContentArea(area);
-            int x = textBounds.X;
-            int y = textBounds.Y;
+            Rectangle contentArea = GetContentArea(area);
+            int x = contentArea.X;
+            int y = contentArea.Y;
             int characterSpacing = CharacterSpacing;
             int lineSpacing = LineSpacing;
             int charHeight = Symtext.GetCharHeight(FontSize);
@@ -84,7 +84,7 @@
                 bool[,] renderedChar = Symtext.GetScaledBoolChar(Text[i], FontSize);
                 int charWidth = renderedChar.GetLength(1);
 
-                if (x + charWidth > textBounds.Right)
+                if (x + charWidth > contentArea.Right)
                 {
                     if (TextWrapping == TextWrapping.Wrap)
                     {
@@ -92,7 +92,7 @@
                         {
                             GoToNewLine();
 
-                            if (y > textBounds.Bottom)
+                            if (y > contentArea.Bottom)
                             {
                                 break;
                             }
@@ -100,25 +100,25 @@
                     }
                     else if (TextWrapping == TextWrapping.NoWrap)
                     {
-                        if (x > textBounds.Right)
+                        if (x > contentArea.Right)
                         {
                             break;
                         }
                     }
                 }
 
-                if (x == textBounds.X && Text[i] == ' ')
+                if (x == contentArea.X && Text[i] == ' ')
                 {
                     continue;
                 }
 
-                Renderer.Safe.AddToBuffer(in renderedChar, ForegroundColor, in x, in y, in textBounds, in bounds);
+                Renderer.Safe.AddToBuffer(in renderedChar, ForegroundColor, in x, in y, in contentArea, in bounds);
                 x += charWidth + characterSpacing;
 
 
                 void GoToNewLine()
                 {
-                    x = textBounds.X;
+                    x = contentArea.X;
                     y += charHeight + lineSpacing;
                 }
             }
