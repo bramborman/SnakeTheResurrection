@@ -96,71 +96,135 @@ namespace SnakeTheResurrection
         private static void UIPlayground()
         {
             Random r = new Random();
-            TextBlock e = new TextBlock()
+            //TextBlock e = new TextBlock()
+            //{
+            //    Text = "Hello World! ",
+            //    ForegroundColor = Utilities.UI.Colors.Black,
+            //    Width = 30,
+            //    Height = 100,
+            //    VerticalAlignment = Utilities.UI.VerticalAlignment.Stretch,
+            //    HorizontalAlignment = Utilities.UI.HorizontalAlignment.Stretch,
+            //    BackgroundColor = Utilities.UI.Colors.Cyan,
+            //    BorderThickness = new Thickness(17),
+            //    BorderColor = Utilities.UI.Colors.Red,
+            //    Padding = new Thickness(5),
+            //    Margin = new Thickness(7),
+            //    FontSize = 3
+            //};
+            //
+            //for (int i = 0; i < 1000; i++)
+            //{
+            //    e.Text += "Hello World! ";
+            //}
+            //
+            //int framesCounter = 0;
+            //
+            //Window.Children.Add(e);
+            //Window.Compositor.BeforeRendering += () =>
+            //{
+            //    if (framesCounter++ % 30 == 0)
+            //    {
+            //        try
+            //        {
+            //            e.Width = r.Next(1, Console.WindowWidth / 2);
+            //            e.Height = r.Next(1, Console.WindowHeight / 2);
+            //            e.HorizontalAlignment = (Utilities.UI.HorizontalAlignment)r.Next(0, 4);
+            //            e.VerticalAlignment = (Utilities.UI.VerticalAlignment)r.Next(0, 4);
+            //            e.BorderThickness = new Thickness(r.Next(0, Math.Min(Console.WindowWidth, Console.WindowHeight) / 4));
+            //            e.BorderColor = (Color)r.Next(1, 16);
+            //            e.FontSize = r.Next(1, e.Height / 7 / 2);
+            //
+            //            do
+            //            {
+            //                e.BackgroundColor = (Color)r.Next(1, 16);
+            //            } while (e.BackgroundColor == e.BorderColor);
+            //        }
+            //        catch
+            //        {
+            //
+            //        }
+            //    }
+            //};
+            //TextBlock splashBlock = new TextBlock()
+            //{
+            //    Text = "Snake",
+            //    TextWrapping = TextWrapping.NoWrap,
+            //    FontSize = 15,
+            //    ForegroundColor = (Color)Constants.ACCENT_COLOR,
+            //    HorizontalAlignment = Utilities.UI.HorizontalAlignment.Stretch,
+            //    VerticalAlignment = Utilities.UI.VerticalAlignment.Center,
+            //    Height = 15 * 7,
+            //    Margin = new Thickness(-Symtext.GetSymtextWidth("Snakee", 15), 0, 0, 0)
+            //};
+            //Window.Children.Add(splashBlock);
+            //Window.Compositor.BeforeRendering += () =>
+            //{
+            //    splashBlock.Margin = new Thickness(splashBlock.Margin.Left + 1, splashBlock.Margin.Top, splashBlock.Margin.Right, splashBlock.Margin.Bottom);
+            //};
+            StackPanel stackPanel = new StackPanel()
             {
-                Text = "Hello World! ",
-                ForegroundColor = Utilities.UI.Colors.Black,
-                Width = 30,
-                Height = 100,
-                VerticalAlignment = Utilities.UI.VerticalAlignment.Stretch,
+                BackgroundColor = Utilities.UI.Colors.Yellow,
                 HorizontalAlignment = Utilities.UI.HorizontalAlignment.Stretch,
-                BackgroundColor = Utilities.UI.Colors.Cyan,
-                BorderThickness = new Thickness(17),
-                BorderColor = Utilities.UI.Colors.Red,
-                Padding = new Thickness(5),
-                Margin = new Thickness(7),
-                FontSize = 3
+                VerticalAlignment = Utilities.UI.VerticalAlignment.Stretch
             };
-            
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < 10; i++)
             {
-                e.Text += "Hello World! ";
-            }
-            
-            int framesCounter = 0;
-            
-            Window.Children.Add(e);
-            Window.Compositor.BeforeRendering += () =>
-            {
-                if (framesCounter++ % 30 == 0)
+                StackPanel sp = new StackPanel()
                 {
-                    try
+                    BackgroundColor = (Color)r.Next(1, 15),
+                    HorizontalAlignment = Utilities.UI.HorizontalAlignment.Stretch,
+                    Orientation = Orientation.Horizontal,
+                    Height = 100
+                };
+
+                for (int j = 0; j < 5; j++)
+                {
+                    sp.Items.Add(new TextBlock()
                     {
-                        e.Width = r.Next(1, Console.WindowWidth / 2);
-                        e.Height = r.Next(1, Console.WindowHeight / 2);
-                        e.HorizontalAlignment = (Utilities.UI.HorizontalAlignment)r.Next(0, 4);
-                        e.VerticalAlignment = (Utilities.UI.VerticalAlignment)r.Next(0, 4);
-                        e.BorderThickness = new Thickness(r.Next(0, Math.Min(Console.WindowWidth, Console.WindowHeight) / 4));
-                        e.BorderColor = (Color)r.Next(1, 16);
-                        e.FontSize = r.Next(1, e.Height / 7 / 2);
-            
-                        do
-                        {
-                            e.BackgroundColor = (Color)r.Next(1, 16);
-                        } while (e.BackgroundColor == e.BorderColor);
-                    }
-                    catch
-                    {
-            
-                    }
+                        Text = "Hello World! ",
+                        ForegroundColor = Utilities.UI.Colors.Black,
+                        Width = 200,
+                        Height = 50,
+                        BackgroundColor = Utilities.UI.Colors.Cyan,
+                        BorderThickness = new Thickness(17),
+                        BorderColor = Utilities.UI.Colors.Red,
+                        Padding = new Thickness(10),
+                        Margin = new Thickness(20),
+                        FontSize = 3
+                    });
                 }
-            };
-            TextBlock splashBlock = new TextBlock()
-            {
-                Text = "Snake",
-                TextWrapping = TextWrapping.NoWrap,
-                FontSize = 15,
-                ForegroundColor = (Color)Constants.ACCENT_COLOR,
-                HorizontalAlignment = Utilities.UI.HorizontalAlignment.Stretch,
-                VerticalAlignment = Utilities.UI.VerticalAlignment.Center,
-                Height = 15 * 7,
-                Margin = new Thickness(-Symtext.GetSymtextWidth("Snakee", 15), 0, 0, 0)
-            };
-            Window.Children.Add(splashBlock);
-            Window.Compositor.BeforeRendering += () =>
-            {
-                splashBlock.Margin = new Thickness(splashBlock.Margin.Left + 1, splashBlock.Margin.Top, splashBlock.Margin.Right, splashBlock.Margin.Bottom);
-            };
+
+                stackPanel.Items.Add(sp);
+            }
+            //stackPanel.Items.Add(new TextBlock()
+            //{
+            //    Text = "Hello World 2! ",
+            //    ForegroundColor = Utilities.UI.Colors.Black,
+            //    Width = 30,
+            //    Height = 100,
+            //    HorizontalAlignment = Utilities.UI.HorizontalAlignment.Center,
+            //    BackgroundColor = Utilities.UI.Colors.Blue,
+            //    BorderThickness = new Thickness(17),
+            //    BorderColor = Utilities.UI.Colors.Magenta,
+            //    Padding = new Thickness(5),
+            //    Margin = new Thickness(7),
+            //    FontSize = 3
+            //});
+            //stackPanel.Items.Add(new TextBlock()
+            //{
+            //    Text = "Hello World 3! ",
+            //    ForegroundColor = Utilities.UI.Colors.Black,
+            //    Width = 300,
+            //    Height = 100,
+            //    HorizontalAlignment = Utilities.UI.HorizontalAlignment.Stretch,
+            //    BackgroundColor = Utilities.UI.Colors.Green,
+            //    BorderThickness = new Thickness(17),
+            //    BorderColor = Utilities.UI.Colors.DarkBlue,
+            //    Padding = new Thickness(5),
+            //    Margin = new Thickness(7),
+            //    FontSize = 5
+            //});
+            Window.Children.Add(stackPanel);
             Window.Compositor.Run();
             Console.ReadLine();
             Window.Compositor.Stop();

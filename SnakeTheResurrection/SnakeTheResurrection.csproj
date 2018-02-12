@@ -71,8 +71,10 @@
     <Compile Include="Utilities\UI\Colors.cs" />
     <Compile Include="Utilities\UI\ContentElement.cs" />
     <Compile Include="Utilities\UI\HorizontalAlignment.cs" />
+    <Compile Include="Utilities\UI\Orientation.cs" />
     <Compile Include="Utilities\UI\Rectangle.cs" />
     <Compile Include="Utilities\UI\Size.cs" />
+    <Compile Include="Utilities\UI\StackPanel.cs" />
     <Compile Include="Utilities\UI\TextBlock.cs" />
     <Compile Include="Utilities\UI\TextWrapping.cs" />
     <Compile Include="Utilities\UI\Thickness.cs" />
