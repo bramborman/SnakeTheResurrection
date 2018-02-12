@@ -31,78 +31,58 @@ namespace SnakeTheResurrection
             // Run the static constructor of Renderer
             RuntimeHelpers.RunClassConstructor(typeof(Renderer).TypeHandle);
 
-            // Random r = new Random();
-            // TextBlock e = new TextBlock()
-            // {
-            //     Text = "Hello World! ",
-            //     ForegroundColor = Utilities.UI.Colors.Black,
-            //     Width = 30,
-            //     Height = 100,
-            //     VerticalAlignment = Utilities.UI.VerticalAlignment.Stretch,
-            //     HorizontalAlignment = Utilities.UI.HorizontalAlignment.Stretch,
-            //     BackgroundColor = Utilities.UI.Colors.Cyan,
-            //     BorderThickness = new Thickness(17),
-            //     BorderColor = Utilities.UI.Colors.Red,
-            //     Padding = new Thickness(5),
-            //     Margin = new Thickness(7),
-            //     FontSize = 3
-            // };
-            // 
-            // for (int i = 0; i < 1000; i++)
-            // {
-            //     e.Text += "Hello World! ";
-            // }
-            // 
-            // int framesCounter = 0;
-            // 
-            // Window.Children.Add(e);
-            // Window.Compositor.BeforeRendering += () =>
-            // {
-            //     if (framesCounter++ % 30 == 0)
-            //     {
-            //         try
-            //         {
-            //             e.Width = r.Next(1, Console.WindowWidth / 2);
-            //             e.Height = r.Next(1, Console.WindowHeight / 2);
-            //             e.HorizontalAlignment = (Utilities.UI.HorizontalAlignment)r.Next(0, 4);
-            //             e.VerticalAlignment = (Utilities.UI.VerticalAlignment)r.Next(0, 4);
-            //             e.BorderThickness = new Thickness(r.Next(0, Math.Min(Console.WindowWidth, Console.WindowHeight) / 4));
-            //             e.BorderColor = (Color)r.Next(1, 16);
-            //             e.FontSize = r.Next(1, e.Height / 7 / 2);
-            // 
-            //             do
-            //             {
-            //                 e.BackgroundColor = (Color)r.Next(1, 16);
-            //             } while (e.BackgroundColor == e.BorderColor);
-            //         }
-            //         catch
-            //         {
-            // 
-            //         }
-            //     }
-            // };
-            // TextBlock splashBlock = new TextBlock()
-            // {
-            //     Text = "Snake",
-            //     TextWrapping = TextWrapping.NoWrap,
-            //     FontSize = 15,
-            //     ForegroundColor = (Color)Constants.ACCENT_COLOR,
-            //     HorizontalAlignment = Utilities.UI.HorizontalAlignment.Stretch,
-            //     VerticalAlignment = Utilities.UI.VerticalAlignment.Center,
-            //     Height = 15 * 7,
-            //     Margin = new Thickness(-Symtext.GetSymtextWidth("Snakee", 15), 0, 0, 0)
-            // };
-            // Window.Children.Add(splashBlock);
-            // Window.Compositor.BeforeRendering += () =>
-            // {
-            //     splashBlock.Margin = new Thickness(splashBlock.Margin.Left + 1, splashBlock.Margin.Top, splashBlock.Margin.Right, splashBlock.Margin.Bottom);
-            // };
-            // Window.Compositor.Run();
-            // Console.ReadLine();
-            // Window.Compositor.Stop();
+            //UIPlayground();
+
+            Window.Children.Add(new TextBlock()
+            {
+                Text = Constants.APP_SHORT_NAME,
+                ForegroundColor = (Color)Constants.ACCENT_COLOR,
+                FontSize = 25,
+                HorizontalAlignment = Utilities.UI.HorizontalAlignment.Center,
+                VerticalAlignment = Utilities.UI.VerticalAlignment.Center,
+                Width = Symtext.GetSymtextWidth("Snakee", 25),
+                Height = Symtext.GetCharHeight(25)
+            });
+            TextBlock prompt = new TextBlock()
+            {
+                Text = "Loading . . .",
+                FontSize = 2,
+                Margin = new Thickness(20),
+                HorizontalAlignment = Utilities.UI.HorizontalAlignment.Right,
+                VerticalAlignment = Utilities.UI.VerticalAlignment.Bottom,
+                Width = Symtext.GetSymtextWidth("Loading . . .", 3),
+                Height = Symtext.GetCharHeight(2)
+            };
+            Window.Children.Add(prompt);
+            Window.Compositor.Run();
 
             AppData.Load();
             ProfileManager.LoadProfiles();
+            
+            int counter = 0;
+
+            void BeforeRendering()
+            {
+                if (++counter == 17)
+                {
+                    counter = 0;
+                    prompt.IsVisible = !prompt.IsVisible;
+                }
+            }
+            
+            Window.Compositor.AddToDispatchQueue(() =>
+            {
+                prompt.Text = "Press any key to continue . . .";
+                prompt.HorizontalAlignment = Utilities.UI.HorizontalAlignment.Center;
+                prompt.VerticalAlignment = Utilities.UI.VerticalAlignment.Center;
+                prompt.Width = Symtext.GetSymtextWidth(prompt.Text + " . . .", prompt.FontSize);
+                prompt.Margin = new Thickness(0, 150);
+            });
+            Window.Compositor.BeforeRendering += BeforeRendering;
+            InputHelper.ClearInputBuffer();
+            Console.ReadKey(true);
+            Window.Compositor.BeforeRendering -= BeforeRendering;
+            Window.Compositor.Stop();
 
             MainMenu();
 
@@ -113,7 +93,80 @@ namespace SnakeTheResurrection
 #endif
         }
         
-        public static void MainMenu()
+        private static void UIPlayground()
+        {
+            Random r = new Random();
+            TextBlock e = new TextBlock()
+            {
+                Text = "Hello World! ",
+                ForegroundColor = Utilities.UI.Colors.Black,
+                Width = 30,
+                Height = 100,
+                VerticalAlignment = Utilities.UI.VerticalAlignment.Stretch,
+                HorizontalAlignment = Utilities.UI.HorizontalAlignment.Stretch,
+                BackgroundColor = Utilities.UI.Colors.Cyan,
+                BorderThickness = new Thickness(17),
+                BorderColor = Utilities.UI.Colors.Red,
+                Padding = new Thickness(5),
+                Margin = new Thickness(7),
+                FontSize = 3
+            };
+            
+            for (int i = 0; i < 1000; i++)
+            {
+                e.Text += "Hello World! ";
+            }
+            
+            int framesCounter = 0;
+            
+            Window.Children.Add(e);
+            Window.Compositor.BeforeRendering += () =>
+            {
+                if (framesCounter++ % 30 == 0)
+                {
+                    try
+                    {
+                        e.Width = r.Next(1, Console.WindowWidth / 2);
+                        e.Height = r.Next(1, Console.WindowHeight / 2);
+                        e.HorizontalAlignment = (Utilities.UI.HorizontalAlignment)r.Next(0, 4);
+                        e.VerticalAlignment = (Utilities.UI.VerticalAlignment)r.Next(0, 4);
+                        e.BorderThickness = new Thickness(r.Next(0, Math.Min(Console.WindowWidth, Console.WindowHeight) / 4));
+                        e.BorderColor = (Color)r.Next(1, 16);
+                        e.FontSize = r.Next(1, e.Height / 7 / 2);
+            
+                        do
+                        {
+                            e.BackgroundColor = (Color)r.Next(1, 16);
+                        } while (e.BackgroundColor == e.BorderColor);
+                    }
+                    catch
+                    {
+            
+                    }
+                }
+            };
+            TextBlock splashBlock = new TextBlock()
+            {
+                Text = "Snake",
+                TextWrapping = TextWrapping.NoWrap,
+                FontSize = 15,
+                ForegroundColor = (Color)Constants.ACCENT_COLOR,
+                HorizontalAlignment = Utilities.UI.HorizontalAlignment.Stretch,
+                VerticalAlignment = Utilities.UI.VerticalAlignment.Center,
+                Height = 15 * 7,
+                Margin = new Thickness(-Symtext.GetSymtextWidth("Snakee", 15), 0, 0, 0)
+            };
+            Window.Children.Add(splashBlock);
+            Window.Compositor.BeforeRendering += () =>
+            {
+                splashBlock.Margin = new Thickness(splashBlock.Margin.Left + 1, splashBlock.Margin.Top, splashBlock.Margin.Right, splashBlock.Margin.Bottom);
+            };
+            Window.Compositor.Run();
+            Console.ReadLine();
+            Window.Compositor.Stop();
+        }
+        
+        private static void MainMenu()
         {
             ListMenu mainMenu = new ListMenu
             {
@@ -141,7 +194,7 @@ namespace SnakeTheResurrection
             }
         }
 
-        public static void About()
+        private static void About()
         {
             bool goBack = false;
 
