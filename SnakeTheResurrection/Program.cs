@@ -40,7 +40,7 @@ namespace SnakeTheResurrection
                 FontSize = 25,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
-                Width = Symtext.GetSymtextWidth("Snakee", 25),
+                Width = Symtext.GetSymtextWidth("Snake", 25, 25),
                 Height = Symtext.GetCharHeight(25)
             });
             TextBlock prompt = new TextBlock()
@@ -50,7 +50,7 @@ namespace SnakeTheResurrection
                 Margin = new Thickness(20),
                 HorizontalAlignment = HorizontalAlignment.Right,
                 VerticalAlignment = VerticalAlignment.Bottom,
-                Width = Symtext.GetSymtextWidth("Loading . . .", 3),
+                Width = Symtext.GetSymtextWidth("Loading . . .", 2, 2),
                 Height = Symtext.GetCharHeight(2)
             };
             Window.Children.Add(prompt);
@@ -75,7 +75,7 @@ namespace SnakeTheResurrection
                 prompt.Text = "Press any key to continue . . .";
                 prompt.HorizontalAlignment = HorizontalAlignment.Center;
                 prompt.VerticalAlignment = VerticalAlignment.Center;
-                prompt.Width = Symtext.GetSymtextWidth(prompt.Text + " . . .", prompt.FontSize);
+                prompt.Width = Symtext.GetSymtextWidth(prompt.Text, prompt.FontSize, prompt.CharacterSpacing);
                 prompt.Margin = new Thickness(0, 150);
             });
             Window.Compositor.BeforeRendering += BeforeRendering;
