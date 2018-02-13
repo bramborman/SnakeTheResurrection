@@ -2,7 +2,6 @@
 using SnakeTheResurrection.Utilities;
 using SnakeTheResurrection.Utilities.UI;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
@@ -228,7 +227,7 @@ namespace SnakeTheResurrection
         {
             ListMenu mainMenu = new ListMenu
             {
-                Items = new List<MenuItem>
+                Items = new[]
                 {
 #pragma warning disable IDE0011 // Add braces
                     new MenuItem("Singleplayer",    () => { while (Game.Play(false)) ; }    ),
@@ -257,7 +256,7 @@ namespace SnakeTheResurrection
 
             ListMenu aboutMenu = new ListMenu
             {
-                Items = new List<MenuItem>
+                Items = new[]
                 {
                     new MenuItem("GitHub repo", () => Process.Start("https://github.com/bramborman/SnakeTheResurrection")   ),
                     new MenuItem("Game font",   () => Process.Start("https://www.dafont.com/symtext.font")                  ),

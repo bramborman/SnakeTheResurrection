@@ -264,7 +264,7 @@ namespace SnakeTheResurrection
             Symtext.WriteTitle("Mode", 7);
             new ListMenu
             {
-                Items = new List<MenuItem>
+                Items = new[]
                 {
                     new MenuItem("Classic",     () => output = false    ),
                     new MenuItem("Borderless",  () => output = true     ),
@@ -283,7 +283,7 @@ namespace SnakeTheResurrection
             Symtext.WriteTitle("Level", 0);
             new ListMenu
             {
-                Items = new List<MenuItem>
+                Items = new[]
                 {
                     new MenuItem("Easy",    () => output = 200  ),
                     new MenuItem("Medium",  () => output = 50   ),
@@ -311,7 +311,7 @@ namespace SnakeTheResurrection
             Symtext.WriteTitle("Pause", 7);
             new ListMenu
             {
-                Items = new List<MenuItem>
+                Items = new[]
                 {
                     new MenuItem("Continue",    () => output = MenuResult.Continue  ),
                     new MenuItem("Restart",     () => output = MenuResult.Restart   ),

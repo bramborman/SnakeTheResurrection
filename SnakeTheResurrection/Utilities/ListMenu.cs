@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace SnakeTheResurrection.Utilities
 {
     public sealed class ListMenu
     {
-        private List<MenuItem> _items;
+        private MenuItem[] _items = new MenuItem[0];
         private int _selectedIndex;
 
-        public List<MenuItem> Items
+        public MenuItem[] Items
         {
             get { return _items; }
             set
@@ -27,33 +26,20 @@ namespace SnakeTheResurrection.Utilities
             {
                 if (_selectedIndex != value)
                 {
-                    ExceptionHelper.ValidateNumberInRange(value, 0, Items.Count - 1, nameof(SelectedIndex));
+                    ExceptionHelper.ValidateNumberInRange(value, 0, Items.Length - 1, nameof(SelectedIndex));
                     _selectedIndex = value;
                 }
             }
         }
-        public MenuItem SelectedItem
-        {
-            get
-            {
-                return Items[SelectedIndex];
-            }
-        }
-
-        public ListMenu()
-        {
-            Items = new List<MenuItem>();
-        }
 
         public void InvokeResult()
         {
-            GetResult();
-            SelectedItem.Action?.Invoke();
+            Items[GetResult()].Action?.Invoke();
         }
         
         public int GetResult()
         {
-            if (Items.Count < 1)
+            if (Items.Length < 1)
             {
                 throw new InvalidOperationException("Cannot draw menu with no items.");
             }
@@ -68,14 +54,14 @@ namespace SnakeTheResurrection.Utilities
 
                     if (symtextCursorTop == null)
                     {
-                        symtextCursorTop    = Symtext.CursorTop;
+                        symtextCursorTop = Symtext.CursorTop;
                     }
                     else
                     {
-                        Symtext.CursorTop   = symtextCursorTop.Value;
+                        Symtext.CursorTop = symtextCursorTop.Value;
                     }
 
-                    for (int i = 0; i < Items.Count; i++)
+                    for (int i = 0; i < Items.Length; i++)
                     {
                         Symtext.ForegroundColor = Constants.FOREGROUND_COLOR;
                         Symtext.BackgroundColor = i == SelectedIndex ? Constants.ACCENT_COLOR_DARK : Constants.BACKGROUND_COLOR;
@@ -101,65 +87,30 @@ namespace SnakeTheResurrection.Utilities
                                 handled = true;
                                 SelectedIndex--;
 
-                                while (string.IsNullOrWhiteSpace(SelectedItem.Text))
+                                while (string.IsNullOrWhiteSpace(Items[SelectedIndex].Text))
                                 {
                                     SelectedIndex--;
                                 }
                             }
 
                             break;
-
                         case ConsoleKey.DownArrow:
-                            if (SelectedIndex != Items.Count - 1)
+                            if (SelectedIndex != Items.Length - 1)
                             {
                                 handled = true;
                                 SelectedIndex++;
 
-                                while (string.IsNullOrWhiteSpace(SelectedItem.Text))
+                                while (string.IsNullOrWhiteSpace(Items[SelectedIndex].Text))
                                 {
                                     SelectedIndex++;
                                 }
                             }
 
                             break;
-
-                        case ConsoleKey.LeftArrow:
-                            {
-                                if (SelectedItem is MenuSwitchItem selectedMenuSwitchItem)
-                                {
-                                    handled = true;
-                                    selectedMenuSwitchItem.IsOn = true;
-                                }
-
-                                break;
-                            }
-
-                        case ConsoleKey.RightArrow:
-                            {
-                                if (SelectedItem is MenuSwitchItem selectedMenuSwitchItem)
-                                {
-                                    handled = true;
-                                    selectedMenuSwitchItem.IsOn = false;
-                                }
-
-                                break;
-                            }
-
                         case ConsoleKey.Enter:
-                            {
-                                handled = true;
-                                
-                                if (SelectedItem is MenuSwitchItem selectedMenuSwitchItem)
-                                {
-                                    selectedMenuSwitchItem.IsOn = !selectedMenuSwitchItem.IsOn;
-                                    break;
-                                }
-                                else
-                                {
-                                    Renderer.Clear();
-                                    return SelectedIndex;
-                                }
-                            }
+                            handled = true;
+                            Renderer.Clear();
+                            return SelectedIndex;
                     }
                 }
             }

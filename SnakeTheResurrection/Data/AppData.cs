@@ -1,6 +1,5 @@
 ﻿using SnakeTheResurrection.Utilities;
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 
 namespace SnakeTheResurrection.Data
@@ -59,7 +58,7 @@ namespace SnakeTheResurrection.Data
 
                     int result = new ListMenu()
                     {
-                        Items = new List<MenuItem>()
+                        Items = new[]
                         {
                             new MenuItem("Try again"),
                             new MenuItem("Use default configuration"),
