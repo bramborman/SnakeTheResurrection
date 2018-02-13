@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SnakeTheResurrection.Data
+﻿namespace SnakeTheResurrection.Data
 {
     public sealed class Profile
     {
@@ -11,22 +9,6 @@ namespace SnakeTheResurrection.Data
         public Profile()
         {
             SnakeControls = new SnakeControls();
-        }
-    }
-
-    public sealed class SnakeControls
-    {
-        public ConsoleKey Up { get; set; }
-        public ConsoleKey Down { get; set; }
-        public ConsoleKey Left { get; set; }
-        public ConsoleKey Right { get; set; }
-
-        public SnakeControls()
-        {
-            Up      = ConsoleKey.UpArrow;
-            Down    = ConsoleKey.DownArrow;
-            Left    = ConsoleKey.LeftArrow;
-            Right   = ConsoleKey.RightArrow;
         }
     }
 }

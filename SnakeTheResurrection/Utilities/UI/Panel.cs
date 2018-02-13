@@ -6,15 +6,9 @@ namespace SnakeTheResurrection.Utilities.UI
     public abstract class Panel : ContentElement
     {
         public ObservableCollection<UIElement> Items { get; } = new ObservableCollection<UIElement>();
-        public Orientation Orientation
-        {
-            get { return (Orientation)GetValue(); }
-            set { SetValue(value); }
-        }
 
         public Panel()
         {
-            RegisterProperty(nameof(Orientation), typeof(Orientation), Orientation.Vertical);
             Items.CollectionChanged += Items_CollectionChanged;
         }
 
@@ -25,17 +19,23 @@ namespace SnakeTheResurrection.Utilities.UI
                 return;
             }
 
-            foreach (UIElement oldItem in e.OldItems)
+            if (e.OldItems != null)
             {
-                if (ReferenceEquals(this, oldItem.Parent))
+                foreach (UIElement oldItem in e.OldItems)
                 {
-                    SetParent(oldItem, null);
+                    if (ReferenceEquals(this, oldItem.Parent))
+                    {
+                        SetParent(oldItem, null);
+                    }
                 }
             }
 
-            foreach (UIElement newItem in e.NewItems)
+            if (e.NewItems != null)
             {
-                SetParent(newItem, this);
+                foreach (UIElement newItem in e.NewItems)
+                {
+                    SetParent(newItem, this);
+                }
             }
         }
     }

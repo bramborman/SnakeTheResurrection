@@ -4,6 +4,17 @@ namespace SnakeTheResurrection.Utilities.UI
 {
     public class StackPanel : Panel
     {
+        public Orientation Orientation
+        {
+            get { return (Orientation)GetValue(); }
+            set { SetValue(value); }
+        }
+
+        public StackPanel()
+        {
+            RegisterProperty(nameof(Orientation), typeof(Orientation), Orientation.Vertical);
+        }
+
         public override Rectangle Render(in Rectangle bounds)
         {
             Rectangle area = base.Render(in bounds);

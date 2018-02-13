@@ -48,6 +48,7 @@
     <Compile Include="Berry.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Data\Profile.cs" />
+    <Compile Include="Data\SnakeControls.cs" />
     <Compile Include="Direction.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="GameObjectBase.cs" />
