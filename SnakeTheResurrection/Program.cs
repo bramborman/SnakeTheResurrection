@@ -231,7 +231,6 @@ namespace SnakeTheResurrection
                 Items = new List<MenuItem>
                 {
 #pragma warning disable IDE0011 // Add braces
-                    // I hope we're not filling the call stack using the while instead of calling the method in itself again to restart
                     new MenuItem("Singleplayer",    () => { while (Game.Play(false)) ; }    ),
                     new MenuItem("Multiplayer",     () => { while (Game.Play(true)) ; }     ),
                     new MenuItem("About",           About                                   ),
