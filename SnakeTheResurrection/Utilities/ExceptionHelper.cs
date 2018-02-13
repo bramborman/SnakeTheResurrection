@@ -11,15 +11,7 @@ namespace SnakeTheResurrection.Utilities
                 throw new ArgumentNullException(parameterName);
             }
         }
-
-        public static void ValidateStringNotNullOrWhiteSpace(string str, string parameterName)
-        {
-            if (string.IsNullOrWhiteSpace(str))
-            {
-                throw new ArgumentException("Value cannot be white space or null.", parameterName);
-            }
-        }
-
+        
         public static void ValidateEnumValueDefined(Enum enumValue, string parameterName)
         {
             if (!Enum.IsDefined(enumValue.GetType(), enumValue))
