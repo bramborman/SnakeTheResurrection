@@ -72,6 +72,7 @@
     <Compile Include="Utilities\UI\HorizontalAlignment.cs" />
     <Compile Include="Utilities\UI\Orientation.cs" />
     <Compile Include="Utilities\UI\Panel.cs" />
+    <Compile Include="Utilities\UI\Playground.cs" />
     <Compile Include="Utilities\UI\Rectangle.cs" />
     <Compile Include="Utilities\UI\Size.cs" />
     <Compile Include="Utilities\UI\StackPanel.cs" />
