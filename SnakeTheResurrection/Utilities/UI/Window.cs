@@ -31,7 +31,7 @@ namespace SnakeTheResurrection.Utilities.UI
             
             public static event Action BeforeRendering;
 
-            public static void Run()
+            public static void Start()
             {
                 if (!renderingThread.IsAlive)
                 {

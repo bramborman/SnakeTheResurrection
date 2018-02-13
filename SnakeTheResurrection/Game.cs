@@ -51,11 +51,15 @@ namespace SnakeTheResurrection
                 switch (i)
                 {
                     case 0:
-                        profile = ProfileManager.CurrentProfile;
+                        profile = new Profile()
+                        {
+                            Name = "Pandafrog",
+                            Color = FastColors.Green
+                        };
+
                         break;
-                        
                     case 1:
-                        profile = new Profile
+                        profile = new Profile()
                         {
                             Name = "Frogpanda",
                             Color = FastColors.Cyan
@@ -68,7 +72,7 @@ namespace SnakeTheResurrection
                         break;
 
                     case 2:
-                        profile = new Profile
+                        profile = new Profile()
                         {
                             Name = "Strawberryraspberry",
                             Color = FastColors.Magenta
@@ -81,7 +85,7 @@ namespace SnakeTheResurrection
                         break;
 
                     case 3:
-                        profile = new Profile
+                        profile = new Profile()
                         {
                             Name = "Lifeescape",
                             Color = FastColors.Yellow

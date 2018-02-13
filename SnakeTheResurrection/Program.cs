@@ -53,10 +53,9 @@ namespace SnakeTheResurrection
                 Height = Symtext.GetCharHeight(2)
             };
             Window.Children.Add(prompt);
-            Window.Compositor.Run();
+            Window.Compositor.Start();
 
             AppData.Load();
-            ProfileManager.LoadProfiles();
             
             int counter = 0;
 
@@ -217,7 +216,7 @@ namespace SnakeTheResurrection
             }
 
             Window.Children.Add(stackPanel);
-            Window.Compositor.Run();
+            Window.Compositor.Start();
             Console.ReadLine();
             Window.Compositor.Stop();
             Window.Children.Clear();
@@ -237,8 +236,6 @@ namespace SnakeTheResurrection
 #pragma warning restore IDE0011 // Add braces
                 }
             };
-
-            ProfileManager.ShowProfileSelection();
             
             while (true)
             {
@@ -284,7 +281,6 @@ namespace SnakeTheResurrection
             if (!error)
             {
                 AppData.Current.Save();
-                ProfileManager.SaveProfiles();
             }
             
             // Cleanup

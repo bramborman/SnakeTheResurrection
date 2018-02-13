@@ -51,7 +51,6 @@
     <Compile Include="Direction.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="GameObjectBase.cs" />
-    <Compile Include="ProfileManager.cs" />
     <Compile Include="Snake.cs" />
     <Compile Include="Utilities\Cheats.cs" />
     <Compile Include="Utilities\FastColors.cs" />

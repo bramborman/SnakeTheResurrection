@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.IO;
 
 namespace SnakeTheResurrection.Utilities
@@ -22,27 +23,22 @@ namespace SnakeTheResurrection.Utilities
 
         public static (T obj, bool success) LoadObject<T>(string filePath) where T : class, new()
         {
-            bool success = true;
-            T obj = null;
-
-            if (File.Exists(filePath))
+            try
             {
-                try
-                {
-                    string json = File.ReadAllText(filePath, Constants.encoding);
+                string json = File.ReadAllText(filePath, Constants.encoding);
+                T obj = null;
 
-                    if (!string.IsNullOrWhiteSpace(json))
-                    {
-                        obj = JsonConvert.DeserializeObject<T>(json);
-                    }
-                }
-                catch
+                if (!string.IsNullOrWhiteSpace(json))
                 {
-                    success = false;
+                    obj = JsonConvert.DeserializeObject<T>(json);
                 }
+
+                return (obj ?? new T(), true);
             }
-            
-            return (obj ?? new T(), success);
+            catch (Exception exception)
+            {
+                return (new T(), exception is FileNotFoundException);
+            }
         }
     }
 }
