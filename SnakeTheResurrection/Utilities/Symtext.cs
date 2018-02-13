@@ -12,8 +12,8 @@ namespace SnakeTheResurrection.Utilities
         private static int _fontSize;
         private static short _foregroundColor;
         private static short _backgroundColor;
-        private static SymtextHorizontalAlignment _horizontalAlignment;
-        private static SymtextVerticalAlignment _verticalAlignment;
+        private static bool _horizontalCentering;
+        private static bool _verticalCentering;
 
         private static int CharacterSpacing
         {
@@ -98,33 +98,25 @@ namespace SnakeTheResurrection.Utilities
                 }
             }
         }
-        public static SymtextHorizontalAlignment HorizontalAlignment
+        public static bool HorizontalCentering
         {
-            get { return _horizontalAlignment; }
+            get { return _horizontalCentering; }
             set
             {
                 lock (syncRoot)
                 {
-                    if (_horizontalAlignment != value)
-                    {
-                        ExceptionHelper.ValidateEnumValueDefined(value, nameof(HorizontalAlignment));
-                        _horizontalAlignment = value;
-                    }
+                    _horizontalCentering = value;
                 }
             }
         }
-        public static SymtextVerticalAlignment VerticalAlignment
+        public static bool VerticalCentering
         {
-            get { return _verticalAlignment; }
+            get { return _verticalCentering; }
             set
             {
                 lock (syncRoot)
                 {
-                    if (_verticalAlignment != value)
-                    {
-                        ExceptionHelper.ValidateEnumValueDefined(value, nameof(VerticalAlignment));
-                        _verticalAlignment = value;
-                    }
+                    _verticalCentering = value;
                 }
             }
         }
@@ -138,7 +130,13 @@ namespace SnakeTheResurrection.Utilities
 
         static Symtext()
         {
-            SetDefaultProperties();
+            CursorLeft          = 0;
+            CursorTop           = 0;
+            FontSize            = 1;
+            ForegroundColor     = Constants.FOREGROUND_COLOR;
+            BackgroundColor     = Constants.BACKGROUND_COLOR;
+            HorizontalCentering = false;
+            VerticalCentering   = false;
         }
 
         public static void SetCursorPosition(int left, int top)
@@ -154,20 +152,20 @@ namespace SnakeTheResurrection.Utilities
         
         public static void Write(object value, int verticalOffset)
         {
-            if (value == null || (string)value == string.Empty)
+            string stringValue = value?.ToString();
+
+            if (string.IsNullOrEmpty(stringValue))
             {
                 return;
             }
 
             lock (syncRoot)
             {
-                string[] lines = value.ToString().Split('\n');
+                string[] lines = stringValue.Split('\n');
                 
-                switch (VerticalAlignment)
+                if (VerticalCentering)
                 {
-                    case SymtextVerticalAlignment.Top:     CursorTop = 0;                                                            break;
-                    case SymtextVerticalAlignment.Center:  CursorTop = (Console.WindowHeight - (lines.Length * CharHeight)) / 2;     break;
-                    case SymtextVerticalAlignment.Bottom:  CursorTop = Console.WindowHeight - (lines.Length * CharHeight);           break;
+                    CursorTop = (Console.WindowHeight - (lines.Length * CharHeight)) / 2;
                 }
 
                 CursorTop += verticalOffset;
@@ -176,11 +174,9 @@ namespace SnakeTheResurrection.Utilities
                 {
                     string line = lines[i];
 
-                    switch (HorizontalAlignment)
+                    if (HorizontalCentering)
                     {
-                        case SymtextHorizontalAlignment.Left:      CursorLeft = 0;                                                    break;
-                        case SymtextHorizontalAlignment.Center:    CursorLeft = (Console.WindowWidth - GetSymtextWidth(line)) / 2;    break;
-                        case SymtextHorizontalAlignment.Right:     CursorLeft = Console.WindowWidth - GetSymtextWidth(line);          break;
+                        CursorLeft = (Console.WindowWidth - GetSymtextWidth(line)) / 2;
                     }
 
                     for (int j = 0; j < line.Length; j++)
@@ -251,12 +247,12 @@ namespace SnakeTheResurrection.Utilities
             ForegroundColor     = Constants.ACCENT_COLOR;
             BackgroundColor     = Constants.BACKGROUND_COLOR;
             FontSize            = 15;
-            HorizontalAlignment = SymtextHorizontalAlignment.Center;
-            VerticalAlignment   = SymtextVerticalAlignment.Center;
+            HorizontalCentering = true;
+            VerticalCentering   = true;
             WriteLine(value, verticalOffset);
 
-            HorizontalAlignment = SymtextHorizontalAlignment.None;
-            VerticalAlignment   = SymtextVerticalAlignment.None;
+            HorizontalCentering = false;
+            VerticalCentering   = false;
 
             FontSize = 3;
             WriteLine();
@@ -266,20 +262,6 @@ namespace SnakeTheResurrection.Utilities
         {
             return 7 * fontSize;
         }
-        
-        public static void SetDefaultProperties()
-        {
-            lock (syncRoot)
-            {
-                CursorLeft          = 0;
-                CursorTop           = 0;
-                FontSize            = 1;
-                ForegroundColor     = Constants.FOREGROUND_COLOR;
-                BackgroundColor     = Constants.BACKGROUND_COLOR;
-                HorizontalAlignment = default;
-                VerticalAlignment   = default;
-            }
-        }
 
         public static void SetTextProperties()
         {
@@ -288,8 +270,8 @@ namespace SnakeTheResurrection.Utilities
                 ForegroundColor     = Constants.FOREGROUND_COLOR;
                 BackgroundColor     = Constants.BACKGROUND_COLOR;
                 FontSize            = 2;
-                HorizontalAlignment = SymtextHorizontalAlignment.None;
-                VerticalAlignment   = SymtextVerticalAlignment.None;
+                HorizontalCentering = false;
+                VerticalCentering   = false;
             }
         }
 
@@ -298,7 +280,7 @@ namespace SnakeTheResurrection.Utilities
             lock (syncRoot)
             {
                 SetTextProperties();
-                HorizontalAlignment = SymtextHorizontalAlignment.Center;
+                HorizontalCentering = true;
             }
         }
 
