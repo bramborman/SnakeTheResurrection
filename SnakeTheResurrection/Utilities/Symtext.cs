@@ -3,15 +3,16 @@
 namespace SnakeTheResurrection.Utilities
 {
     // Font inspired by Symtext (4/26/2017): http://www.dafont.com/symtext.font
+    //TODO: Separate font and Console functionality
     public static partial class Symtext
     {
         public static readonly object syncRoot = new object();
 
         private static int _cursorLeft;
         private static int _cursorTop;
-        private static int _fontSize;
-        private static short _foregroundColor;
-        private static short _backgroundColor;
+        private static int _fontSize = 1;
+        private static short _foregroundColor = Constants.FOREGROUND_COLOR;
+        private static short _backgroundColor = Constants.BACKGROUND_COLOR;
         private static bool _horizontalCentering;
         private static bool _verticalCentering;
 
@@ -127,28 +128,6 @@ namespace SnakeTheResurrection.Utilities
                 return GetCharHeight(FontSize);
             }
         }
-
-        static Symtext()
-        {
-            CursorLeft          = 0;
-            CursorTop           = 0;
-            FontSize            = 1;
-            ForegroundColor     = Constants.FOREGROUND_COLOR;
-            BackgroundColor     = Constants.BACKGROUND_COLOR;
-            HorizontalCentering = false;
-            VerticalCentering   = false;
-        }
-
-        public static void SetCursorPosition(int left, int top)
-        {
-            CursorLeft = left;
-            CursorTop  = top;
-        }
-
-        public static void Write(object value)
-        {
-            Write(value, 0);
-        }
         
         public static void Write(object value, int verticalOffset)
         {
@@ -225,20 +204,10 @@ namespace SnakeTheResurrection.Utilities
                 }
             }
         }
-
-        public static void WriteLine()
+        
+        public static void WriteLine(object value = null, int verticalOffset = 0)
         {
-            WriteLine(null);
-        }
-
-        public static void WriteLine(object value)
-        {
-            WriteLine(value, 0);
-        }
-
-        public static void WriteLine(object value, int verticalOffset)
-        {
-            Write(value?.ToString() + '\n', verticalOffset);
+            Write(value + "\n", verticalOffset);
             CursorLeft = 0;
         }
 

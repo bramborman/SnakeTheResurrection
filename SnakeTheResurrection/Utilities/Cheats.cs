@@ -62,7 +62,8 @@ namespace SnakeTheResurrection.Utilities
 
                         lock (Symtext.syncRoot)
                         {
-                            Symtext.SetCursorPosition(0, 0);
+                            Symtext.CursorLeft          = 0;
+                            Symtext.CursorTop           = 0;
                             Symtext.FontSize            = 1;
                             Symtext.BackgroundColor     = FastColors.Gray;
                             Symtext.ForegroundColor     = FastColors.Black;
@@ -70,7 +71,7 @@ namespace SnakeTheResurrection.Utilities
                             Symtext.VerticalCentering   = false;
 
                             Renderer.RemoveFromBuffer(0, 0, Symtext.GetSymtextWidth(CHEAT_DEACTIVATED_MESSAGE), Symtext.CharHeight);
-                            Symtext.Write(cheatCodeInfo[currentCode] ? CHEAT_ACTIVATED_MESSAGE : CHEAT_DEACTIVATED_MESSAGE);
+                            Symtext.Write(cheatCodeInfo[currentCode] ? CHEAT_ACTIVATED_MESSAGE : CHEAT_DEACTIVATED_MESSAGE, 0);
                             Renderer.RenderFrame();
                         }
 
