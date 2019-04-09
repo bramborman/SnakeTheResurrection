@@ -98,7 +98,7 @@ namespace SnakeTheResurrection.Utilities.UI
 
             Rectangle area = GetArea(in bounds);
 
-            if (area.Width <= 0 || area.Height <= 0)
+            if (area.Width <= 0 || area.Height <= 0 || IsOutOfBounds(in area, in bounds))
             {
                 return Rectangle.Empty;
             }
@@ -192,6 +192,11 @@ namespace SnakeTheResurrection.Utilities.UI
             }
 
             return new Rectangle(left, top, right, bottom);
+        }
+
+        protected bool IsOutOfBounds(in Rectangle area, in Rectangle bounds)
+        {
+            return (area.Left > bounds.Right && area.Top > bounds.Bottom) || (area.Right < bounds.Left && area.Bottom < bounds.Top);
         }
 
         protected static void SetParent(UIElement element, UIElement newParent)

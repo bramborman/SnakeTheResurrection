@@ -67,6 +67,12 @@
             }
 
             Rectangle contentArea = GetContentArea(area);
+
+            if (IsOutOfBounds(in contentArea, in bounds))
+            {
+                return area;
+            }
+
             int x = contentArea.X;
             int y = contentArea.Y;
             int characterSpacing = CharacterSpacing;
@@ -92,7 +98,7 @@
                         {
                             GoToNewLine();
 
-                            if (y > contentArea.Bottom)
+                            if (y >= contentArea.Bottom)
                             {
                                 break;
                             }
@@ -100,7 +106,7 @@
                     }
                     else if (TextWrapping == TextWrapping.NoWrap)
                     {
-                        if (x > contentArea.Right)
+                        if (x >= contentArea.Right)
                         {
                             break;
                         }

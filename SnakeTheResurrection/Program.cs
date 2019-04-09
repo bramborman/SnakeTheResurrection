@@ -38,14 +38,14 @@ namespace SnakeTheResurrection
             Window.Compositor.Start();
 
             AppData.Load();
-            
-            int counter = 0;
+
+            Stopwatch stopwatch = new Stopwatch();
 
             void BeforeRendering()
             {
-                if (++counter == 17)
+                if (stopwatch.ElapsedMilliseconds > 850)
                 {
-                    counter = 0;
+                    stopwatch.Restart();
                     prompt.IsVisible = !prompt.IsVisible;
                 }
             }
@@ -59,10 +59,12 @@ namespace SnakeTheResurrection
                 prompt.Margin = new Thickness(0, 150);
             });
             Window.Compositor.BeforeRendering += BeforeRendering;
+            stopwatch.Start();
             InputHelper.ClearInputBuffer();
             Console.ReadKey(true);
             Window.Compositor.BeforeRendering -= BeforeRendering;
             Window.Compositor.Stop();
+            stopwatch.Stop();
 
             MainMenu();
 
